@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd "$(dirname "$0")"
 
@@ -206,9 +206,9 @@ case "$AUTOBUILD_PLATFORM" in
             
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
-        DEBUG_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include \
+        DEBUG_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include/zlib/ \
             -sZLIB_LIBPATH=$stage/packages/lib/debug \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/ \
+            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
             $BOOST_BJAM_OPTIONS"
         "${bjam}" variant=debug --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/debug \
@@ -229,9 +229,9 @@ case "$AUTOBUILD_PLATFORM" in
 
         "${bjam}" --clean
 
-        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include \
+        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include/zlib/ \
             -sZLIB_LIBPATH=$stage/packages/lib/release \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/ \
+            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
             $BOOST_BJAM_OPTIONS"
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
