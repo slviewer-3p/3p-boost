@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd "$(dirname "$0")"
+top="$(pwd)"
 
 # turn on verbose debugging output for parabuild logs.
 set -x
@@ -8,6 +9,8 @@ set -x
 set -e
 
 BOOST_SOURCE_DIR="boost"
+VERSION_HEADER_FILE="$BOOST_SOURCE_DIR/boost/version.hpp"
+VERSION_MACRO="BOOST_LIB_VERSION"
 
 if [ -z "$AUTOBUILD" ] ; then 
     fail
@@ -138,6 +141,16 @@ case "$AUTOBUILD_PLATFORM" in
         # Move the debug libs first, then the leftover release libs
         mv "${stage_lib}"/*-gd.lib "${stage_debug}"
         mv "${stage_lib}"/*.lib "${stage_release}"
+
+        # populate version_file
+        cl /DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
+           /DVERSION_MACRO="$VERSION_MACRO" \
+           /Fo"$(cygpath -w "$stage/version.obj")" \
+           /Fe"$(cygpath -w "$stage/version.exe")" \
+           "$(cygpath -w "$top/version.c")"
+        # Boost's VERSION_MACRO emits (e.g.) "1_55"
+        "$stage/version.exe" | tr '_' '.' > "$stage/version.txt"
+        rm "$stage"/version.{obj,exe}
         ;;
 
     "darwin")
@@ -194,6 +207,14 @@ case "$AUTOBUILD_PLATFORM" in
         fi
 
         mv "${stage_lib}"/*.a "${stage_release}"
+
+        # populate version_file
+        cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
+           -DVERSION_MACRO="$VERSION_MACRO" \
+           -o "$stage/version" "$top/version.c"
+        # Boost's VERSION_MACRO emits (e.g.) "1_55"
+        "$stage/version" | tr '_' '.' > "$stage/version.txt"
+        rm "$stage/version"
         ;;
 
     "linux")
@@ -252,6 +273,14 @@ case "$AUTOBUILD_PLATFORM" in
         mv "${stage_lib}"/libboost* "${stage_release}"
 
         "${bjam}" --clean
+
+        # populate version_file
+        cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
+           -DVERSION_MACRO="$VERSION_MACRO" \
+           -o "$stage/version" "$top/version.c"
+        # Boost's VERSION_MACRO emits (e.g.) "1_55"
+        "$stage/version" | tr '_' '.' > "$stage/version.txt"
+        rm "$stage/version"
         ;;
 esac
     

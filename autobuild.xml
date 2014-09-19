@@ -5,6 +5,10 @@
     <map>
       <key>icu4c</key>
       <map>
+        <key>copyright</key>
+        <string>Copyright (c) 1995-2011 International Business Machines Corporation and others &lt;http://source.icu-project.org&gt;</string>
+        <key>description</key>
+        <string>ICU is a mature, widely used set of C/C++ and Java libraries providing Unicode and Globalization support for software applications. ICU is widely portable and gives applications the same results on all platforms and between C/C++ and Java software.</string>
         <key>license</key>
         <string>ICU, permissive non-copyleft free software license</string>
         <key>license_file</key>
@@ -18,9 +22,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>bcc0482ffd58edf50a9d26253555d278</string>
+              <string>798a4a7f71a4bb5f97b605082146cae9</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3p-icu4c/rev/268323/arch/Darwin/installer/icu4c-48.1-darwin-20121218.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294307/arch/Darwin/installer/icu4c-4.8.1-darwin-294307.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -30,9 +34,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>9a758afca3e193d710b8ff6a59849c01</string>
+              <string>bf0b461093d8f65421bf6d441b6169f3</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3p-icu4c/rev/268323/arch/Linux/installer/icu4c-48.1-linux-20121218.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294307/arch/Linux/installer/icu4c-4.8.1-linux-294307.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -42,17 +46,23 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>6c87efd59cae130367a88bdcb17b72a4</string>
+              <string>cc92bc42352392738effe4228c120413</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3p-icu4c/rev/268323/arch/CYGWIN/installer/icu4c-48.1-windows-20121218.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294307/arch/CYGWIN/installer/icu4c-4.8.1-windows-294307.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
           </map>
         </map>
+        <key>version</key>
+        <string>4.8.1</string>
       </map>
       <key>zlib</key>
       <map>
+        <key>copyright</key>
+        <string>Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler</string>
+        <key>description</key>
+        <string>Zlib Data Compression Library</string>
         <key>license</key>
         <string>zlib</string>
         <key>license_file</key>
@@ -66,9 +76,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>6658071e3b54b1dd5f5279227aff402a</string>
+              <string>6165638d2113dbdc43ea000836dacaf9</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3pl_3p-zlib-update/rev/290556/arch/Darwin/installer/zlib-1.2.8-darwin-20140602.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/Darwin/installer/zlib-1.2.8.294168-darwin-294168.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -78,9 +88,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>63a62bb3cbef2aad3cca49cb6f2d0aeb</string>
+              <string>eab7fff3c7465f8c722a284b33ac69fd</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3pl_3p-zlib-update/rev/290556/arch/Linux/installer/zlib-1.2.8-linux-20140602.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/Linux/installer/zlib-1.2.8.294168-linux-294168.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -90,18 +100,22 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ab45a628e22a495814e806ce46081806</string>
+              <string>a66728f3bdeb676a353aee5683169bfa</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/3pl_3p-zlib-update/rev/290556/arch/CYGWIN/installer/zlib-1.2.8-windows-20140602.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/CYGWIN/installer/zlib-1.2.8.294168-windows-294168.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
           </map>
         </map>
+        <key>version</key>
+        <string>1.2.8.294168</string>
       </map>
     </map>
     <key>package_description</key>
     <map>
+      <key>copyright</key>
+      <string>(see individual source files)</string>
       <key>description</key>
       <string>Boost C++ Libraries</string>
       <key>license</key>
@@ -217,10 +231,12 @@
       <string>boost</string>
       <key>version</key>
       <string>1.55.0</string>
+      <key>version_file</key>
+      <string>version.txt</string>
     </map>
     <key>type</key>
     <string>autobuild</string>
     <key>version</key>
-    <string>1.2</string>
+    <string>1.3</string>
   </map>
 </llsd>
