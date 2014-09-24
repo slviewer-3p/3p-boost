@@ -28,7 +28,8 @@ BOOST_TEST_LIBS_COMMON="context program_options signals system thread coroutine"
 BOOST_TEST_LIBS_LINUX="${BOOST_TEST_LIBS_COMMON} date_time iostreams"
 BOOST_TEST_LIBS_WINDOWS="${BOOST_TEST_LIBS_COMMON} filesystem"
 # No filesystem test for darwin due to Bug 9560 - may have production implications, too
-BOOST_TEST_LIBS_DARWIN="${BOOST_TEST_LIBS_COMMON} date_time iostreams"
+# clang 5.1+ seems to bollix iostreams code_converter_test.cpp, grr.
+BOOST_TEST_LIBS_DARWIN="${BOOST_TEST_LIBS_COMMON} date_time" # iostreams
 BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compilation to be examined
 
 top="$(pwd)"
