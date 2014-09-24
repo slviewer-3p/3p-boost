@@ -92,10 +92,14 @@ namespace std {
 }
 #endif
 
-#if !defined(__MSL_CPP__) && !defined(__LIBCOMO__)
-    #define BOOST_CODECVT_DO_LENGTH_CONST const
-#else
+#if (defined(__clang_major__) &&                        \
+     (__clang_major__ == 5 && __clang_minor__ >= 1) ||  \
+     (__clang_major__ > 5)) ||                          \
+    defined(__MSL_CPP__) ||                             \
+    defined(__LIBCOMO__)
     #define BOOST_CODECVT_DO_LENGTH_CONST
+#else
+    #define BOOST_CODECVT_DO_LENGTH_CONST const
 #endif
 
 // maximum lenght of a multibyte string
