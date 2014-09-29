@@ -9,7 +9,10 @@
          hg tags
 
     [ ]  Expected differences between vendor and default?  Very
-         little of the original source should be modified.
+         little of the original source should be modified. (However,
+         several files have been added under boost/boost/dcoroutine;
+         the following 'hg diff' command displays each of them in
+         their entirety.)
 
          hg diff -rcurrent boost
 
