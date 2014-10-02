@@ -36,6 +36,13 @@ function suppress_tests {
   do for ((i=0; i<${#BOOST_LIBS[@]}; ++i))
      do if [[ "${BOOST_LIBS[$i]}" == "$lib" ]]
         then unset BOOST_LIBS[$i]
+             # From -x trace output, it appears that the above 'unset' command
+             # doesn't immediately close the gaps in the BOOST_LIBS array. In
+             # fact it seems that although the count ${#BOOST_LIBS[@]} is
+             # decremented, there's a hole at [$i], and subsequent elements
+             # remain at their original subscripts. Reset the array: remove
+             # any such holes.
+             BOOST_LIBS=("${BOOST_LIBS[@]}")
              break
         fi
      done
@@ -124,15 +131,26 @@ case "$AUTOBUILD_PLATFORM" in
         "${bjam}" link=static variant=debug \
             --prefix="${stage}" --libdir="${stage_debug}" $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
 
-        # Windows unit tests seem confused more than usual. So bypass for now
-        # but retry with every update.
-        BOOST_LIBS=()
+        # Constraining Windows unit tests to link=static produces unit-test
+        # link errors. While it may be possible to edit the test/Jamfile.v2
+        # logic in such a way as to succeed statically, it's simpler to allow
+        # dynamic linking for test purposes. However -- with dynamic linking,
+        # some test executables expect to implicitly load a couple of ICU
+        # DLLs. But our installed ICU doesn't even package those DLLs!
+        # TODO: Does this clutter our eventual tarball, or are the extra DLLs
+        # in a separate build directory?
+        # In any case, we still observe failures in certain libraries' unit
+        # tests. In the case of thread, this seems to be due to failure to
+        # write a .rsp response file rather than an indirect dependency on
+        # ICU?!
+        suppress_tests date_time filesystem iostreams regex thread
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
                 pushd libs/"$blib"/test
-                    "${bjam}" link=static variant=debug \
+                    # link=static
+                    "${bjam}" variant=debug \
                         --prefix="${stage}" --libdir="${stage_debug}" \
                         $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
                 popd
@@ -147,7 +165,8 @@ case "$AUTOBUILD_PLATFORM" in
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
                 pushd libs/"$blib"/test
-                    "${bjam}" link=static variant=release \
+                    # link=static
+                    "${bjam}" variant=release \
                         --prefix="${stage}" --libdir="${stage_debug}" \
                         $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
                 popd
