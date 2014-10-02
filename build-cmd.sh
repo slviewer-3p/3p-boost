@@ -20,14 +20,10 @@ fi
 BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
             regex signals system thread)
 
-BOOST_BJAM_OPTIONS="address-model=32 architecture=x86 --layout=tagged -sNO_BZIP2=1"
-# explicitly request each of the libraries named in BOOST_LIBS
-set +x
-for lib in "${BOOST_LIBS[@]}"
-do BOOST_BJAM_OPTIONS="$BOOST_BJAM_OPTIONS --with-$lib"
-done
-echo "BOOST_BJAM_OPTIONS=$BOOST_BJAM_OPTIONS"
-set -x
+# Explicitly request each of the libraries named in BOOST_LIBS.
+# Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
+BOOST_BJAM_OPTIONS="address-model=32 architecture=x86 --layout=tagged -sNO_BZIP2=1
+                    ${BOOST_LIBS[*]/#/--with-}"
 
 # Optionally use this function in a platform build to SUPPRESS running unit
 # tests on one or more specific libraries: sadly, it happens that some
