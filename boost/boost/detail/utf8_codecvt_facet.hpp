@@ -83,6 +83,7 @@
 #include <cstddef>  // for std::size_t
 
 #include <boost/config.hpp>
+#include <boost/config/codecvt_do_length_const.hpp>
 #include <boost/detail/workaround.hpp>
 
 #if defined(BOOST_NO_STDC_NAMESPACE)
@@ -90,16 +91,6 @@ namespace std {
     using ::mbstate_t;
     using ::size_t;
 }
-#endif
-
-#if (defined(__clang_major__) &&                        \
-     (__clang_major__ == 5 && __clang_minor__ >= 1) ||  \
-     (__clang_major__ > 5)) ||                          \
-    defined(__MSL_CPP__) ||                             \
-    defined(__LIBCOMO__)
-    #define BOOST_CODECVT_DO_LENGTH_CONST
-#else
-    #define BOOST_CODECVT_DO_LENGTH_CONST const
 #endif
 
 // maximum lenght of a multibyte string
