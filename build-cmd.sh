@@ -179,7 +179,9 @@ case "$AUTOBUILD_PLATFORM" in
         # boost::future::then() appears broken on 32-bit Mac (see boost bug
         # 9558). Disable then() method in the unit test runs and *don't use
         # future::then()* in production until it's known to be good.
-        BOOST_CXXFLAGS="-gdwarf-2 -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION -DBOOST_THREAD_DONT_PROVIDE_FUTURE_UNWRAP"
+        BOOST_CXXFLAGS="-gdwarf-2 \
+                        -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION \
+                        -DBOOST_THREAD_DONT_PROVIDE_FUTURE_UNWRAP"
 
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
@@ -192,10 +194,17 @@ case "$AUTOBUILD_PLATFORM" in
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
-        DEBUG_BJAM_OPTIONS="include=\"${stage}\"/packages/include include=\"${stage}\"/packages/include/zlib/ \
-            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/debug \
+        DARWIN_BJAM_OPTIONS="${BOOST_BJAM_OPTIONS} \
+            include=\"${stage}\"/packages/include \
+            include=\"${stage}\"/packages/include/zlib/ \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            ${BOOST_BJAM_OPTIONS}"
+            cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros"
+
+        DEBUG_BJAM_OPTIONS="${DARWIN_BJAM_OPTIONS} \
+            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/debug"
+
+        RELEASE_BJAM_OPTIONS="${DARWIN_BJAM_OPTIONS} \
+            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/release"
 
         "${bjam}" toolset=darwin variant=debug $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
 
@@ -210,11 +219,6 @@ case "$AUTOBUILD_PLATFORM" in
         fi
 
         mv "${stage_lib}"/*.a "${stage_debug}"
-
-        RELEASE_BJAM_OPTIONS="include=\"${stage}\"/packages/include include=\"${stage}\"/packages/include/zlib/ \
-            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/release \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            ${BOOST_BJAM_OPTIONS}"
 
         "${bjam}" toolset=darwin variant=release $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
         
