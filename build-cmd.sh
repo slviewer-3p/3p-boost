@@ -16,20 +16,38 @@ if [ -z "$AUTOBUILD" ] ; then
     fail
 fi
 
+# Libraries on which we depend - please keep alphabetized for maintenance
+BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
+            regex signals system thread)
 
-BOOST_BJAM_OPTIONS="address-model=32 architecture=x86 --layout=tagged \
-                            --with-context --with-date_time --with-filesystem \
-                            --with-iostreams --with-program_options \
-                            --with-regex --with-signals --with-system \
-                            --with-thread --with-coroutine -sNO_BZIP2=1"
+BOOST_BJAM_OPTIONS="address-model=32 architecture=x86 --layout=tagged -sNO_BZIP2=1"
+# explicitly request each of the libraries named in BOOST_LIBS
+set +x
+for lib in "${BOOST_LIBS[@]}"
+do BOOST_BJAM_OPTIONS="$BOOST_BJAM_OPTIONS --with-$lib"
+done
+echo "BOOST_BJAM_OPTIONS=$BOOST_BJAM_OPTIONS"
+set -x
 
-# regex tests disabled due to failure in 1.55.0 (re-enable later) - Bug 9555
-BOOST_TEST_LIBS_COMMON="context program_options signals system thread coroutine"
-BOOST_TEST_LIBS_LINUX="${BOOST_TEST_LIBS_COMMON} date_time iostreams"
-BOOST_TEST_LIBS_WINDOWS="${BOOST_TEST_LIBS_COMMON} filesystem"
-# No filesystem test for darwin due to Bug 9560 - may have production implications, too
-# clang 5.1+ seems to bollix iostreams code_converter_test.cpp, grr.
-BOOST_TEST_LIBS_DARWIN="${BOOST_TEST_LIBS_COMMON} date_time" # iostreams
+# Optionally use this function in a platform build to SUPPRESS running unit
+# tests on one or more specific libraries: sadly, it happens that some
+# libraries we care about might fail their unit tests on a particular platform
+# for a particular Boost release.
+# Usage: suppress_tests date_time regex
+function suppress_tests {
+  set +x
+  for lib
+  do for ((i=0; i<${#BOOST_LIBS[@]}; ++i))
+     do if [[ "${BOOST_LIBS[$i]}" == "$lib" ]]
+        then unset BOOST_LIBS[$i]
+             break
+        fi
+     done
+  done
+  echo "BOOST_LIBS=${BOOST_LIBS[*]}"
+  set -x
+}
+
 BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compilation to be examined
 
 top="$(pwd)"
@@ -89,10 +107,10 @@ restore_dylibs ()
 case "$AUTOBUILD_PLATFORM" in
 
     "windows")
-        INCLUDE_PATH=$(cygpath -m "${stage}"/packages/include)
-        ZLIB_RELEASE_PATH=$(cygpath -m "${stage}"/packages/lib/release)
-        ZLIB_DEBUG_PATH=$(cygpath -m "${stage}"/packages/lib/debug)
-        ICU_PATH=$(cygpath -m "${stage}"/packages)
+        INCLUDE_PATH="$(cygpath -m "${stage}"/packages/include)"
+        ZLIB_RELEASE_PATH="$(cygpath -m "${stage}"/packages/lib/release)"
+        ZLIB_DEBUG_PATH="$(cygpath -m "${stage}"/packages/lib/debug)"
+        ICU_PATH="$(cygpath -m "${stage}"/packages)"
 
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
@@ -110,34 +128,35 @@ case "$AUTOBUILD_PLATFORM" in
         "${bjam}" link=static variant=debug \
             --prefix="${stage}" --libdir="${stage_debug}" $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
 
-        # Windows unit tests seem confused more than usual.  So they're
-        # disabled for now but should be tried with every update.
+        # Windows unit tests seem confused more than usual. So bypass for now
+        # but retry with every update.
+        BOOST_LIBS=()
 
         # conditionally run unit tests
-        # if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-        #     for blib in $BOOST_TEST_LIBS_WINDOWS; do
-        #         cd libs/"$blib"/test
-        #             "${bjam}" link=static variant=debug \
-        #                 --prefix="${stage}" --libdir="${stage_debug}" \
-        #                 $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
-        #         cd ../../..
-        #     done
-        # fi
+        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"$blib"/test
+                    "${bjam}" link=static variant=debug \
+                        --prefix="${stage}" --libdir="${stage_debug}" \
+                        $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
+                popd
+            done
+        fi
 
         RELEASE_BJAM_OPTIONS="$WINDOWS_BJAM_OPTIONS -sZLIB_LIBPATH=$ZLIB_RELEASE_PATH -sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH -sZLIB_NAME=zlib"
         "${bjam}" link=static variant=release \
             --prefix="${stage}" --libdir="${stage_release}" $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
 
         # conditionally run unit tests
-        # if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-        #     for blib in $BOOST_TEST_LIBS_WINDOWS; do
-        #         cd libs/"$blib"/test
-        #             "${bjam}" link=static variant=release \
-        #                 --prefix="${stage}" --libdir="${stage_debug}" \
-        #                 $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
-        #         cd ../../..
-        #     done
-        # fi
+        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"$blib"/test
+                    "${bjam}" link=static variant=release \
+                        --prefix="${stage}" --libdir="${stage_debug}" \
+                        $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
+                popd
+            done
+        fi
 
         # Move the debug libs first, then the leftover release libs
         mv "${stage_lib}"/*-gd.lib "${stage_debug}"
@@ -155,10 +174,12 @@ case "$AUTOBUILD_PLATFORM" in
         ;;
 
     "darwin")
-        # boost::future appears broken on 32-bit Mac (see boost bug 9558).
-        # Disable the class in the unit test runs and *don't use it* in 
-        # production until it's known to be good.
-        BOOST_CXXFLAGS="-gdwarf-2 -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CTOR_ALLOCATORS -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION -DBOOST_THREAD_DONT_PROVIDE_FUTURE_UNWRAP -DBOOST_THREAD_DONT_PROVIDE_FUTURE_INVALID_AFTER_GET"
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        suppress_tests date_time
+        # boost::future::then() appears broken on 32-bit Mac (see boost bug
+        # 9558). Disable the class in the unit test runs and *don't use
+        # future::then()* in production until it's known to be good.
+        BOOST_CXXFLAGS="-gdwarf-2 -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CTOR_ALLOCATORS -DBOOST_THREAD_DONT_PROVIDE_FUTURE_INVALID_AFTER_GET -DBOOST_THREAD_DONT_PROVIDE_FUTURE_UNWRAP"
 
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
@@ -180,11 +201,11 @@ case "$AUTOBUILD_PLATFORM" in
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in $BOOST_TEST_LIBS_DARWIN; do
-                cd libs/"${blib}"/test
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"${blib}"/test
                     "${bjam}" toolset=darwin variant=debug -a -q \
                         $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM cxxflags="$BOOST_CXXFLAGS"
-                cd ../../..
+                popd
             done
         fi
 
@@ -199,11 +220,11 @@ case "$AUTOBUILD_PLATFORM" in
         
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in $BOOST_TEST_LIBS_DARWIN; do
-                cd libs/"${blib}"/test
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"${blib}"/test
                     "${bjam}" toolset=darwin variant=release -a -q \
                         $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM cxxflags="$BOOST_CXXFLAGS"
-                cd ../../..
+                popd
             done
         fi
 
@@ -219,6 +240,8 @@ case "$AUTOBUILD_PLATFORM" in
         ;;
 
     "linux")
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        suppress_tests date_time
         # Force static linkage to libz by moving .sos out of the way
         trap restore_sos EXIT
         for solib in "${stage}"/packages/lib/debug/libz.so* "${stage}"/packages/lib/release/libz.so*; do
@@ -239,12 +262,12 @@ case "$AUTOBUILD_PLATFORM" in
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in $BOOST_TEST_LIBS_LINUX; do
-                cd libs/"${blib}"/test
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"${blib}"/test
                     "${bjam}" variant=debug -a -q \
                         --prefix="${stage}" --libdir="${stage}"/lib/debug \
                         $DEBUG_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM
-                cd ../../..
+                popd
             done
         fi
 
@@ -262,12 +285,12 @@ case "$AUTOBUILD_PLATFORM" in
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in $BOOST_TEST_LIBS_LINUX; do
-                cd libs/"${blib}"/test
+            for blib in "${BOOST_LIBS[@]}"; do
+                pushd libs/"${blib}"/test
                     "${bjam}" variant=release -a -q \
                         --prefix="${stage}" --libdir="${stage}"/lib/release \
                         $RELEASE_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM
-                cd ../../..
+                popd
             done
         fi
 
