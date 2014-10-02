@@ -31,11 +31,14 @@ void bar(boost::future<int> fooResult)
 
 int main()
 {
+// This test cannot succeed if future::then() has been suppressed.
+#if ! defined(BOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION)
     IntPromise p(new boost::promise<int>());
     boost::thread t(boost::bind(foo, p));
     boost::future<int> f1 = p->get_future();
     //f1.then(launch::deferred, boost::bind(bar, _1));
     f1.then(boost::launch::deferred, &bar);
     t.join();
+#endif
 }
 
