@@ -162,6 +162,10 @@ case "$AUTOBUILD_PLATFORM" in
         mv "${stage_lib}"/*-gd.lib "${stage_debug}"
         mv "${stage_lib}"/*.lib "${stage_release}"
 
+        # bjam doesn't need vsvars, but our hand compilation does
+        eval "$("$AUTOBUILD" source_environment)"
+        load_vsvars
+
         # populate version_file
         cl /DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            /DVERSION_MACRO="$VERSION_MACRO" \
