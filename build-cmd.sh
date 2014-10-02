@@ -115,10 +115,10 @@ case "$AUTOBUILD_PLATFORM" in
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
-        cmd.exe /C bootstrap.bat vc10
+        cmd.exe /C bootstrap.bat vc12
 
         # Windows build of viewer expects /Zc:wchar_t-, have to match that
-        WINDOWS_BJAM_OPTIONS="--toolset=msvc-10.0 -j2 \
+        WINDOWS_BJAM_OPTIONS="--toolset=msvc-12.0 -j2 \
             include=$INCLUDE_PATH -sICU_PATH=$ICU_PATH \
             -sZLIB_INCLUDE=$INCLUDE_PATH/zlib \
             cxxflags=-Zc:wchar_t- \
@@ -163,7 +163,7 @@ case "$AUTOBUILD_PLATFORM" in
         mv "${stage_lib}"/*.lib "${stage_release}"
 
         # bjam doesn't need vsvars, but our hand compilation does
-        eval "$("$AUTOBUILD" source_environment)"
+        eval "$(AUTOBUILD_VSVER=120 "$AUTOBUILD" source_environment)"
         load_vsvars
 
         # populate version_file
