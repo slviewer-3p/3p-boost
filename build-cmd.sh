@@ -121,7 +121,10 @@ case "$AUTOBUILD_PLATFORM" in
         cmd.exe /C bootstrap.bat vc12
 
         # Windows build of viewer expects /Zc:wchar_t-, have to match that
+        # Without --abbreviate-paths, some compilations fail with:
+        # failed to write output file 'some\long\path\something.rsp'!
         WINDOWS_BJAM_OPTIONS="--toolset=msvc-12.0 -j2 \
+            --abbreviate-paths \
             include=$INCLUDE_PATH -sICU_PATH=$ICU_PATH \
             -sZLIB_INCLUDE=$INCLUDE_PATH/zlib \
             cxxflags=-Zc:wchar_t- \
@@ -137,12 +140,12 @@ case "$AUTOBUILD_PLATFORM" in
         # dynamic linking for test purposes. However -- with dynamic linking,
         # some test executables expect to implicitly load a couple of ICU
         # DLLs. But our installed ICU doesn't even package those DLLs!
-        # TODO: Does this clutter our eventual tarball, or are the extra DLLs
-        # in a separate build directory?
+        # TODO: Does this clutter our eventual tarball, or are the extra Boost
+        # DLLs in a separate build directory?
         # In any case, we still observe failures in certain libraries' unit
-        # tests. In the case of thread, this seems to be due to failure to
-        # write a .rsp response file rather than an indirect dependency on
-        # ICU?!
+        # tests. Certain libraries depend on ICU; thread tests are so deeply
+        # nested that even with --abbreviate-paths, the .rsp file pathname is
+        # too long for Windows. Poor sad broken Windows.
         suppress_tests date_time filesystem iostreams regex thread
 
         # conditionally run unit tests
