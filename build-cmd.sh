@@ -216,10 +216,15 @@ case "$AUTOBUILD_PLATFORM" in
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
+        # BOOST_NO_CXX11_SMART_PTR is important per
+        # https://svn.boost.org/trac/boost/ticket/10637 .
+        # Without the -Wno-etc switches, clang spams the build output with
+        # many hundreds of pointless warnings.
         DARWIN_BJAM_OPTIONS="${BOOST_BJAM_OPTIONS} \
             include=\"${stage}\"/packages/include \
             include=\"${stage}\"/packages/include/zlib/ \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
+            cxxflags=-DBOOST_NO_CXX11_SMART_PTR \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
             cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable"
 
