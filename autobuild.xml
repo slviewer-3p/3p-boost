@@ -22,9 +22,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>798a4a7f71a4bb5f97b605082146cae9</string>
+              <string>ceaf0cd9ee915b3cc3a4357a35b0112c</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294307/arch/Darwin/installer/icu4c-4.8.1-darwin-294307.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294381/arch/Darwin/installer/icu4c-4.8.1-darwin-294381.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -34,9 +34,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>bf0b461093d8f65421bf6d441b6169f3</string>
+              <string>aa837ac8f10f167affc240bfa97cbade</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294307/arch/Linux/installer/icu4c-4.8.1-linux-294307.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295205/arch/Linux/installer/icu4c-4.8.1-linux-295205.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -76,9 +76,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>6165638d2113dbdc43ea000836dacaf9</string>
+              <string>8b124f8b3750e1300853a6342553c269</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/Darwin/installer/zlib-1.2.8.294168-darwin-294168.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/295227/arch/Darwin/installer/zlib-1.2.8.295227-darwin-295227.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -88,9 +88,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>eab7fff3c7465f8c722a284b33ac69fd</string>
+              <string>19c8870ab6a95aadff861784ea4da451</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/Linux/installer/zlib-1.2.8.294168-linux-294168.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294883/arch/Linux/installer/zlib-1.2.8.294883-linux-294883.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -109,7 +109,7 @@
           </map>
         </map>
         <key>version</key>
-        <string>1.2.8.294168</string>
+        <string>1.2.8.294883</string>
       </map>
     </map>
     <key>package_description</key>
