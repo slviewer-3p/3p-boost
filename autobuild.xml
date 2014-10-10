@@ -22,9 +22,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ceaf0cd9ee915b3cc3a4357a35b0112c</string>
+              <string>5893e7f667a1b57ae1cebdc38c97c0e5</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294381/arch/Darwin/installer/icu4c-4.8.1-darwin-294381.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295358/arch/Darwin/installer/icu4c-4.8.1-darwin-295358.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -34,9 +34,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>8a3fd31cb523e7b701e9fc91faf2f362</string>
+              <string>4a3c1e6b6098092bacb520d951cd0390</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/294381/arch/Linux/installer/icu4c-4.8.1-linux-294381.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295358/arch/Linux/installer/icu4c-4.8.1-linux-295358.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
