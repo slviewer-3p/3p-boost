@@ -33,7 +33,7 @@
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
 #include <boost/context/fcontext.hpp>
-#include <boost/coroutine/stack_context.hpp>
+#include <boost/coroutine/stack_traits.hpp>
 #include <boost/coroutine/stack_allocator.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/dcoroutine/exception.hpp>
@@ -67,7 +67,8 @@ namespace boost { namespace dcoroutines { namespace detail {
         // permit consumer to call StackAllocator static methods
         typedef StackAllocator allocator;
 
-        stack_holder_with(allocator& allocref, std::size_t size=allocator::default_stacksize()):
+        stack_holder_with(allocator& allocref,
+                          std::size_t size=coroutines::stack_traits::default_size()):
             mAllocRef(allocref)
         {
             mAllocRef.allocate(mStack, size);
@@ -129,7 +130,7 @@ namespace boost { namespace dcoroutines { namespace detail {
         // before we get around to constructing our stack_holder_with base
         // class. That lets us pass mAllocator into the second base class
         // constructor.
-        stack_holder(std::size_t size=allocator::default_stacksize()):
+        stack_holder(std::size_t size=coroutines::stack_traits::default_size()):
             super_with(super_holder::mAllocator, size)
         {}
     };
@@ -167,7 +168,7 @@ namespace boost { namespace dcoroutines { namespace detail {
 
     public:
         fcontext_holder(void (*fn)(intptr_t),
-                        std::size_t size=StackAllocator::default_stacksize()):
+                        std::size_t size=coroutines::stack_traits::default_size()):
             super(size)
         {
             // Our stack_holder base class already has a stack for us to
@@ -297,7 +298,7 @@ namespace boost { namespace dcoroutines { namespace detail {
         context_context_impl(Functor& cb, std::ptrdiff_t stack_size) :
             // if caller passes -1, use allocator's default size,
             // else use explicit size
-            m_stack(stack_size == -1? stack_holder_type::allocator::default_stacksize()
+            m_stack(stack_size == -1? coroutines::stack_traits::default_size()
                                     : stack_size),
             // cast Functor ptr to ptr type needed for jump_fcontext()
             m_arg((intptr_t)(&cb))

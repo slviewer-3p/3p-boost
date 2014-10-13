@@ -85,7 +85,7 @@ namespace boost { namespace dcoroutines { namespace detail {
 
     template<typename Functor>
 	static inline	
-	pointer create(Functor, std::ptrdiff_t);
+	pointer create(Functor, std::ptrdiff_t = default_stack_size);
 
     void bind_args(arg_slot_type* arg) {
       m_arg = arg;
@@ -270,7 +270,7 @@ namespace boost { namespace dcoroutines { namespace detail {
   typename 
   coroutine_impl<CoroutineType, ContextImpl>::pointer
   coroutine_impl<CoroutineType, ContextImpl>::
-  create(Functor f, std::ptrdiff_t stack_size = default_stack_size) {
+  create(Functor f, std::ptrdiff_t stack_size) {
     return new coroutine_impl_wrapper<Functor, CoroutineType, ContextImpl>
       (f, stack_size);      
   }
