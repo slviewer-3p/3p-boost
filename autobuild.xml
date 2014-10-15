@@ -22,9 +22,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>b2b7d937ce0e4d4f762468e08a99d8f9</string>
+              <string>910edfc0b936389bc8804c42d1008aa8</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295477/arch/Darwin/installer/icu4c-4.8.1-darwin-295477.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/Darwin/installer/icu4c-4.8.1-darwin-295486.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -34,9 +34,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ec6e0f44b3b42a0c029b2158c581f7e1</string>
+              <string>ad0852eedefeb0f7cf5f93d8a9ba0528</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295477/arch/Linux/installer/icu4c-4.8.1-linux-295477.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/Linux/installer/icu4c-4.8.1-linux-295486.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -46,9 +46,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>59103721ef55bbf121e2eac26cfc1265</string>
+              <string>abecfe844b7ee1f54c8069914c2d59dd</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295477/arch/CYGWIN/installer/icu4c-4.8.1-windows-295477.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/CYGWIN/installer/icu4c-4.8.1-windows-295486.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
