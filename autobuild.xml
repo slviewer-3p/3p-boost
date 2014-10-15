@@ -76,9 +76,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>567f437d22d891c811aa9a70e2b63ad8</string>
+              <string>6da5069b92f29b4b9cfdc7881130bd41</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294883/arch/Darwin/installer/zlib-1.2.8.294883-darwin-294883.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/295483/arch/Darwin/installer/zlib-1.2.8.295483-darwin-295483.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -88,9 +88,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>19c8870ab6a95aadff861784ea4da451</string>
+              <string>3a3df451fe6b45d4c29b1071b9725d19</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294883/arch/Linux/installer/zlib-1.2.8.294883-linux-294883.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/295483/arch/Linux/installer/zlib-1.2.8.295483-linux-295483.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
@@ -100,16 +100,16 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>a66728f3bdeb676a353aee5683169bfa</string>
+              <string>3852a004f1882b9b5e25990e780e0622</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294168/arch/CYGWIN/installer/zlib-1.2.8.294168-windows-294168.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/295483/arch/CYGWIN/installer/zlib-1.2.8.295483-windows-295483.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
           </map>
         </map>
         <key>version</key>
-        <string>1.2.8.294883</string>
+        <string>1.2.8.295483</string>
       </map>
     </map>
     <key>package_description</key>
