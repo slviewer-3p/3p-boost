@@ -181,7 +181,7 @@ case "$AUTOBUILD_PLATFORM" in
         mv "${stage_lib}"/*.lib "${stage_release}"
 
         # bjam doesn't need vsvars, but our hand compilation does
-        eval "$(AUTOBUILD_VSVER=120 "$AUTOBUILD" source_environment)"
+        eval "$("$AUTOBUILD" source_environment)"
         load_vsvars
 
         # populate version_file
