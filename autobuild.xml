@@ -76,9 +76,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>567f437d22d891c811aa9a70e2b63ad8</string>
+              <string>6da5069b92f29b4b9cfdc7881130bd41</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/294883/arch/Darwin/installer/zlib-1.2.8.294883-darwin-294883.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/295483/arch/Darwin/installer/zlib-1.2.8.295483-darwin-295483.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin</string>
@@ -109,7 +109,7 @@
           </map>
         </map>
         <key>version</key>
-        <string>1.2.8.294883</string>
+        <string>1.2.8.295483</string>
       </map>
     </map>
     <key>package_description</key>
