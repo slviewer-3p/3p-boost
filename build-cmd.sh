@@ -216,8 +216,6 @@ case "$AUTOBUILD_PLATFORM" in
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
-        # BOOST_NO_CXX11_SMART_PTR is important per
-        # https://svn.boost.org/trac/boost/ticket/10637 .
         # All viewer packages must be built with -mmacosx-version-min=10.7.
         SDK="-iwithsysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk"
         MINVER="-mmacosx-version-min=10.7"
@@ -227,7 +225,6 @@ case "$AUTOBUILD_PLATFORM" in
             include=\"${stage}\"/packages/include \
             include=\"${stage}\"/packages/include/zlib/ \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            define=BOOST_NO_CXX11_SMART_PTR \
             cxxflags=$SDK cxxflags=$MINVER \
             linkflags=$SDK linkflags=$MINVER \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
