@@ -77,9 +77,7 @@
 
     [ ]  Confirm compilation with -fPIC on Mac/Linux.
 
-    [ ]  Can the filesystem unit test be re-enabled on Linux or Mac?
-         Can the regex unit test be re-enabled post-1.55.0?  Does
-         boost::future work on all platforms and can be used now?
+    [ ]  Can the datetime unit test be re-enabled on Linux or Mac?
 
 
 1.  Introduction
@@ -108,45 +106,10 @@
 
     * windows - /Zc:wchar_t- option during build via bjam.
 
-  2.2  Unit Tests - Filesystem Disabled
-
-    2.2.1  Linux
-
-    The Filesystem unit tests fail on some Linux distributions in the
-    wide-char filename operations.  This is due to a severely limited
-    implementation of the std::codecvt class that fails to convert
-    wchar_t to utf-8.  The implication is that filesystem operations
-    that use wide character strings types to name files will be
-    unreliable on some Linux distributions.  This shouldn't be a
-    problem in the viewer where the utf-8 conversion will have
-    happened before getting to Boost but be aware of the limitation.
-    One result:  Filesystem unit test disabled for Linux.
-
-    2.2.2  Mac
-
-    Boost Bug 9560 details a crash in unit tests which may be another
-    problem in the wchar_t-to-utf-8 conversion methods used in the
-    filesystem code.  Scope may be greater than unit tests and we
-    should take care in letting Boost manage our wide-character
-    conversion.
-
-  2.3  Unit Tests - Regex Disabled
-
-    1.55.0 did some damange to the regex unit tests in the no-excep-
-    tion-handling case and were disabled.  Should be able to enable
-    these in later releases.
-
-  2.4  Unit Tests - Signals fix
-
-    The file 'swap_test.cpp' needed to include '<iostream>'.  Expect
-    an equivalent change from upstream in the future (Bug #9555).
-
-  2.5  Thread Library - boost::future damaged on Mac
-
-    I've found evidence that boost::future does not work correctly on
-    32-bit Mac (Bug #9558).  For the unit tests, I disable the feature
-    with an assortment of -D flags.  For production, don't use the
-    boost::future class until its shown to be safe.
+  2.2 - 2.5 snipped
+    Boost 1.57 appears to have fixed a number of bugs we previously had to
+    work around. Filesystem, Regex, Signals, Thread unit tests now run clean
+    on all platforms.
 
   2.6  Unit Tests - Windows
 
@@ -173,8 +136,8 @@
 
 3.  Source Origin
 
-    1.55.0:
-      http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz/download
+    1.57.0:
+      http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download
 
 
 4.  Package Contents
