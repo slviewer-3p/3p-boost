@@ -198,12 +198,7 @@ case "$AUTOBUILD_PLATFORM" in
     "darwin")
         # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
         suppress_tests date_time
-        # boost::future::then() appears broken on 32-bit Mac (see boost bug
-        # 9558). Disable then() method in the unit test runs and *don't use
-        # future::then()* in production until it's known to be good.
-        BOOST_CXXFLAGS="-gdwarf-2 \
-                        -DBOOST_THREAD_DONT_PROVIDE_FUTURE_CONTINUATION \
-                        -DBOOST_THREAD_DONT_PROVIDE_FUTURE_UNWRAP"
+        BOOST_CXXFLAGS="-gdwarf-2"
 
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
