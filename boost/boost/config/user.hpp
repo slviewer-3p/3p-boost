@@ -107,10 +107,13 @@
 // build variant will be automatically selected and linked against, 
 // simply by the act of including one of that library's headers.  
 // This macro turns that feature off.
-// However, DO NOT #define it here, as it's already specified in Jamroot
-// (project boost stanza) -- and some compilers feel obligated to produce a
-// warning for every compile that directly or indirectly #includes this file.
-// #define BOOST_ALL_NO_LIB
+// Wrap it in #ifndef since it's already specified in Jamroot (project boost
+// stanza) -- and without the conditional, some compilers feel obligated to
+// produce a duplicate-definition warning for every compile that directly or
+// indirectly #includes this file.
+#ifndef BOOST_ALL_NO_LIB
+#define BOOST_ALL_NO_LIB
+#endif
  
 // BOOST_WHATEVER_NO_LIB: Tells the config system not to automatically 
 // select which library to link against for library "whatever", 
