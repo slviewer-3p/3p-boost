@@ -220,8 +220,8 @@ case "$AUTOBUILD_PLATFORM" in
             include=\"${stage}\"/packages/include \
             include=\"${stage}\"/packages/include/zlib/ \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            cxxflags=$SDK cxxflags=$MINVER \
-            linkflags=$SDK linkflags=$MINVER \
+            cxxflags=$SDK cxxflags=$MINVER cxxflags=-stdlib=libstdc++ \
+            linkflags=$SDK linkflags=$MINVER cxxflags=-stdlib=libstdc++ \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
             cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable"
 
