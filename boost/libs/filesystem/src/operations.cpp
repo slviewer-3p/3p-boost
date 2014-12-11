@@ -1417,6 +1417,7 @@ namespace detail
     //   "http://man7.org/linux/man-pages/man2/fchmodat.2.html"
 #   if defined(AT_FDCWD) && defined(AT_SYMLINK_NOFOLLOW) \
       && !(defined(__SUNPRO_CC) || defined(__sun) || defined(sun)) \
+      && ! defined(__GLIBCXX__) \
       && !(defined(linux) || defined(__linux) || defined(__linux__))
       if (::fchmodat(AT_FDCWD, p.c_str(), mode_cast(prms),
            !(prms & symlink_perms) ? 0 : AT_SYMLINK_NOFOLLOW))
