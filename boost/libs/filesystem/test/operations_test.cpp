@@ -160,8 +160,21 @@ namespace
     return false;
   }
 
-  boost::system::error_category* poison_category_aux() { return 0; }
-  boost::system::error_category& poison_category()     { return *poison_category_aux(); }
+  struct bogus_error_category: public boost::system::error_category
+  {
+      const char* name() const BOOST_SYSTEM_NOEXCEPT { return "bogus"; }
+      std::string message(int ev) const { return boost::system::system_category().message(ev); }
+      boost::system::error_condition default_error_condition(int ev) const BOOST_SYSTEM_NOEXCEPT
+      {
+          return boost::system::system_category().default_error_condition(ev);
+      }
+  };
+
+  boost::system::error_category& static_category()
+  {
+      static bogus_error_category cat;
+      return cat;
+  }
 
   // compile-only two argument "do-the-right-thing" tests
   //   verifies that all overload combinations compile without error
@@ -1162,9 +1175,9 @@ namespace
     error_code ec;
 
     // test status, ec, for existing file
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(ec.value() == -1);
-    BOOST_TEST(&ec.category() == &poison_category()); 
+    BOOST_TEST(&ec.category() == &static_category()); 
     fs::file_status s = fs::status(".",ec);
     BOOST_TEST(ec.value() == 0);
     BOOST_TEST(ec.category() == system_category()); 
@@ -1173,7 +1186,7 @@ namespace
 
     // test status, ec, for non-existing file
     fs::path p ("nosuch");
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     s = fs::status(p,ec);
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category()); 
@@ -1187,29 +1200,29 @@ namespace
     BOOST_TEST(!fs::is_other(s));
 
     // test queries, ec, for existing file
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(fs::exists(".", ec));
     BOOST_TEST(ec.value() == 0);
     BOOST_TEST(ec.category() == system_category()); 
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(!fs::is_regular_file(".", ec));
     BOOST_TEST(ec.value() == 0);
     BOOST_TEST(ec.category() == system_category()); 
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(fs::is_directory(".", ec));
     BOOST_TEST(ec.value() == 0);
     BOOST_TEST(ec.category() == system_category()); 
 
     // test queries, ec, for non-existing file
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(!fs::exists(p, ec));
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category()); 
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(!fs::is_regular_file(p, ec));
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category()); 
-    ec.assign(-1,poison_category());
+    ec.assign(-1,static_category());
     BOOST_TEST(!fs::is_directory(p, ec));
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category()); 
