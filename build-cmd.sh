@@ -75,8 +75,13 @@ set_build_variables convenience Release
 # Explicitly request each of the libraries named in BOOST_LIBS.
 # Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
 BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE architecture=x86 --layout=tagged -sNO_BZIP2=1 \
-                    ${BOOST_LIBS[*]/#/--with-} \
-                    cxxflags='$LL_BUILD'"
+                    ${BOOST_LIBS[*]/#/--with-}"
+
+# Turn these into a bash array: it's important that all of cxxflags (which
+# we're about to add) go into a single array entry.
+BOOST_BJAM_OPTIONS=($BOOST_BJAM_OPTIONS)
+# Append cxxflags as a single entry containing all of LL_BUILD.
+BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=$LL_BUILD"
 
 stage_lib="${stage}"/lib
 stage_release="${stage_lib}"/release
@@ -138,19 +143,23 @@ case "$AUTOBUILD_PLATFORM" in
         # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD.
         # Without --abbreviate-paths, some compilations fail with:
         # failed to write output file 'some\long\path\something.rsp'!
-        WINDOWS_BJAM_OPTIONS="--toolset=$bjamtoolset -j2 \
-            --abbreviate-paths \
-            include=$INCLUDE_PATH -sICU_PATH=$ICU_PATH \
-            -sZLIB_INCLUDE=$INCLUDE_PATH/zlib \
-            $BOOST_BJAM_OPTIONS"
+        # Without /FS, some compilations fail with:
+        # fatal error C1041: cannot open program database '...\vc120.pdb';
+        # if multiple CL.EXE write to the same .PDB file, please use /FS
+        WINDOWS_BJAM_OPTIONS=("--toolset=$bjamtoolset" -j2 \
+            --abbreviate-paths 
+            "include=$INCLUDE_PATH" "-sICU_PATH=$ICU_PATH" \
+            "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib" \
+            cxxflags=/FS \
+            "${BOOST_BJAM_OPTIONS[@]}")
 
-        RELEASE_BJAM_OPTIONS="$WINDOWS_BJAM_OPTIONS \
-            -sZLIB_LIBPATH=$ZLIB_RELEASE_PATH \
-            -sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH \
-            -sZLIB_NAME=zlib"
+        RELEASE_BJAM_OPTIONS=("${WINDOWS_BJAM_OPTIONS[@]}" \
+            "-sZLIB_LIBPATH=$ZLIB_RELEASE_PATH" \
+            "-sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH" \
+            "-sZLIB_NAME=zlib")
         "${bjam}" link=static variant=release \
             --prefix="${stage}" --libdir="${stage_release}" \
-            $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+            "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # Constraining Windows unit tests to link=static produces unit-test
         # link errors. While it may be possible to edit the test/Jamfile.v2
@@ -212,24 +221,24 @@ case "$AUTOBUILD_PLATFORM" in
 
         # Without the -Wno-etc switches, clang spams the build output with
         # many hundreds of pointless warnings.
-        DARWIN_BJAM_OPTIONS="${BOOST_BJAM_OPTIONS} \
-            include=\"${stage}\"/packages/include \
-            include=\"${stage}\"/packages/include/zlib/ \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
+        DARWIN_BJAM_OPTIONS=("${BOOST_BJAM_OPTIONS[@]}" \
+            "include=${stage}/packages/include" \
+            "include=${stage}/packages/include/zlib/" \
+            "-sZLIB_INCLUDE=${stage}/packages/include/zlib/" \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
-            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable"
+            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable)
 
-        RELEASE_BJAM_OPTIONS="${DARWIN_BJAM_OPTIONS} \
-            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/release"
+        RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
+            "-sZLIB_LIBPATH=${stage}/packages/lib/release")
 
-        "${bjam}" toolset=darwin variant=release $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+        "${bjam}" toolset=darwin variant=release "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
         
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
                 pushd libs/"${blib}"/test
                     "${bjam}" toolset=darwin variant=release -a -q \
-                        $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM
+                        "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
                 popd
             done
         fi
@@ -258,13 +267,13 @@ case "$AUTOBUILD_PLATFORM" in
             
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
-        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include/zlib/ \
-            -sZLIB_LIBPATH=$stage/packages/lib/release \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            $BOOST_BJAM_OPTIONS"
+        RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc-4.6 "include=$stage/packages/include/zlib/" \
+            "-sZLIB_LIBPATH=$stage/packages/lib/release" \
+            "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
+            "${BOOST_BJAM_OPTIONS[@]}")
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
-            $RELEASE_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+            "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
@@ -272,7 +281,7 @@ case "$AUTOBUILD_PLATFORM" in
                 pushd libs/"${blib}"/test
                     "${bjam}" variant=release -a -q \
                         --prefix="${stage}" --libdir="${stage}"/lib/release \
-                        $RELEASE_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM
+                        "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
                 popd
             done
         fi
