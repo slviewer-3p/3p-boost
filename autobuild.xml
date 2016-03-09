@@ -175,7 +175,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.a</string>
-            <string>lib/debug/*.a</string>
           </array>
           <key>name</key>
           <string>darwin</string>
@@ -198,7 +197,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.a</string>
-            <string>lib/debug/*.a</string>
           </array>
           <key>name</key>
           <string>linux</string>
@@ -221,7 +219,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.lib</string>
-            <string>lib/debug/*.lib</string>
           </array>
           <key>name</key>
           <string>windows</string>
