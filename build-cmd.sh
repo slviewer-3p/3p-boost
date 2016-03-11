@@ -226,7 +226,8 @@ case "$AUTOBUILD_PLATFORM" in
             "include=${stage}/packages/include/zlib/" \
             "-sZLIB_INCLUDE=${stage}/packages/include/zlib/" \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
-            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable)
+            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable \
+            cxxflags=-Wno-unused-local-typedef)
 
         RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
             "-sZLIB_LIBPATH=${stage}/packages/lib/release")
