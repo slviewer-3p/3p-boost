@@ -20,7 +20,7 @@ fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
 BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
-            regex signals system thread)
+            regex signals system thread wave)
 
 # Optionally use this function in a platform build to SUPPRESS running unit
 # tests on one or more specific libraries: sadly, it happens that some
@@ -107,6 +107,21 @@ restore_dylibs ()
     done
 }
 
+find_test_jamfile_dir_for()
+{
+    # Not every Boost library contains a libs/x/test/Jamfile.v2 file. Some
+    # have libs/x/test/build/Jamfile.v2. Try to be general about it.
+    local Jamfiles="$(find libs/$1/test -name 'Jam????*' -type f -print)"
+    local lines=$(echo "$Jamfiles" | wc -l)
+    if [ $lines -ne 1 ]
+    then echo "Found $lines Jamfiles under libs/$1/test:
+$Jamfiles" 1>&2
+         exit 1
+    fi
+    # show caller the directory name containing the Jamfile.
+    echo "$(dirname "$Jamfiles")"
+}
+
 # bjam doesn't support a -sICU_LIBPATH to point to the location
 # of the icu libraries like it does for zlib. Instead, it expects
 # the library files to be immediately in the ./lib directory
@@ -178,7 +193,7 @@ case "$AUTOBUILD_PLATFORM" in
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"$blib"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     # link=static
                     "${bjam}" variant=release \
                         --prefix="${stage}" --libdir="${stage_release}" \
@@ -237,7 +252,7 @@ case "$AUTOBUILD_PLATFORM" in
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     "${bjam}" toolset=darwin variant=release -a -q \
                         "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
                 popd
@@ -279,7 +294,7 @@ case "$AUTOBUILD_PLATFORM" in
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     "${bjam}" variant=release -a -q \
                         --prefix="${stage}" --libdir="${stage}"/lib/release \
                         "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
