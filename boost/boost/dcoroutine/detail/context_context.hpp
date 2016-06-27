@@ -219,9 +219,8 @@ namespace boost { namespace dcoroutines { namespace detail {
         swap_context(context_context_impl_base& from, 
                      const context_context_impl_base& to,
                      default_hint) {
-            // Not knowing the caller's intent, we leave the default
-            // preserve_fpu=true parameter.
-            boost::context::jump_fcontext(&from.m_ctx, to.m_ctx, to.get_arg()); 
+            boost::context::jump_fcontext(&from.m_ctx, to.m_ctx, to.get_arg(),
+                                          boost_context_preserve_fpu<void>::value());
         }
 
         // delegate to subclass the problem of supplying an appropriate
