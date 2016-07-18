@@ -142,18 +142,18 @@ namespace boost { namespace dcoroutines { namespace detail {
     template <typename T>
     struct boost_context_preserve_fpu
     {
-        inline
-        bool value() const { return true; }
+        static inline
+        bool value() { return true; }
     };
 
     // Use BOOST_CONTEXT_PRESERVE_FPU(true) or (false) to set the desired
     // behavior for fcontext_holder::jump_from() throughout this program.
 #define BOOST_CONTEXT_PRESERVE_FPU(BOOL)        \
-    template <>                               \
-    struct boost_context_preserve_fpu<void>   \
-    {                                         \
-        inline                                \
-        bool value() const { return BOOL; }   \
+    template <>                                 \
+    struct boost_context_preserve_fpu<void>     \
+    {                                           \
+        static inline                           \
+        bool value() { return BOOL; }           \
     };
 
     /**
