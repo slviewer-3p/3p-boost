@@ -281,7 +281,7 @@ case "$AUTOBUILD_PLATFORM" in
             
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
-        DEBUG_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include/zlib/ \
+        DEBUG_BOOST_BJAM_OPTIONS="toolset=gcc include=$stage/packages/include/zlib/ \
             -sZLIB_LIBPATH=$stage/packages/lib/debug \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
             $BOOST_BJAM_OPTIONS"
@@ -304,7 +304,7 @@ case "$AUTOBUILD_PLATFORM" in
 
         "${bjam}" --clean
 
-        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc-4.6 include=$stage/packages/include/zlib/ \
+        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc include=$stage/packages/include/zlib/ \
             -sZLIB_LIBPATH=$stage/packages/lib/release \
             -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
             $BOOST_BJAM_OPTIONS"
