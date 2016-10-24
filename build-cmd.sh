@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd "$(dirname "$0")"
 top="$(pwd)"
 
 # turn on verbose debugging output for parabuild logs.
-set -x
+exec 4>&1; export BASH_XTRACEFD=4; set -x
 # make errors fatal
 set -e
 # error on undefined environment variables
@@ -15,7 +15,7 @@ VERSION_HEADER_FILE="$BOOST_SOURCE_DIR/boost/version.hpp"
 VERSION_MACRO="BOOST_LIB_VERSION"
 
 if [ -z "$AUTOBUILD" ] ; then 
-    fail
+    exit 1
 fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
@@ -65,12 +65,9 @@ else
 fi
 
 # load autobuild provided shell functions and variables
-set +x
-eval "$("$autobuild" source_environment)"
-set -x
-
-# pull in LL_BUILD with platform-appropriate compiler switches
-set_build_variables convenience Release
+source_environment_tempfile="$stage/source_environment.sh"
+"$autobuild" source_environment > "$source_environment_tempfile"
+. "$source_environment_tempfile"
 
 # Explicitly request each of the libraries named in BOOST_LIBS.
 # Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
@@ -80,8 +77,8 @@ BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE architecture=x86 --layout=
 # Turn these into a bash array: it's important that all of cxxflags (which
 # we're about to add) go into a single array entry.
 BOOST_BJAM_OPTIONS=($BOOST_BJAM_OPTIONS)
-# Append cxxflags as a single entry containing all of LL_BUILD.
-BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=$LL_BUILD"
+# Append cxxflags as a single entry containing all of LL_BUILD_RELEASE.
+BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=$LL_BUILD_RELEASE"
 
 stage_lib="${stage}"/lib
 stage_release="${stage_lib}"/release
@@ -146,7 +143,7 @@ case "$AUTOBUILD_PLATFORM" in
                 bjamtoolset="msvc-12.0"
                 ;;
             *)
-                fail "Unrecognized AUTOBUILD_VSVER='$AUTOBUILD_VSVER'"
+                echo "Unrecognized AUTOBUILD_VSVER='$AUTOBUILD_VSVER'" 1>&2 ; exit 1
                 ;;
         esac
 
@@ -155,7 +152,7 @@ case "$AUTOBUILD_PLATFORM" in
         # dropping 'echo on' into the .bat files seems to help.
         cmd.exe /C bootstrap.bat "$bootstrapver"
 
-        # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD.
+        # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD_RELEASE.
         # Without --abbreviate-paths, some compilations fail with:
         # failed to write output file 'some\long\path\something.rsp'!
         # Without /FS, some compilations fail with:
@@ -324,5 +321,3 @@ mkdir -p "${stage}"/docs/boost/
 cp -a "$top"/README.Linden "${stage}"/docs/boost/
 
 cd "$top"
-
-pass
