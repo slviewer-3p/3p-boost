@@ -34,9 +34,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>2a8c3e47b57c52a58a7658e6f87f78a5</string>
+              <string>2c34cb4e62d1f155d5dad798e69d03c8</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/Darwin/installer/icu4c-4.8.1-darwin64-314152.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/466/1005/icu4c-4.8.1-darwin64-500388.tar.bz2</string>
             </map>
             <key>name</key>
             <string>darwin64</string>
@@ -58,9 +58,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>801017fa1dea06101d71b9b7163fae7a</string>
+              <string>b327031733c36efe2eee4582aefb2d66</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/Linux/installer/icu4c-4.8.1-linux64-314152.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/462/995/icu4c-4.8.1-linux64-500388.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux64</string>
@@ -70,9 +70,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>8cc7c8be26881134343f2f6f16f85b62</string>
+              <string>af354f6ab6d2cecf266c79031977e3e0</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/CYGWIN/installer/icu4c-4.8.1-windows-314152.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/492/1078/icu4c-4.8.1-windows-500388.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
@@ -82,9 +82,9 @@
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>28b5a0187f424be5c27126ebf398e126</string>
+              <string>e8b20cea748b90ea18bb63dfba06e059</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/CYGWIN/installer/icu4c-4.8.1-windows64-314152.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/491/1075/icu4c-4.8.1-windows64-500388.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows64</string>
