@@ -13,22 +13,17 @@
 
 #include <boost/container/detail/config_begin.hpp>
 #include "check_equal_containers.hpp"
-#include <memory>
-#include <set>
-#include <functional>
 #include "print_container.hpp"
 #include <boost/move/utility_core.hpp>
 #include <boost/move/iterator.hpp>
 #include <boost/move/make_unique.hpp>
-#include <string>
 
-#include <boost/intrusive/detail/has_member_function_callable_with.hpp>
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME rebalance
-#define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEGIN namespace boost { namespace container { namespace test {
+#define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEG namespace boost { namespace container { namespace test {
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_END   }}}
-#define BOOST_PP_ITERATION_PARAMS_1 (3, (0, 0, <boost/intrusive/detail/has_member_function_callable_with.hpp>))
-#include BOOST_PP_ITERATE()
-
+#define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_MIN 0
+#define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_MAX 0
+#include <boost/intrusive/detail/has_member_function_callable_with.hpp>
 
 namespace boost{
 namespace container {
@@ -51,6 +46,8 @@ template<class MyBoostSet
 int set_test_copyable(boost::container::container_detail::false_type)
 {  return 0; }
 
+const int MaxElem = 50;
+
 template<class MyBoostSet
         ,class MyStdSet
         ,class MyBoostMultiSet
@@ -58,7 +55,6 @@ template<class MyBoostSet
 int set_test_copyable(boost::container::container_detail::true_type)
 {
    typedef typename MyBoostSet::value_type IntType;
-   const int max = 50;
 
    ::boost::movelib::unique_ptr<MyBoostSet> const pboostset = ::boost::movelib::make_unique<MyBoostSet>();
    ::boost::movelib::unique_ptr<MyStdSet>   const pstdset = ::boost::movelib::make_unique<MyStdSet>();
@@ -70,7 +66,13 @@ int set_test_copyable(boost::container::container_detail::true_type)
    MyBoostMultiSet &boostmultiset = *pboostmultiset;
    MyStdMultiSet   &stdmultiset   = *pstdmultiset;
 
-   for(int i = 0; i < max; ++i){
+   //Just to test move aware catch conversions
+   boostset.insert(boostset.cbegin(), boostset.cend());
+   boostmultiset.insert(boostmultiset.cbegin(), boostmultiset.cend());
+   boostset.insert(boostset.begin(), boostset.end());
+   boostmultiset.insert(boostmultiset.begin(), boostmultiset.end());
+
+   for(int i = 0; i < MaxElem; ++i){
       IntType move_me(i);
       boostset.insert(boost::move(move_me));
       stdset.insert(i);
@@ -108,6 +110,20 @@ int set_test_copyable(boost::container::container_detail::true_type)
       if(!CheckEqualContainers(boostmsetcopy, stdmsetcopy))
          return 1;
    }
+   {
+      //Now, test copy constructor
+      MyBoostSet boostsetcopy(boostset, typename MyBoostSet::allocator_type());
+      MyStdSet stdsetcopy(stdset);
+
+      if(!CheckEqualContainers(boostsetcopy, stdsetcopy))
+         return 1;
+
+      MyBoostMultiSet boostmsetcopy(boostmultiset, typename MyBoostSet::allocator_type());
+      MyStdMultiSet stdmsetcopy(stdmultiset);
+
+      if(!CheckEqualContainers(boostmsetcopy, stdmsetcopy))
+         return 1;
+   }
    return 0;
 }
 
@@ -119,7 +135,6 @@ template<class MyBoostSet
 int set_test ()
 {
    typedef typename MyBoostSet::value_type IntType;
-   const int max = 50;
 
    ::boost::movelib::unique_ptr<MyBoostSet> const pboostset = ::boost::movelib::make_unique<MyBoostSet>();
    ::boost::movelib::unique_ptr<MyStdSet>   const pstdset = ::boost::movelib::make_unique<MyStdSet>();
@@ -132,6 +147,54 @@ int set_test ()
    MyStdMultiSet   &stdmultiset   = *pstdmultiset;
 
    //Test construction from a range
+   {  //Set(beg, end, compare)
+      IntType aux_vect[50];
+      for(int i = 0; i < 50; ++i){
+         IntType move_me(i/2);
+         aux_vect[i] = boost::move(move_me);
+      }
+      int aux_vect2[50];
+      for(int i = 0; i < 50; ++i){
+         aux_vect2[i] = i/2;
+      }
+      IntType aux_vect3[50];
+      for(int i = 0; i < 50; ++i){
+         IntType move_me(i/2);
+         aux_vect3[i] = boost::move(move_me);
+      }
+      ::boost::movelib::unique_ptr<MyBoostSet> const pboostset = ::boost::movelib::make_unique<MyBoostSet>
+         (boost::make_move_iterator(&aux_vect[0]), boost::make_move_iterator(&aux_vect[0]+50), typename MyBoostSet::key_compare());
+      ::boost::movelib::unique_ptr<MyStdSet> const pstdset = ::boost::movelib::make_unique<MyStdSet>(&aux_vect2[0], &aux_vect2[0]+50);
+      if(!test::CheckEqualContainers(*pboostset, *pstdset)) return 1;
+      ::boost::movelib::unique_ptr<MyBoostMultiSet> const pboostmultiset = ::boost::movelib::make_unique<MyBoostMultiSet>
+         (boost::make_move_iterator(&aux_vect3[0]), boost::make_move_iterator(&aux_vect3[0]+50), typename MyBoostMultiSet::key_compare());
+      ::boost::movelib::unique_ptr<MyStdMultiSet> const pstdmultiset = ::boost::movelib::make_unique<MyStdMultiSet>(&aux_vect2[0], &aux_vect2[0]+50);
+      if(!test::CheckEqualContainers(*pboostmultiset, *pstdmultiset)) return 1;
+   }
+   {  //Set(beg, end, alloc)
+      IntType aux_vect[50];
+      for(int i = 0; i < 50; ++i){
+         IntType move_me(i/2);
+         aux_vect[i] = boost::move(move_me);
+      }
+      int aux_vect2[50];
+      for(int i = 0; i < 50; ++i){
+         aux_vect2[i] = i/2;
+      }
+      IntType aux_vect3[50];
+      for(int i = 0; i < 50; ++i){
+         IntType move_me(i/2);
+         aux_vect3[i] = boost::move(move_me);
+      }
+      ::boost::movelib::unique_ptr<MyBoostSet> const pboostset = ::boost::movelib::make_unique<MyBoostSet>
+         (boost::make_move_iterator(&aux_vect[0]), boost::make_move_iterator(&aux_vect[0]+50), typename MyBoostSet::allocator_type());
+      ::boost::movelib::unique_ptr<MyStdSet> const pstdset = ::boost::movelib::make_unique<MyStdSet>(&aux_vect2[0], &aux_vect2[0]+50);
+      if(!test::CheckEqualContainers(*pboostset, *pstdset)) return 1;
+      ::boost::movelib::unique_ptr<MyBoostMultiSet> const pboostmultiset = ::boost::movelib::make_unique<MyBoostMultiSet>
+         (boost::make_move_iterator(&aux_vect3[0]), boost::make_move_iterator(&aux_vect3[0]+50), typename MyBoostMultiSet::allocator_type());
+      ::boost::movelib::unique_ptr<MyStdMultiSet> const pstdmultiset = ::boost::movelib::make_unique<MyStdMultiSet>(&aux_vect2[0], &aux_vect2[0]+50);
+      if(!test::CheckEqualContainers(*pboostmultiset, *pstdmultiset)) return 1;
+   }
    {
       IntType aux_vect[50];
       for(int i = 0; i < 50; ++i){
@@ -188,7 +251,19 @@ int set_test ()
          aux_vect3[i] = boost::move(move_me);
       }
 
-
+      //some comparison operators
+      if(!(boostset2 == boostset2))
+         return 1;
+      if(boostset2 != boostset2)
+         return 1;
+      if(boostset2 < boostset2)
+         return 1;
+      if(boostset2 > boostset2)
+         return 1;
+      if(!(boostset2 <= boostset2))
+         return 1;
+      if(!(boostset2 >= boostset2))
+         return 1;
 
       ::boost::movelib::unique_ptr<MyBoostSet> const pboostset3 = ::boost::movelib::make_unique<MyBoostSet>
             ( ordered_unique_range
@@ -218,7 +293,7 @@ int set_test ()
       }
    }
 
-   for(int i = 0; i < max; ++i){
+   for(int i = 0; i < MaxElem; ++i){
       IntType move_me(i);
       boostset.insert(boost::move(move_me));
       stdset.insert(i);
@@ -399,7 +474,7 @@ int set_test ()
       }
    }
 
-   for(int i = 0; i < max; ++i){
+   for(int i = 0; i < MaxElem; ++i){
       IntType move_me(i);
       boostset.insert(boost::move(move_me));
       stdset.insert(i);
@@ -417,7 +492,7 @@ int set_test ()
       return 1;
    }
 
-   for(int i = 0; i < max; ++i){
+   for(int i = 0; i < MaxElem; ++i){
       {
          IntType move_me(i);
          boostset.insert(boostset.begin(), boost::move(move_me));
@@ -504,7 +579,7 @@ int set_test ()
    }
 
    //Compare count with std containers
-   for(int i = 0; i < max; ++i){
+   for(int i = 0; i < MaxElem; ++i){
       IntType count_me(i);
       if(boostset.count(count_me) != stdset.count(i)){
          return -1;
@@ -628,12 +703,143 @@ int set_test ()
       }
    }
 
+   {  //merge
+      ::boost::movelib::unique_ptr<MyBoostSet> const pboostset2 = ::boost::movelib::make_unique<MyBoostSet>();
+      ::boost::movelib::unique_ptr<MyBoostMultiSet> const pboostmultiset2 = ::boost::movelib::make_unique<MyBoostMultiSet>();
+
+      MyBoostSet &boostset2 = *pboostset2;
+      MyBoostMultiSet &boostmultiset2 = *pboostmultiset2;
+
+      boostset.clear();
+      boostset2.clear();
+      boostmultiset.clear();
+      boostmultiset2.clear();
+      stdset.clear();
+      stdmultiset.clear();
+
+      {
+         IntType aux_vect[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect[i] = i;
+         }
+
+         IntType aux_vect2[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect2[i] = MaxElem/2+i;
+         }
+         IntType aux_vect3[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect3[i] = MaxElem*2/2+i;
+         }
+         boostset.insert(boost::make_move_iterator(&aux_vect[0]), boost::make_move_iterator(&aux_vect[0] + MaxElem));
+         boostset2.insert(boost::make_move_iterator(&aux_vect2[0]), boost::make_move_iterator(&aux_vect2[0] + MaxElem));
+         boostmultiset2.insert(boost::make_move_iterator(&aux_vect3[0]), boost::make_move_iterator(&aux_vect3[0] + MaxElem));
+      }
+      for(int i = 0; i < MaxElem; ++i){
+         stdset.insert(i);
+      }
+      for(int i = 0; i < MaxElem; ++i){
+         stdset.insert(MaxElem/2+i);
+      }
+
+      boostset.merge(boost::move(boostset2));
+      if(!CheckEqualContainers(boostset, stdset)) return 1;
+
+      for(int i = 0; i < MaxElem; ++i){
+         stdset.insert(MaxElem*2/2+i);
+      }
+
+      boostset.merge(boost::move(boostmultiset2));
+      if(!CheckEqualContainers(boostset, stdset)) return 1;
+
+      boostset.clear();
+      boostset2.clear();
+      boostmultiset.clear();
+      boostmultiset2.clear();
+      stdset.clear();
+      stdmultiset.clear();
+      {
+         IntType aux_vect[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect[i] = i;
+         }
+
+         IntType aux_vect2[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect2[i] = MaxElem/2+i;
+         }
+         IntType aux_vect3[MaxElem];
+         for(int i = 0; i < MaxElem; ++i){
+            aux_vect3[i] = MaxElem*2/2+i;
+         }
+         boostmultiset.insert(boost::make_move_iterator(&aux_vect[0]), boost::make_move_iterator(&aux_vect[0] + MaxElem));
+         boostmultiset2.insert(boost::make_move_iterator(&aux_vect2[0]), boost::make_move_iterator(&aux_vect2[0] + MaxElem));
+         boostset2.insert(boost::make_move_iterator(&aux_vect3[0]), boost::make_move_iterator(&aux_vect3[0] + MaxElem));
+      }
+      for(int i = 0; i < MaxElem; ++i){
+         stdmultiset.insert(i);
+      }
+      for(int i = 0; i < MaxElem; ++i){
+         stdmultiset.insert(MaxElem/2+i);
+      }
+      boostmultiset.merge(boost::move(boostmultiset2));
+      if(!CheckEqualContainers(boostmultiset, stdmultiset)) return 1;
+
+      for(int i = 0; i < MaxElem; ++i){
+         stdmultiset.insert(MaxElem*2/2+i);
+      }
+
+      boostmultiset.merge(boost::move(boostset2));
+      if(!CheckEqualContainers(boostmultiset, stdmultiset)) return 1;
+   }
+
    if(set_test_copyable<MyBoostSet, MyStdSet, MyBoostMultiSet, MyStdMultiSet>
       (container_detail::bool_<boost::container::test::is_copyable<IntType>::value>())){
       return 1;
    }
 
    return 0;
+}
+
+template<typename SetType>
+bool test_set_methods_with_initializer_list_as_argument_for()
+{
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
+   std::initializer_list<int> il = { 1, 2, 3, 4, 5, 5 };
+   std::initializer_list<int> ilu = { 1, 2, 3, 4, 5 };
+   SetType expected(il.begin(), il.end());
+   SetType expectedu(ilu.begin(), ilu.end());
+   {
+      SetType sil((il));
+      if (sil != expected)
+         return false;
+
+      SetType sila(il, typename SetType::allocator_type());
+      if (sila != expected)
+         return false;
+
+      SetType silca(il, typename SetType::key_compare(), typename SetType::allocator_type());
+      if (silca != expected)
+         return false;
+
+      SetType sil_ordered(ordered_unique_range, ilu);
+      if (sil_ordered != expectedu)
+         return false;
+
+      SetType sil_assign = { 99, 100, 101, 102, 103, 104, 105 };
+      sil_assign = il;
+      if (sil_assign != expected)
+         return false;
+   }
+   {
+      SetType sil;
+      sil.insert(il);
+      if (sil != expected)
+         return false;
+   }
+   return true;
+#endif
+   return true;
 }
 
 }  //namespace test{

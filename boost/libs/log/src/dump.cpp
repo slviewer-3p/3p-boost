@@ -1,5 +1,5 @@
 /*
- *          Copyright Andrey Semashev 2007 - 2014.
+ *          Copyright Andrey Semashev 2007 - 2015.
  * Distributed under the Boost Software License, Version 1.0.
  *    (See accompanying file LICENSE_1_0.txt or copy at
  *          http://www.boost.org/LICENSE_1_0.txt)
@@ -13,12 +13,12 @@
  *         at http://www.boost.org/doc/libs/release/libs/log/doc/html/index.html.
  */
 
+#include <boost/log/detail/config.hpp>
 #include <ostream>
 #include <boost/cstdint.hpp>
 #include <boost/log/utility/manipulators/dump.hpp>
-#if defined(_MSC_VER)
-#include "windows_version.hpp"
-#include <windows.h>
+#if defined(_MSC_VER) && (defined(BOOST_LOG_USE_SSSE3) || defined(BOOST_LOG_USE_AVX2))
+#include <boost/detail/winapi/dll.hpp>
 #include <intrin.h> // __cpuid
 #endif
 #include <boost/log/detail/header.hpp>
@@ -52,8 +52,11 @@ extern dump_data_char32_t dump_data_char32_avx2;
 
 enum { stride = 256 };
 
-extern const char g_lowercase_dump_char_table[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-extern const char g_uppercase_dump_char_table[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+extern const char g_hex_char_table[2][16] =
+{
+    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' },
+    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' }
+};
 
 template< typename CharT >
 void dump_data_generic(const void* data, std::size_t size, std::basic_ostream< CharT >& strm)
@@ -62,7 +65,7 @@ void dump_data_generic(const void* data, std::size_t size, std::basic_ostream< C
 
     char_type buf[stride * 3u];
 
-    const char* const char_table = (strm.flags() & std::ios_base::uppercase) ? g_uppercase_dump_char_table : g_lowercase_dump_char_table;
+    const char* const char_table = g_hex_char_table[(strm.flags() & std::ios_base::uppercase) != 0];
     const std::size_t stride_count = size / stride, tail_size = size % stride;
 
     const uint8_t* p = static_cast< const uint8_t* >(data);
@@ -154,21 +157,19 @@ struct function_pointer_initializer
                             : "c" (0)
                     );
                     mmstate = (eax & 6U) == 6U;
-#elif defined(_MSC_VER)
+#elif defined(BOOST_WINDOWS)
                     // MSVC does not have an intrinsic for xgetbv, we have to query OS
-                    HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
+                    boost::detail::winapi::HMODULE_ hKernel32 = boost::detail::winapi::GetModuleHandleW(L"kernel32.dll");
                     if (hKernel32)
                     {
-                        typedef uint64_t (__stdcall* get_enabled_extended_features_t)(uint64_t);
-                        get_enabled_extended_features_t get_enabled_extended_features = (get_enabled_extended_features_t)GetProcAddress(hKernel32, "GetEnabledExtendedFeatures");
+                        typedef uint64_t (WINAPI* get_enabled_extended_features_t)(uint64_t);
+                        get_enabled_extended_features_t get_enabled_extended_features = (get_enabled_extended_features_t)boost::detail::winapi::get_proc_address(hKernel32, "GetEnabledExtendedFeatures");
                         if (get_enabled_extended_features)
                         {
                             // XSTATE_MASK_LEGACY_SSE | XSTATE_MASK_GSSE == 6
                             mmstate = get_enabled_extended_features(6u) == 6u;
                         }
                     }
-#else
-#error Boost.Log: Unexpected compiler
 #endif
 
                     if (mmstate)

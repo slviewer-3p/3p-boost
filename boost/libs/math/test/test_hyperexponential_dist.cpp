@@ -7,6 +7,7 @@
 //
 
 #include <algorithm>
+#include <boost/math/tools/test.hpp>
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/math/distributions/complement.hpp>
 #include <boost/math/distributions/hyperexponential.hpp>
@@ -68,7 +69,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(klass, RealT, test_types)
     BOOST_MATH_HYPEREXP_CHECK_CLOSE_COLLECTIONS(RealT, dist_r.probabilities(), std::vector<RealT>(probs, probs+n), tol);
     BOOST_MATH_HYPEREXP_CHECK_CLOSE_COLLECTIONS(RealT, dist_r.rates(), std::vector<RealT>(rates, rates+n), tol);
     
-#ifndef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !(defined(BOOST_GCC_VERSION) && (BOOST_GCC_VERSION < 40500))
     boost::math::hyperexponential_distribution<RealT> dist_il = {{static_cast<RealT>(0.2L), static_cast<RealT>(0.3L), static_cast<RealT>(0.5L)}, {static_cast<RealT>(0.5L), static_cast<RealT>(1.0L), static_cast<RealT>(1.5L)}};
     BOOST_CHECK_EQUAL(dist_il.num_phases(), n);
     BOOST_MATH_HYPEREXP_CHECK_CLOSE_COLLECTIONS(RealT, dist_il.probabilities(), std::vector<RealT>(probs, probs+n), tol);
@@ -321,7 +322,7 @@ BOOST_AUTO_TEST_CASE(construct)
    result_v = he2.probabilities();
    BOOST_CHECK_EQUAL_COLLECTIONS(v2.begin(), v2.end(), result_v.begin(), result_v.end());
 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
+#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !(defined(BOOST_GCC_VERSION) && (BOOST_GCC_VERSION < 40500))
    std::initializer_list<double> il = { 0.25, 0.5, 0.25 };
    std::initializer_list<double> il2 = { 0.5, 1, 1.5 };
    boost::math::hyperexponential he3(il, il2);
@@ -342,7 +343,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(special_cases, RealT, test_types)
 {
     const RealT tol = make_tolerance<RealT>();
 
-	// When the number of phases is 1, the hyperexponential distribution is an exponential distribution
+    // When the number of phases is 1, the hyperexponential distribution is an exponential distribution
     const RealT rates1[] = { static_cast<RealT>(0.5L) };
     boost::math::hyperexponential_distribution<RealT> hexp1(rates1);
     boost::math::exponential_distribution<RealT> exp1(rates1[0]);
@@ -355,7 +356,7 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(special_cases, RealT, test_types)
     BOOST_CHECK_CLOSE(boost::math::quantile(hexp1, static_cast<RealT>(0.75L)), boost::math::quantile(exp1, static_cast<RealT>(0.75L)), tol);
     BOOST_CHECK_CLOSE(boost::math::mode(hexp1), boost::math::mode(exp1), tol);
 
-	// When a k-phase hyperexponential distribution has all rates equal to r, the distribution is an exponential distribution with rate r
+    // When a k-phase hyperexponential distribution has all rates equal to r, the distribution is an exponential distribution with rate r
     const RealT rate2 = static_cast<RealT>(0.5L);
     const RealT rates2[] = { rate2, rate2, rate2 };
     boost::math::hyperexponential_distribution<RealT> hexp2(rates2);
@@ -376,12 +377,12 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(error_cases, RealT, test_types)
    boost::array<RealT, 2> probs = { { 1, 2 } };
    boost::array<RealT, 3> probs2 = { { 1, 2, 3 } };
    boost::array<RealT, 3> rates = { { 1, 2, 3 } };
-   BOOST_CHECK_THROW(dist_t(probs.begin(), probs.end(), rates.begin(), rates.end()), std::domain_error);
-   BOOST_CHECK_THROW(dist_t(probs, rates), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(probs.begin(), probs.end(), rates.begin(), rates.end()), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(probs, rates), std::domain_error);
    rates[1] = 0;
-   BOOST_CHECK_THROW(dist_t(probs2, rates), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(probs2, rates), std::domain_error);
    rates[1] = -1;
-   BOOST_CHECK_THROW(dist_t(probs2, rates), std::domain_error);
-   BOOST_CHECK_THROW(dist_t(probs.begin(), probs.begin(), rates.begin(), rates.begin()), std::domain_error);
-   BOOST_CHECK_THROW(dist_t(rates.begin(), rates.begin()), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(probs2, rates), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(probs.begin(), probs.begin(), rates.begin(), rates.begin()), std::domain_error);
+   BOOST_MATH_CHECK_THROW(dist_t(rates.begin(), rates.begin()), std::domain_error);
 }

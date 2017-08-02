@@ -1,9 +1,10 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 // Unit Test
 
-// Copyright (c) 2014, Oracle and/or its affiliates.
+// Copyright (c) 2014-2017, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -33,10 +34,11 @@
 
 #include <boost/geometry/io/wkt/wkt.hpp>
 
+#include <boost/geometry/algorithms/intersection.hpp>
 #include <boost/geometry/algorithms/is_valid.hpp>
 #include <boost/geometry/algorithms/is_simple.hpp>
 
-#include "from_wkt.hpp"
+#include <from_wkt.hpp>
 
 #ifdef BOOST_GEOMETRY_TEST_DEBUG
 #include "pretty_print_geometry.hpp"
@@ -62,19 +64,30 @@ typedef bg::model::box<point_type>                      box_type;
 //----------------------------------------------------------------------------
 
 
-template <typename Geometry>
-void test_simple(Geometry const& geometry, bool expected_result)
+template <typename CSTag, typename Geometry>
+void test_simple(Geometry const& geometry, bool expected_result,
+                 bool check_validity = true)
 {
 #ifdef BOOST_GEOMETRY_TEST_DEBUG
     std::cout << "=======" << std::endl;
 #endif
 
     bool simple = bg::is_simple(geometry);
-    BOOST_ASSERT( bg::is_valid(geometry) );
+
+    BOOST_ASSERT( ! check_validity || bg::is_valid(geometry) );
     BOOST_CHECK_MESSAGE( simple == expected_result,
         "Expected: " << expected_result
         << " detected: " << simple
         << " wkt: " << bg::wkt(geometry) );
+
+    typedef typename bg::strategy::intersection::services::default_strategy
+        <
+            CSTag
+        >::type strategy_type;
+
+    bool simple_s = bg::is_simple(geometry, strategy_type());
+
+    BOOST_CHECK_EQUAL(simple, simple_s);
 
 #ifdef BOOST_GEOMETRY_TEST_DEBUG
     std::cout << "Geometry: ";
@@ -88,6 +101,26 @@ void test_simple(Geometry const& geometry, bool expected_result)
     std::cout << std::noboolalpha;
 #endif
 }
+
+
+template <typename Geometry>
+void test_simple(Geometry const& geometry,
+                 bool expected_result,
+                 bool check_validity = true)
+{
+    typedef typename bg::cs_tag<Geometry>::type cs_tag;
+    test_simple<cs_tag>(geometry, expected_result, check_validity);
+}
+
+template <BOOST_VARIANT_ENUM_PARAMS(typename T)>
+void test_simple(boost::variant<BOOST_VARIANT_ENUM_PARAMS(T)> const& variant_geometry,
+                 bool expected_result,
+                 bool check_validity = true)
+{
+    typedef typename bg::cs_tag<T0>::type cs_tag;
+    test_simple<cs_tag>(variant_geometry, expected_result, check_validity);
+}
+
 
 
 //----------------------------------------------------------------------------
@@ -121,6 +154,9 @@ BOOST_AUTO_TEST_CASE( test_is_simple_multipoint )
     test_simple(from_wkt<G>("MULTIPOINT(0 0)"), true);
     test_simple(from_wkt<G>("MULTIPOINT(0 0,1 0,1 1,0 1)"), true);
     test_simple(from_wkt<G>("MULTIPOINT(0 0,1 0,1 1,1 0,0 1)"), false);
+
+    // empty multipoint
+    test_simple(from_wkt<G>("MULTIPOINT()"), true);
 }
 
 BOOST_AUTO_TEST_CASE( test_is_simple_segment )
@@ -161,6 +197,7 @@ BOOST_AUTO_TEST_CASE( test_is_simple_linestring )
     // simple closed linestrings
     test_simple(from_wkt<G>("LINESTRING(0 0,1 0,1 1,0 0)"), true);
     test_simple(from_wkt<G>("LINESTRING(0 0,1 0,1 1,0 1,0 0)"), true);
+    test_simple(from_wkt<G>("LINESTRING(0 0,10 0,10 10,0 10,0 0)"), true);
 
     // non-simple linestrings
     test_simple(from_wkt<G>("LINESTRING(0 0,1 0,0 0)"), false);
@@ -173,6 +210,27 @@ BOOST_AUTO_TEST_CASE( test_is_simple_linestring )
     test_simple(from_wkt<G>("LINESTRING(0 0,3 0,5 0,4 0,2 0)"), false);
     test_simple(from_wkt<G>("LINESTRING(0 0,3 0,2 0,5 0)"), false);
     test_simple(from_wkt<G>("LINESTRING(0 0,2 0,2 2,1 0,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,1 0,2 0,2 2,1 0,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,10 0,10 10,0 10,0 0,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,0 10,5 10,0 0,10 10,10 5,10 0,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,0 0,10 0,10 10,0 10,0 0,0 0)"),
+                false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,0 0,0 0,10 0,10 10,0 10,0 0,0 0,0 0,0 0)"),
+                false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,0 0,10 0,10 10,10 10,10 10,10 10,10 10,0 10,0 0,0 0)"),
+                false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,1 0,2 0,2 2,1 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(1 0,2 2,2 0,1 0,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(0 0,1 0,2 0,2 2,1 0,1 4,0 0)"), false);
+    test_simple(from_wkt<G>("LINESTRING(4 1,10 8,4 6,4 1,10 5,10 3)"),
+                false);
+    test_simple(from_wkt<G>("LINESTRING(10 3,10 5,4 1,4 6,10 8,4 1)"),
+                false);
+
+    // empty linestring
+    // the simplicity result is irrelevant since an empty linestring
+    // is considered as invalid
+    test_simple(from_wkt<G>("LINESTRING()"), false, false);
 }
 
 BOOST_AUTO_TEST_CASE( test_is_simple_multilinestring )
@@ -208,6 +266,7 @@ BOOST_AUTO_TEST_CASE( test_is_simple_multilinestring )
                 true);
     test_simple(from_wkt<G>("MULTILINESTRING((0 0,1 0),(0 0,0 1),(0 0,-1 0),(0 0,0 -1))"),
                 true);
+    test_simple(from_wkt<G>("MULTILINESTRING((0 0,10 0,10 10,0 10,0 0))"), true);
 
     // non-simple multilinestrings
     test_simple(from_wkt<G>("MULTILINESTRING((0 0,2 2),(0 0,2 2))"), false);
@@ -246,6 +305,15 @@ BOOST_AUTO_TEST_CASE( test_is_simple_multilinestring )
                 false);
     test_simple(from_wkt<G>("MULTILINESTRING((0 0,1 0,1 1,0 1,0 0),(-1 -1,-1 0,0 0,0 -1,-1 -1))"),
                 false);
+    test_simple(from_wkt<G>("MULTILINESTRING((0 0,0 10,5 10,0 0,10 10,10 5,10 0,0 0))"),
+                false);
+    test_simple(from_wkt<G>("MULTILINESTRING((4 1,10 8,4 6,4 1,10 5,10 3))"),
+                false);
+    test_simple(from_wkt<G>("MULTILINESTRING((10 3,10 5,4 1,4 6,10 8,4 1))"),
+                false);
+
+    // empty multilinestring
+    test_simple(from_wkt<G>("MULTILINESTRING()"), true);
 }
 
 BOOST_AUTO_TEST_CASE( test_is_simple_areal )
@@ -270,6 +338,35 @@ BOOST_AUTO_TEST_CASE( test_is_simple_areal )
                 false);
     test_simple(from_wkt<mpl>("MULTIPOLYGON(((0 0,1 0,1 1,1 1)),((10 0,20 0,20 0,20 10,10 10)))"),
                 false);
+
+    // empty polygon
+    // the simplicity result is irrelevant since an empty polygon
+    // is considered as invalid
+    test_simple(from_wkt<o_ccw_p>("POLYGON(())"), false, false);
+
+    // empty multipolygon
+    test_simple(from_wkt<mpl>("MULTIPOLYGON()"), true);
+}
+
+BOOST_AUTO_TEST_CASE( test_geometry_with_NaN_coordinates )
+{
+#ifdef BOOST_GEOMETRY_TEST_DEBUG
+    std::cout << std::endl << std::endl;
+    std::cout << "************************************" << std::endl;
+    std::cout << " is_valid: geometry with NaN coordinates" << std::endl;
+    std::cout << "************************************" << std::endl;
+#endif
+
+    linestring_type ls1, ls2;
+    bg::read_wkt("LINESTRING(1 1,1.115235e+308 1.738137e+308)", ls1);
+    bg::read_wkt("LINESTRING(-1 1,1.115235e+308 1.738137e+308)", ls2);
+
+    // the intersection of the two linestrings is a new linestring
+    // (multilinestring with a single element) that has NaN coordinates
+    multi_linestring_type mls;
+    bg::intersection(ls1, ls2, mls);
+
+    test_simple(mls, true, false);
 }
 
 BOOST_AUTO_TEST_CASE( test_is_simple_variant )

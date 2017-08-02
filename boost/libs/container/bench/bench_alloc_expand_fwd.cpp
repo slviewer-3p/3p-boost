@@ -60,32 +60,32 @@ struct stats_traits;
 template<>
 struct stats_traits<std::vector>
 {
-   template<class T, class A>
-   static void reset_alloc_stats(std::vector<T, A> &)
+   template<class T, class Allocator>
+   static void reset_alloc_stats(std::vector<T, Allocator> &)
       {}
 
-   template<class T, class A>
-   static std::size_t get_num_alloc(std::vector<T, A> &)
+   template<class T, class Allocator>
+   static std::size_t get_num_alloc(std::vector<T, Allocator> &)
       {  return 0;   }
 
-   template<class T, class A>
-   static std::size_t get_num_expand(std::vector<T, A> &)
+   template<class T, class Allocator>
+   static std::size_t get_num_expand(std::vector<T, Allocator> &)
       {  return 0;   }
 };
 
 template<>
 struct stats_traits<bc::vector>
 {
-   template<class T, class A>
-   static void reset_alloc_stats(bc::vector<T, A> &v)
+   template<class T, class Allocator>
+   static void reset_alloc_stats(bc::vector<T, Allocator> &v)
       { v.reset_alloc_stats(); }
 
-   template<class T, class A>
-   static std::size_t get_num_alloc(bc::vector<T, A> &v)
+   template<class T, class Allocator>
+   static std::size_t get_num_alloc(bc::vector<T, Allocator> &v)
       {  return v.num_alloc;  }
 
-   template<class T, class A>
-   static std::size_t get_num_expand(bc::vector<T, A> &v)
+   template<class T, class Allocator>
+   static std::size_t get_num_expand(bc::vector<T, Allocator> &v)
       {  return v.num_expand_fwd;  }
 };
 
@@ -223,7 +223,7 @@ void vector_test_template(unsigned int num_iterations, unsigned int num_elements
                      << "(" << float(numalloc)/num_iterations << "/" << float(numexpand)/num_iterations << ")"
                   << std::endl << std::endl;
    }
-   boost_cont_trim(0);
+   bc::dlmalloc_trim(0);
 }
 
 void print_header()
@@ -238,14 +238,14 @@ int main(int argc, const char *argv[])
    #define SINGLE_TEST
    #ifndef SINGLE_TEST
       #ifdef NDEBUG
-      unsigned int numit []  = { 10000, 100000, 1000000, 10000000 };
+      unsigned int numit []  = { 1000, 10000, 100000, 1000000 };
       #else
       unsigned int numit []  = { 100, 1000, 10000, 100000 };
       #endif
       unsigned int numele [] = { 10000, 1000,   100,     10       };
    #else
       #ifdef NDEBUG
-      std::size_t numit [] = { 10000 };
+      std::size_t numit [] = { 1000 };
       #else
       std::size_t numit [] = { 100 };
       #endif

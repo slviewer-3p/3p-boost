@@ -16,8 +16,7 @@
 #include <boost/container/detail/workaround.hpp>
 #include <boost/container/detail/mpl.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/container/detail/utilities.hpp>
-#include <boost/aligned_storage.hpp>
+#include <boost/container/detail/type_traits.hpp>
 
 namespace boost{
 namespace container {
@@ -147,7 +146,7 @@ bool test_expected_container(const Container &ec, const std::pair<EmplaceInt, Em
 static EmplaceInt expected [10];
 
 typedef std::pair<EmplaceInt, EmplaceInt> EmplaceIntPair;
-static boost::aligned_storage<sizeof(EmplaceIntPair)*10>::type pair_storage;
+static boost::container::container_detail::aligned_storage<sizeof(EmplaceIntPair)*10>::type pair_storage;
 
 static EmplaceIntPair* initialize_emplace_int_pair()
 {
@@ -176,13 +175,18 @@ bool test_emplace_back(container_detail::true_)
       new(&expected [4]) EmplaceInt(1, 2, 3, 4);
       new(&expected [5]) EmplaceInt(1, 2, 3, 4, 5);
       Container c;
-      c.emplace_back();
-      if(!test_expected_container(c, &expected[0], 1)){
-         return false;
+      typedef typename Container::reference reference;
+      {
+         reference r = c.emplace_back();
+         if(&r != &c.back() && !test_expected_container(c, &expected[0], 1)){
+            return false;
+         }
       }
-      c.emplace_back(1);
-      if(!test_expected_container(c, &expected[0], 2)){
-         return false;
+      {
+         reference r = c.emplace_back(1);
+         if(&r != &c.back() && !test_expected_container(c, &expected[0], 2)){
+            return false;
+         }
       }
       c.emplace_back(1, 2);
       if(!test_expected_container(c, &expected[0], 3)){
@@ -223,13 +227,18 @@ bool test_emplace_front(container_detail::true_)
       new(&expected [4]) EmplaceInt(1);
       new(&expected [5]) EmplaceInt();
       Container c;
-      c.emplace_front();
-      if(!test_expected_container(c, &expected[0] + 5, 1)){
-         return false;
+      typedef typename Container::reference reference;
+      {
+         reference r = c.emplace_front();
+         if(&r != &c.front() && !test_expected_container(c, &expected[0] + 5, 1)){
+            return false;
+         }
       }
-      c.emplace_front(1);
-      if(!test_expected_container(c, &expected[0] + 4, 2)){
-         return false;
+      {
+         reference r = c.emplace_front(1);
+         if(&r != &c.front() && !test_expected_container(c, &expected[0] + 4, 2)){
+            return false;
+         }
       }
       c.emplace_front(1, 2);
       if(!test_expected_container(c, &expected[0] + 3, 3)){
