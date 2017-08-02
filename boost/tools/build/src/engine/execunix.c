@@ -64,8 +64,6 @@ static int get_free_cmdtab_slot();
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 static clock_t tps;
-static int old_time_initialized;
-static struct tms old_time;
 
 /* We hold stdout & stderr child process information in two element arrays
  * indexed as follows.
@@ -137,6 +135,9 @@ void exec_cmd
     LIST * shell
 )
 {
+    struct sigaction ignore, saveintr, savequit;
+    sigset_t chldmask, savemask;
+
     int const slot = get_free_cmdtab_slot();
     int out[ 2 ];
     int err[ 2 ];
@@ -161,11 +162,11 @@ void exec_cmd
     if ( DEBUG_EXECCMD )
     {
         int i;
-        printf( "Using shell: " );
+        out_printf( "Using shell: " );
         list_print( shell );
-        printf( "\n" );
+        out_printf( "\n" );
         for ( i = 0; argv[ i ]; ++i )
-            printf( "    argv[%d] = '%s'\n", i, argv[ i ] );
+            out_printf( "    argv[%d] = '%s'\n", i, argv[ i ] );
     }
 
     /* Create pipes for collecting child output. */
@@ -173,13 +174,6 @@ void exec_cmd
     {
         perror( "pipe" );
         exit( EXITBAD );
-    }
-
-    /* Initialize old_time only once. */
-    if ( !old_time_initialized )
-    {
-        times( &old_time );
-        old_time_initialized = 1;
     }
 
     /* Start the command */
@@ -203,6 +197,21 @@ void exec_cmd
     if ( globs.pipe_action )
         fcntl( err[ EXECCMD_PIPE_READ ], F_SETFD, FD_CLOEXEC );
 
+    /* ignore SIGINT and SIGQUIT */
+    ignore.sa_handler = SIG_IGN;
+    sigemptyset(&ignore.sa_mask);
+    ignore.sa_flags = 0;
+    if (sigaction(SIGINT, &ignore, &saveintr) < 0)
+        return;
+    if (sigaction(SIGQUIT, &ignore, &savequit) < 0)
+        return;
+
+    /* block SIGCHLD */
+    sigemptyset(&chldmask);
+    sigaddset(&chldmask, SIGCHLD);
+    if (sigprocmask(SIG_BLOCK, &chldmask, &savemask) < 0)
+        return;
+
     if ( ( cmdtab[ slot ].pid = vfork() ) == -1 )
     {
         perror( "vfork" );
@@ -215,6 +224,11 @@ void exec_cmd
         /* Child process */
         /*****************/
         int const pid = getpid();
+
+        /* restore previous signals */
+        sigaction(SIGINT, &saveintr, NULL);
+        sigaction(SIGQUIT, &savequit, NULL);
+        sigprocmask(SIG_SETMASK, &savemask, NULL);
 
         /* Redirect stdout and stderr to pipes inherited from the parent. */
         dup2( out[ EXECCMD_PIPE_WRITE ], STDOUT_FILENO );
@@ -236,7 +250,10 @@ void exec_cmd
             r_limit.rlim_max = globs.timeout;
             setrlimit( RLIMIT_CPU, &r_limit );
         }
-        setpgid( pid, pid );
+        if (0 != setpgid( pid, pid )) {
+            perror("setpgid(child)");
+            /* exit( EXITBAD ); */
+        }
         execvp( argv[ 0 ], (char * *)argv );
         perror( "execvp" );
         _exit( 127 );
@@ -245,7 +262,9 @@ void exec_cmd
     /******************/
     /* Parent process */
     /******************/
-    setpgid( cmdtab[ slot ].pid, cmdtab[ slot ].pid );
+
+    /* redundant call, ignore return value */
+    setpgid(cmdtab[ slot ].pid, cmdtab[ slot ].pid);
 
     /* Parent not need the write pipe ends used by the child. */
     close( out[ EXECCMD_PIPE_WRITE ] );
@@ -281,6 +300,11 @@ void exec_cmd
     /* Save input data into the selected running commands table slot. */
     cmdtab[ slot ].func = func;
     cmdtab[ slot ].closure = closure;
+
+    /* restore previous signals */
+    sigaction(SIGINT, &saveintr, NULL);
+    sigaction(SIGQUIT, &savequit, NULL);
+    sigprocmask(SIG_SETMASK, &savemask, NULL);
 }
 
 #undef EXECCMD_PIPE_READ
@@ -448,10 +472,17 @@ void exec_wait()
 
         /* select() will wait for I/O on a descriptor, a signal, or timeout. */
         {
+            /* disable child termination signals while in select */
             int ret;
+            sigset_t sigmask;
+            sigemptyset(&sigmask);
+            sigaddset(&sigmask, SIGCHLD);
+            sigprocmask(SIG_BLOCK, &sigmask, NULL);
             while ( ( ret = select( fd_max + 1, &fds, 0, 0, ptv ) ) == -1 )
                 if ( errno != EINTR )
                     break;
+            /* restore original signal mask by unblocking sigchld */
+            sigprocmask(SIG_UNBLOCK, &sigmask, NULL);
             if ( ret <= 0 )
                 continue;
         }
@@ -473,6 +504,7 @@ void exec_wait()
                 int status;
                 int rstat;
                 timing_info time_info;
+                struct rusage cmd_usage;
 
                 /* We found a terminated child process - our search is done. */
                 finished = 1;
@@ -483,12 +515,12 @@ void exec_wait()
                     close_streams( i, ERR );
 
                 /* Reap the child and release resources. */
-                while ( ( pid = waitpid( cmdtab[ i ].pid, &status, 0 ) ) == -1 )
+                while ( ( pid = wait4( cmdtab[ i ].pid, &status, 0, &cmd_usage ) ) == -1 )
                     if ( errno != EINTR )
                         break;
                 if ( pid != cmdtab[ i ].pid )
                 {
-                    printf( "unknown pid %d with errno = %d\n", pid, errno );
+                    err_printf( "unknown pid %d with errno = %d\n", pid, errno );
                     exit( EXITBAD );
                 }
 
@@ -499,15 +531,10 @@ void exec_wait()
                         : EXIT_OK;
 
                 {
-                    struct tms new_time;
-                    times( &new_time );
-                    time_info.system = (double)( new_time.tms_cstime -
-                        old_time.tms_cstime ) / CLOCKS_PER_SEC;
-                    time_info.user   = (double)( new_time.tms_cutime -
-                        old_time.tms_cutime ) / CLOCKS_PER_SEC;
+                    time_info.system = ((double)(cmd_usage.ru_stime.tv_sec)*1000000.0+(double)(cmd_usage.ru_stime.tv_usec))/1000000.0;
+                    time_info.user   = ((double)(cmd_usage.ru_utime.tv_sec)*1000000.0+(double)(cmd_usage.ru_utime.tv_usec))/1000000.0;
                     timestamp_copy( &time_info.start, &cmdtab[ i ].start_dt );
                     timestamp_current( &time_info.end );
-                    old_time = new_time;
                 }
 
                 /* Drive the completion. */
@@ -552,7 +579,7 @@ static int get_free_cmdtab_slot()
     for ( slot = 0; slot < MAXJOBS; ++slot )
         if ( !cmdtab[ slot ].pid )
             return slot;
-    printf( "no slots for child!\n" );
+    err_printf( "no slots for child!\n" );
     exit( EXITBAD );
 }
 

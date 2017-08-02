@@ -7,6 +7,7 @@
 
 # Reset the toolset.
 BOOST_JAM_TOOLSET=
+BOOST_JAM_OS=
 
 # Run a command, and echo before doing so. Also checks the exit status and quits
 # if there was an error.
@@ -31,7 +32,7 @@ error_exit ()
     echo "###"
     echo "### Toolsets supported by this script are:"
     echo "###     acc, como, darwin, gcc, intel-darwin, intel-linux, kcc, kylix,"
-    echo "###     mipspro, mingw(msys), pathscale, pgi, qcc, sun, sunpro, tru64cxx, vacpp"
+    echo "###     mipspro, pathscale, pgi, qcc, sun, sunpro, tru64cxx, vacpp"
     echo "###"
     echo "### A special toolset; cc, is available which is used as a fallback"
     echo "### when a more specific toolset is not found and the cc command is"
@@ -62,14 +63,21 @@ test_uname ()
 # Try and guess the toolset to bootstrap the build with...
 Guess_Toolset ()
 {
-    if test -r /mingw/bin/gcc ; then
-        BOOST_JAM_TOOLSET=mingw
-        BOOST_JAM_TOOLSET_ROOT=/mingw/
-    elif test_uname Darwin ; then BOOST_JAM_TOOLSET=darwin
+    if test_uname Darwin ; then BOOST_JAM_TOOLSET=darwin
     elif test_uname IRIX ; then BOOST_JAM_TOOLSET=mipspro
     elif test_uname IRIX64 ; then BOOST_JAM_TOOLSET=mipspro
     elif test_uname OSF1 ; then BOOST_JAM_TOOLSET=tru64cxx
     elif test_uname QNX && test_path qcc ; then BOOST_JAM_TOOLSET=qcc
+    elif test_uname Linux && test_path xlc; then 
+       if /usr/bin/lscpu | grep Byte | grep Little > /dev/null 2>&1 ; then
+          # Little endian linux          
+          BOOST_JAM_TOOLSET=xlcpp
+       else
+          #Big endian linux
+          BOOST_JAM_TOOLSET=vacpp
+       fi
+    elif test_uname AIX && test_path xlc; then BOOST_JAM_TOOLSET=vacpp    
+    elif test_uname FreeBSD && test_path freebsd-version && test_path clang; then BOOST_JAM_TOOLSET=clang
     elif test_path gcc ; then BOOST_JAM_TOOLSET=gcc
     elif test_path icc ; then BOOST_JAM_TOOLSET=intel-linux
     elif test -r /opt/intel/cc/9.0/bin/iccvars.sh ; then
@@ -89,7 +97,6 @@ Guess_Toolset ()
         BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler50/ia32/
     elif test_path pgcc ; then BOOST_JAM_TOOLSET=pgi
     elif test_path pathcc ; then BOOST_JAM_TOOLSET=pathscale
-    elif test_path xlc ; then BOOST_JAM_TOOLSET=vacpp
     elif test_path como ; then BOOST_JAM_TOOLSET=como
     elif test_path KCC ; then BOOST_JAM_TOOLSET=kcc
     elif test_path bc++ ; then BOOST_JAM_TOOLSET=kylix
@@ -122,15 +129,28 @@ BOOST_JAM_OPT_JAM="-o bootstrap/jam0"
 BOOST_JAM_OPT_MKJAMBASE="-o bootstrap/mkjambase0"
 BOOST_JAM_OPT_YYACC="-o bootstrap/yyacc0"
 case $BOOST_JAM_TOOLSET in
-    mingw)
-    if test -r ${BOOST_JAM_TOOLSET_ROOT}bin/gcc ; then
-        export PATH=${BOOST_JAM_TOOLSET_ROOT}bin:$PATH
-    fi
-    BOOST_JAM_CC="gcc -DNT"
-    ;;
 
     gcc)
-    BOOST_JAM_CC=gcc
+        # Check whether it's MinGW GCC, which has Windows headers and none of POSIX ones.
+        machine=$(gcc -dumpmachine 2>/dev/null)
+        if [ $? -ne 0 ]; then
+            echo "BOOST_JAM_TOOLSET is gcc, but the 'gcc' command cannot be executed."
+            echo "Make sure 'gcc' is in PATH, or use a different toolset."
+            exit 1
+        fi
+        case $machine in
+        *mingw*)
+        # MinGW insists that its bin directory be in PATH.
+        if test -r ${BOOST_JAM_TOOLSET_ROOT}bin/gcc ; then
+            export PATH=${BOOST_JAM_TOOLSET_ROOT}bin:$PATH
+        fi
+        BOOST_JAM_CC="gcc -DNT"
+        BOOST_JAM_OS="NT"
+        ;;
+
+        *)
+        BOOST_JAM_CC=gcc
+        esac
     ;;
 
     darwin)
@@ -142,16 +162,27 @@ case $BOOST_JAM_TOOLSET in
     ;;
 
     intel-linux)
-    if test -r /opt/intel/cc/9.0/bin/iccvars.sh ; then
-        BOOST_JAM_TOOLSET_ROOT=/opt/intel/cc/9.0/
-    elif test -r /opt/intel_cc_80/bin/iccvars.sh ; then
-        BOOST_JAM_TOOLSET_ROOT=/opt/intel_cc_80/
-    elif test -r /opt/intel/compiler70/ia32/bin/iccvars.sh ; then
-        BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler70/ia32/
-    elif test -r /opt/intel/compiler60/ia32/bin/iccvars.sh ; then
-        BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler60/ia32/
-    elif test -r /opt/intel/compiler50/ia32/bin/iccvars.sh ; then
-        BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler50/ia32/
+    test_path icc >/dev/null 2>&1
+    if test $? ; then
+	BOOST_JAM_CC=`test_path icc`
+	echo "Found $BOOST_JAM_CC in environment"
+	BOOST_JAM_TOOLSET_ROOT=`echo $BOOST_JAM_CC | sed -e 's/bin.*\/icc//'`
+	# probably the most widespread
+	ARCH=intel64
+    else
+	echo "No intel compiler in current path"
+	echo "Look in a few old place for legacy reason"
+	if test -r /opt/intel/cc/9.0/bin/iccvars.sh ; then
+            BOOST_JAM_TOOLSET_ROOT=/opt/intel/cc/9.0/
+	elif test -r /opt/intel_cc_80/bin/iccvars.sh ; then
+            BOOST_JAM_TOOLSET_ROOT=/opt/intel_cc_80/
+	elif test -r /opt/intel/compiler70/ia32/bin/iccvars.sh ; then
+            BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler70/ia32/
+	elif test -r /opt/intel/compiler60/ia32/bin/iccvars.sh ; then
+            BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler60/ia32/
+	elif test -r /opt/intel/compiler50/ia32/bin/iccvars.sh ; then
+            BOOST_JAM_TOOLSET_ROOT=/opt/intel/compiler50/ia32/
+	fi
     fi
     if test -r ${BOOST_JAM_TOOLSET_ROOT}bin/iccvars.sh ; then
         # iccvars does not change LD_RUN_PATH. We adjust LD_RUN_PATH here in
@@ -164,12 +195,18 @@ case $BOOST_JAM_TOOLSET in
             LD_RUN_PATH="${BOOST_JAM_TOOLSET_ROOT}lib:${LD_RUN_PATH}"
         fi
         export LD_RUN_PATH
-        . ${BOOST_JAM_TOOLSET_ROOT}bin/iccvars.sh
+        . ${BOOST_JAM_TOOLSET_ROOT}bin/iccvars.sh $ARCH
     fi
-    BOOST_JAM_CC=icc
+    if test -z "$BOOST_JAM_CC" ; then
+	BOOST_JAM_CC=icc
+    fi
     ;;
 
     vacpp)
+    BOOST_JAM_CC=xlc
+    ;;
+    
+    xlcpp)
     BOOST_JAM_CC=xlc
     ;;
 
@@ -252,8 +289,8 @@ BJAM_SOURCES="\
  builtins.c class.c cwd.c native.c md5.c w32_getreg.c modules/set.c\
  modules/path.c modules/regex.c modules/property-set.c modules/sequence.c\
  modules/order.c"
-case $BOOST_JAM_TOOLSET in
-    mingw)
+case $BOOST_JAM_OS in
+    NT)
     BJAM_SOURCES="${BJAM_SOURCES} execnt.c filent.c pathnt.c"
     ;;
 

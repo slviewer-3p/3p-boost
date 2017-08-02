@@ -9,11 +9,11 @@
 
 #include <boost/atomic.hpp>
 #include <boost/cstdint.hpp>
-#include <boost/test/minimal.hpp>
+#include <boost/core/lightweight_test.hpp>
 
 #include "api_test_helpers.hpp"
 
-int test_main(int, char *[])
+int main(int, char *[])
 {
     test_flag_api();
 
@@ -46,6 +46,9 @@ int test_main(int, char *[])
     test_struct_api<test_struct<boost::uint32_t> >();
     test_struct_api<test_struct<boost::uint64_t> >();
 
+    // https://svn.boost.org/trac/boost/ticket/10994
+    test_struct_x2_api<test_struct_x2<boost::uint64_t> >();
+
     // https://svn.boost.org/trac/boost/ticket/9985
     test_struct_api<test_struct<double> >();
 
@@ -55,5 +58,5 @@ int test_main(int, char *[])
     // Other non-trivial constructors are allowed.
     test_struct_with_ctor_api();
 
-    return 0;
+    return boost::report_errors();
 }

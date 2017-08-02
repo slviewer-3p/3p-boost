@@ -22,32 +22,32 @@
     typedef std::ostream the_ostream;
     typedef std::istream the_istream;
 #endif
-#include <boost/thread/sync_queue.hpp>
+#include <boost/thread/concurrent_queues/sync_queue.hpp>
 
-void producer(the_ostream &mos, boost::sync_queue<int> & sbq)
+void producer(the_ostream & /*mos*/, boost::sync_queue<int> & sbq)
 {
   using namespace boost;
   try {
     for(int i=0; ;++i)
     {
-      sbq.push_back(i);
+      sbq.push(i);
       //sbq << i;
-      mos << "push_back(" << i << ") "<< sbq.size()<<"\n";
+      //mos << "push(" << i << ") "<< sbq.size()<<"\n";
       this_thread::sleep_for(chrono::milliseconds(200));
     }
   }
   catch(sync_queue_is_closed&)
   {
-    mos << "closed !!!\n";
+    //mos << "closed !!!\n";
   }
   catch(...)
   {
-    mos << "exception !!!\n";
+    //mos << "exception !!!\n";
   }
 }
 
 void consumer(
-    the_ostream &mos,
+    the_ostream & /*mos*/,
     boost::sync_queue<int> & sbq)
 {
   using namespace boost;
@@ -55,58 +55,58 @@ void consumer(
     for(int i=0; ;++i)
     {
       int r;
-      sbq.pull_front(r);
+      sbq.pull(r);
       //sbq >> r;
-      mos << i << " pull(" << r << ") "<< sbq.size()<<"\n";
+      //mos << i << " pull(" << r << ") "<< sbq.size()<<"\n";
 
       this_thread::sleep_for(chrono::milliseconds(250));
     }
   }
   catch(sync_queue_is_closed&)
   {
-    mos << "closed !!!\n";
+    //mos << "closed !!!\n";
   }
   catch(...)
   {
-    mos << "exception !!!\n";
+    //mos << "exception !!!\n";
   }
 }
-void consumer2(the_ostream &mos, boost::sync_queue<int> & sbq)
+void consumer2(the_ostream &/*mos*/, boost::sync_queue<int> & sbq)
 {
   using namespace boost;
   try {
     for(int i=0; ;++i)
     {
       int r;
-      queue_op_status st = sbq.try_pull_front(r);
+      queue_op_status st = sbq.try_pull(r);
       if (queue_op_status::closed == st) break;
       if (queue_op_status::success == st) {
-        mos << i << " pull(" << r << ")\n";
+        //mos << i << " pull(" << r << ")\n";
       }
       this_thread::sleep_for(chrono::milliseconds(250));
     }
   }
   catch(...)
   {
-    mos << "exception !!!\n";
+    //mos << "exception !!!\n";
   }
 }
-void consumer3(the_ostream &mos, boost::sync_queue<int> & sbq)
+void consumer3(the_ostream &/*mos*/, boost::sync_queue<int> & sbq)
 {
   using namespace boost;
   try {
     for(int i=0; ;++i)
     {
       int r;
-      queue_op_status res = sbq.wait_pull_front(r);
+      queue_op_status res = sbq.wait_pull(r);
       if (res==queue_op_status::closed) break;
-      mos << i << " wait_pull_front(" << r << ")\n";
+      //mos << i << " wait_pull(" << r << ")\n";
       this_thread::sleep_for(chrono::milliseconds(250));
     }
   }
   catch(...)
   {
-    mos << "exception !!!\n";
+    //mos << "exception !!!\n";
   }
 }
 

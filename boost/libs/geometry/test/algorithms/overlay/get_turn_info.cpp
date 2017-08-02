@@ -3,6 +3,10 @@
 
 // Copyright (c) 2007-2012 Barend Gehrels, Amsterdam, the Netherlands.
 
+// This file was modified by Oracle on 2017.
+// Modifications copyright (c) 2017, Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -42,6 +46,11 @@ void test_with_point(std::string const& caseid,
     P qj = bg::make<P>(qj_x, qj_y);
     P qk = bg::make<P>(qk_x, qk_y);
 
+    typedef typename bg::strategy::intersection::services::default_strategy
+        <
+            typename bg::cs_tag<P>::type
+        >::type strategy_type;
+
     typedef typename bg::detail::no_rescale_policy rescale_policy_type;
 
     typedef bg::detail::overlay::turn_info
@@ -52,13 +61,14 @@ void test_with_point(std::string const& caseid,
     typedef std::vector<turn_info> tp_vector;
     turn_info model;
     tp_vector info;
+    strategy_type strategy;
     rescale_policy_type rescale_policy;
     bg::detail::overlay::get_turn_info
         <
             bg::detail::overlay::assign_null_policy
         >::apply(pi, pj, pk, qi, qj, qk,
                  false, false, false, false, // dummy parameters
-        model, rescale_policy, std::back_inserter(info));
+        model, strategy, rescale_policy, std::back_inserter(info));
 
 
     if (info.size() == 0)
@@ -183,11 +193,8 @@ void test_both(std::string const& caseid,
 
     //return;
 
-    std::string reverse;
-    for (int i = expected.size() - 1; i >= 0; i--)
-    {
-        reverse += expected[i];
-    }
+    std::string reversed(expected.rbegin(), expected.rend());
+    
     if (ip_x2 >= 0 && ip_y2 >= 0)
     {
         std::swap(ip_x, ip_x2);
@@ -197,7 +204,7 @@ void test_both(std::string const& caseid,
     test_with_point<P, double>(caseid + "_r",
             qi_x, qi_y, qj_x, qj_y, qk_x, qk_y, // q
             pi_x, pi_y, pj_x, pj_y, pk_x, pk_y, // p
-            method, ip_x, ip_y, reverse, ip_x2, ip_y2);
+            method, ip_x, ip_y, reversed, ip_x2, ip_y2);
 }
 
 

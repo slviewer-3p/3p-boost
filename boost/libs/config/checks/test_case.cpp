@@ -1,4 +1,4 @@
-//  This file was automatically generated on Mon Oct 13 13:09:13 2014
+//  This file was automatically generated on Sun Feb  5 19:09:22 2017
 //  by libs/config/tools/generate.cpp
 //  Copyright John Maddock 2002-4.
 //  Use, modification and distribution are subject to the 
@@ -28,6 +28,10 @@ namespace test = boost_has_dirent_h;
 #ifdef TEST_BOOST_HAS_EXPM1
 #  include "../test/boost_has_expm1.ipp"
 namespace test = boost_has_expm1;
+#endif
+#ifdef TEST_BOOST_HAS_FLOAT128
+#  include "../test/boost_has_float128.ipp"
+namespace test = boost_has_float128;
 #endif
 #ifdef TEST_BOOST_HAS_FTIME
 #  include "../test/boost_has_ftime.ipp"
@@ -393,6 +397,10 @@ namespace test = boost_no_cxx11_numeric_limits;
 #  include "../test/boost_no_cxx11_ref_qualifiers.ipp"
 namespace test = boost_no_cxx11_ref_qualifiers;
 #endif
+#ifdef TEST_BOOST_NO_CXX11_SFINAE_EXPR
+#  include "../test/boost_no_cxx11_sfinae_expr.ipp"
+namespace test = boost_no_cxx11_sfinae_expr;
+#endif
 #ifdef TEST_BOOST_NO_CXX11_SMART_PTR
 #  include "../test/boost_no_cxx11_smart_ptr.ipp"
 namespace test = boost_no_cxx11_smart_ptr;
@@ -400,6 +408,10 @@ namespace test = boost_no_cxx11_smart_ptr;
 #ifdef TEST_BOOST_NO_CXX11_STD_ALIGN
 #  include "../test/boost_no_cxx11_std_align.ipp"
 namespace test = boost_no_cxx11_std_align;
+#endif
+#ifdef TEST_BOOST_NO_CXX11_THREAD_LOCAL
+#  include "../test/boost_no_cxx11_thread_local.ipp"
+namespace test = boost_no_cxx11_thread_local;
 #endif
 #ifdef TEST_BOOST_NO_CXX11_TRAILING_RESULT_TYPES
 #  include "../test/boost_no_cxx11_trailing_result_types.ipp"
@@ -423,11 +435,15 @@ namespace test = boost_no_cxx14_decltype_auto;
 #endif
 #ifdef TEST_BOOST_NO_CXX14_DIGIT_SEPARATORS
 #  include "../test/boost_no_cxx14_digit_separator.ipp"
-namespace test = boost_no_cxx14_digit_separator;
+namespace test = boost_no_cxx14_digit_separators;
 #endif
 #ifdef TEST_BOOST_NO_CXX14_GENERIC_LAMBDAS
 #  include "../test/boost_no_cxx14_generic_lambda.ipp"
 namespace test = boost_no_cxx14_generic_lambdas;
+#endif
+#ifdef TEST_BOOST_NO_CXX14_HDR_SHARED_MUTEX
+#  include "../test/boost_no_cxx14_hdr_shared_mutex.ipp"
+namespace test = boost_no_cxx14_hdr_shared_mutex;
 #endif
 #ifdef TEST_BOOST_NO_CXX14_INITIALIZED_LAMBDA_CAPTURES
 #  include "../test/boost_no_cxx14_lambda_capture.ipp"
@@ -441,9 +457,21 @@ namespace test = boost_no_cxx14_aggregate_nsdmi;
 #  include "../test/boost_no_cxx14_return_type_ded.ipp"
 namespace test = boost_no_cxx14_return_type_deduction;
 #endif
+#ifdef TEST_BOOST_NO_CXX14_STD_EXCHANGE
+#  include "../test/boost_no_cxx14_std_exchange.ipp"
+namespace test = boost_no_cxx14_std_exchange;
+#endif
 #ifdef TEST_BOOST_NO_CXX14_VARIABLE_TEMPLATES
 #  include "../test/boost_no_cxx14_var_templ.ipp"
 namespace test = boost_no_cxx14_variable_templates;
+#endif
+#ifdef TEST_BOOST_NO_CXX17_STD_APPLY
+#  include "../test/boost_no_cxx17_std_apply.ipp"
+namespace test = boost_no_cxx17_std_apply;
+#endif
+#ifdef TEST_BOOST_NO_CXX17_STD_INVOKE
+#  include "../test/boost_no_cxx17_std_invoke.ipp"
+namespace test = boost_no_cxx17_std_invoke;
 #endif
 #ifdef TEST_BOOST_NO_CXX11_HDR_FUNCTIONAL
 #  include "../test/boost_no_cxx_hdr_functional.ipp"
@@ -624,6 +652,10 @@ namespace test = boost_no_cxx11_range_based_for;
 #ifdef TEST_BOOST_NO_CXX11_RAW_LITERALS
 #  include "../test/boost_no_raw_literals.ipp"
 namespace test = boost_no_cxx11_raw_literals;
+#endif
+#ifdef TEST_BOOST_NO_RESTRICT_REFERENCES
+#  include "../test/boost_no_restrict_references.ipp"
+namespace test = boost_no_restrict_references;
 #endif
 #ifdef TEST_BOOST_NO_UNREACHABLE_RETURN_DETECTION
 #  include "../test/boost_no_ret_det.ipp"

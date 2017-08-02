@@ -18,7 +18,7 @@
 typedef boost::string_ref string_ref;
 
 void ends_with ( const char *arg ) {
-    const size_t sz = strlen ( arg );
+    const size_t sz = std::strlen ( arg );
     string_ref sr ( arg );
     string_ref sr2 ( arg );
     const char *p = arg;
@@ -48,7 +48,7 @@ void ends_with ( const char *arg ) {
     }
 
 void starts_with ( const char *arg ) {
-    const size_t sz = strlen ( arg );
+    const size_t sz = std::strlen ( arg );
     string_ref sr  ( arg );
     string_ref sr2 ( arg );
     const char *p = arg + std::strlen ( arg ) - 1;
@@ -83,7 +83,7 @@ void reverse ( const char *arg ) {
     BOOST_CHECK ( std::equal ( sr1.begin (), sr1.end (), string2.begin ()));
     }
 
-//	This helper function eliminates signed vs. unsigned warnings
+// This helper function eliminates signed vs. unsigned warnings
 string_ref::size_type ptr_diff ( const char *res, const char *base ) {
     BOOST_CHECK ( res >= base );
     return static_cast<string_ref::size_type> ( res - base );
@@ -112,7 +112,7 @@ void find ( const char *arg ) {
       ++p;
       }
 
-//	Look for pairs on characters (searching from the start)
+// Look for pairs on characters (searching from the start)
     sr1 = arg;
     p = arg;
     while ( *p && *(p+1)) {
@@ -159,7 +159,7 @@ void find ( const char *arg ) {
 
 //  Find everything at the end
     sr1  = arg;
-    p    = arg + strlen ( arg ) - 1;
+    p    = arg + std::strlen ( arg ) - 1;
     while ( !sr1.empty ()) {
         string_ref::size_type pos = sr1.rfind(*p);
         BOOST_CHECK ( pos == sr1.size () - 1 );
@@ -180,7 +180,7 @@ void find ( const char *arg ) {
 
 //  Find everything at the end
     sr1  = arg;
-    p    = arg + strlen ( arg ) - 1;
+    p    = arg + std::strlen ( arg ) - 1;
     while ( !sr1.empty ()) {
         string_ref::size_type pos = sr1.find_last_of(*p);
         BOOST_CHECK ( pos == sr1.size () - 1 );
@@ -249,7 +249,7 @@ void to_string ( const char *arg ) {
 
     str1.assign ( arg );
     sr1 = arg;
-//	str2 = sr1.to_string<std::allocator<char> > ();
+// str2 = sr1.to_string<std::allocator<char> > ();
     str2 = sr1.to_string ();
     BOOST_CHECK ( str1 == str2 );
 
@@ -266,11 +266,11 @@ void compare ( const char *arg ) {
 
     str1.assign ( arg );
     sr1 = arg;
-    BOOST_CHECK ( sr1  == sr1);	    // compare string_ref and string_ref
-    BOOST_CHECK ( sr1  == str1);	// compare string and string_ref
-    BOOST_CHECK ( str1 == sr1 );	// compare string_ref and string
-    BOOST_CHECK ( sr1  == arg );	// compare string_ref and pointer
-    BOOST_CHECK ( arg  == sr1 );	// compare pointer and string_ref
+    BOOST_CHECK ( sr1  == sr1);     // compare string_ref and string_ref
+    BOOST_CHECK ( sr1  == str1);    // compare string and string_ref
+    BOOST_CHECK ( str1 == sr1 );    // compare string_ref and string
+    BOOST_CHECK ( sr1  == arg );    // compare string_ref and pointer
+    BOOST_CHECK ( arg  == sr1 );    // compare pointer and string_ref
 
     if ( sr1.size () > 0 ) {
         (*str1.rbegin())++;

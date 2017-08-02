@@ -11,7 +11,11 @@
 #ifndef BOOST_CONTAINER_VARRAY_HPP
 #define BOOST_CONTAINER_VARRAY_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -196,7 +200,7 @@ public:
     //!   Linear O(N).
     template <std::size_t C>
 // TEMPORARY WORKAROUND
-#if defined(BOOST_NO_RVALUE_REFERENCES)
+#if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
     varray & operator=(::boost::rv< varray<value_type, C> > const& other)
 #else
     varray & operator=(varray<value_type, C> const& other)
