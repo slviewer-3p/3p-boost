@@ -19,34 +19,8 @@ if [ -z "$AUTOBUILD" ] ; then
 fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
-BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
+BOOST_LIBS=(context coroutine2 date_time filesystem iostreams program_options \
             regex signals system thread wave)
-
-# Optionally use this function in a platform build to SUPPRESS running unit
-# tests on one or more specific libraries: sadly, it happens that some
-# libraries we care about might fail their unit tests on a particular platform
-# for a particular Boost release.
-# Usage: suppress_tests date_time regex
-function suppress_tests {
-  set +x
-  for lib
-  do for ((i=0; i<${#BOOST_LIBS[@]}; ++i))
-     do if [[ "${BOOST_LIBS[$i]}" == "$lib" ]]
-        then unset BOOST_LIBS[$i]
-             # From -x trace output, it appears that the above 'unset' command
-             # doesn't immediately close the gaps in the BOOST_LIBS array. In
-             # fact it seems that although the count ${#BOOST_LIBS[@]} is
-             # decremented, there's a hole at [$i], and subsequent elements
-             # remain at their original subscripts. Reset the array: remove
-             # any such holes.
-             BOOST_LIBS=("${BOOST_LIBS[@]}")
-             break
-        fi
-     done
-  done
-  echo "BOOST_LIBS=${BOOST_LIBS[*]}"
-  set -x
-}
 
 BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compilation to be examined
 
@@ -107,16 +81,54 @@ restore_dylibs ()
 find_test_jamfile_dir_for()
 {
     # Not every Boost library contains a libs/x/test/Jamfile.v2 file. Some
-    # have libs/x/test/build/Jamfile.v2. Try to be general about it.
-    local Jamfiles="$(find libs/$1/test -name 'Jam????*' -type f -print)"
-    local lines=$(echo "$Jamfiles" | wc -l)
-    if [ $lines -ne 1 ]
-    then echo "Found $lines Jamfiles under libs/$1/test:
-$Jamfiles" 1>&2
-         exit 1
+    # have libs/x/test/build/Jamfile.v2. Some have more than one test
+    # subdirectory with a Jamfile. Try to be general about it.
+    # You can't use bash 'read' from a pipe, though truthfully I've always
+    # wished that worked. What you *can* do is read from redirected stdin, but
+    # that must follow 'done'.
+    while read path
+    do # caller doesn't want the actual Jamfile name, just its directory
+       dirname "$path"
+    done < <(find libs/$1/test -name 'Jam????*' -type f -print)
+    # Credit to https://stackoverflow.com/a/11100252/5533635 for the
+    # < <(command) trick. Empirically, it does iterate 0 times on empty input.
+}
+
+find_test_dirs()
+{
+    # Pass in the libraries of interest. This shell function emits to stdout
+    # the corresponding set of test directories, one per line: the specific
+    # library directories containing the Jamfiles of interest. Passing each of
+    # these directories to bjam should cause it to build and run that set of
+    # tests.
+    for blib
+    do
+        find_test_jamfile_dir_for "$blib"
+    done
+}
+
+# conditionally run unit tests
+run_tests()
+{
+    # This shell function wants to accept two different sets of arguments,
+    # each of arbitrary length: the list of library test directories, and the
+    # list of bjam arguments for each test. Since we don't have a good way to
+    # do that in bash, we read library test directories from stdin, one per
+    # line; command-line arguments are simply forwarded to the bjam command.
+    if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
+        # read individual directories from stdin below
+        while read testdir
+        do  sep "$testdir"
+            # link=static
+            "${bjam}" "$testdir" "$@"
+        done < /dev/stdin
     fi
-    # show caller the directory name containing the Jamfile.
-    echo "$(dirname "$Jamfiles")"
+    return 0
+}
+
+sep()
+{
+    python -c "print ' $* '.center(72, '=')"
 }
 
 # bjam doesn't support a -sICU_LIBPATH to point to the location
@@ -147,6 +159,7 @@ case "$AUTOBUILD_PLATFORM" in
                 ;;
         esac
 
+        sep "bootstrap"
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
@@ -169,6 +182,7 @@ case "$AUTOBUILD_PLATFORM" in
             "-sZLIB_LIBPATH=$ZLIB_RELEASE_PATH" \
             "-sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH" \
             "-sZLIB_NAME=zlib")
+        sep "build"
         "${bjam}" link=static variant=release \
             --prefix="${stage}" --libdir="${stage_release}" \
             "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
@@ -185,23 +199,24 @@ case "$AUTOBUILD_PLATFORM" in
         # tests. Certain libraries depend on ICU; thread tests are so deeply
         # nested that even with --abbreviate-paths, the .rsp file pathname is
         # too long for Windows. Poor sad broken Windows.
-        suppress_tests date_time filesystem iostreams regex thread
 
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    # link=static
-                    "${bjam}" variant=release \
-                        --prefix="${stage}" --libdir="${stage_release}" \
-                        $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
-                popd
-            done
-        fi
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/' \
+             -e 'iostreams/' \
+             -e 'regex/' \
+             -e 'thread/' \
+             | \
+        run_tests variant=release \
+                  --prefix="${stage}" --libdir="${stage_release}" \
+                  $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
 
         # Move the libs
         mv "${stage_lib}"/*.lib "${stage_release}"
 
+        sep "version"
         # bjam doesn't need vsvars, but our hand compilation does
         load_vsvars
 
@@ -217,9 +232,6 @@ case "$AUTOBUILD_PLATFORM" in
         ;;
 
     darwin*)
-        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
-        suppress_tests date_time
-
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
         for dylib in "${stage}"/packages/lib/{debug,release}/*.dylib; do
@@ -227,7 +239,8 @@ case "$AUTOBUILD_PLATFORM" in
                 mv "$dylib" "$dylib".disable
             fi
         done
-            
+
+        sep "bootstrap"
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
@@ -244,21 +257,31 @@ case "$AUTOBUILD_PLATFORM" in
         RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
             "-sZLIB_LIBPATH=${stage}/packages/lib/release")
 
+        sep "build"
         "${bjam}" toolset=darwin variant=release "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
-        
+
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    "${bjam}" toolset=darwin variant=release -a -q \
-                        "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
-                popd
-            done
-        fi
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        # With Boost 1.64, skip filesystem/tests/issues -- we get:
+        # error: Unable to find file or target named
+        # error:     '6638-convert_aux-fails-init-global.cpp'
+        # error: referred to from project at
+        # error:     'libs/filesystem/test/issues'
+        # regex/tests/de_fuzz depends on an external Fuzzer library:
+        # ld: library not found for -lFuzzer
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/test/issues' \
+             -e 'regex/test/de_fuzz' \
+            | \
+        run_tests toolset=darwin variant=release -a -q \
+                  "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
 
         mv "${stage_lib}"/*.a "${stage_release}"
 
         # populate version_file
+        sep "version"
         cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            -DVERSION_MACRO="$VERSION_MACRO" \
            -o "$stage/version" "$top/version.c"
@@ -268,8 +291,6 @@ case "$AUTOBUILD_PLATFORM" in
         ;;
 
     linux*)
-        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
-        suppress_tests date_time
         # Force static linkage to libz by moving .sos out of the way
         trap restore_sos EXIT
         for solib in "${stage}"/packages/lib/debug/libz.so* "${stage}"/packages/lib/release/libz.so*; do
@@ -277,33 +298,36 @@ case "$AUTOBUILD_PLATFORM" in
                 mv -f "$solib" "$solib".disable
             fi
         done
-            
+
+        sep "bootstrap"
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
         RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib/" \
             "-sZLIB_LIBPATH=$stage/packages/lib/release" \
             "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
             "${BOOST_BJAM_OPTIONS[@]}")
+        sep "build"
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
             "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    "${bjam}" variant=release -a -q \
-                        --prefix="${stage}" --libdir="${stage}"/lib/release \
-                        "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
-                popd
-            done
-        fi
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+            | \
+        run_tests variant=release -a -q \
+                  --prefix="${stage}" --libdir="${stage}"/lib/release \
+                  "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
 
         mv "${stage_lib}"/libboost* "${stage_release}"
 
+        sep "clean"
         "${bjam}" --clean
 
         # populate version_file
+        sep "version"
         cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            -DVERSION_MACRO="$VERSION_MACRO" \
            -o "$stage/version" "$top/version.c"
@@ -312,7 +336,8 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage/version"
         ;;
 esac
-    
+
+sep "includes and text"
 mkdir -p "${stage}"/include
 cp -a boost "${stage}"/include/
 mkdir -p "${stage}"/LICENSES
