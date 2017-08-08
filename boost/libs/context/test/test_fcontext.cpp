@@ -173,6 +173,8 @@ void f13( ctx::transfer_t t) {
 }
 
 void f14( ctx::transfer_t t) {
+#if ! BOOST_WINDOWS
+    // snprintf() is _snprintf() on Windows, but with different behavior
     {
         const char *fmt = "sqrt(2) = %f";
         char buf[15];
@@ -187,6 +189,7 @@ void f14( ctx::transfer_t t) {
         snprintf( buf, sizeof( buf), fmt, n);
         BOOST_CHECK_EQUAL( std::string("0x0BCDEF1234567890"), std::string( buf) );
     }
+#endif // ! BOOST_WINDOWS
     ctx::jump_fcontext( t.fctx, 0);
 }
 
