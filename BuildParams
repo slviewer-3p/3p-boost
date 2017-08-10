@@ -3,3 +3,5 @@ public_build = true
 
 CYGWIN.USE_INCREDIBUILD=0
 
+# Need viewer-build-variables as well as other shared repositories
+buildscripts_shared_more_NAMEs="build_variables"
