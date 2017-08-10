@@ -33,9 +33,18 @@ stage="$(pwd)/stage"
                                                      
 if [ "$OSTYPE" = "cygwin" ] ; then
     autobuild="$(cygpath -u $AUTOBUILD)"
-    # Bjam doesn't know about cygwin paths, so convert them!
+    # convert from bash path to native OS pathname
+    native()
+    {
+        cygpath -m "$@"
+    }
 else
     autobuild="$AUTOBUILD"
+    # no pathname conversion needed
+    native()
+    {
+        echo "$*"
+    }
 fi
 
 # load autobuild provided shell functions and variables
@@ -127,9 +136,11 @@ run_tests()
 }
 
 last_file="$(mktemp -t build-cmd.XXXXXXXX)"
+trap "rm '$last_file'" EXIT
+# from here on, the only references to last_file will be from Python
+last_file="$(native "$last_file")"
 last_time="$(python -c "import os.path; print(int(os.path.getmtime(r'$last_file')))")"
 start_time="$last_time"
-trap "rm '$last_file'" EXIT
 
 sep()
 {
