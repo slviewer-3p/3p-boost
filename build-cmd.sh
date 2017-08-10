@@ -304,14 +304,12 @@ case "$AUTOBUILD_PLATFORM" in
         # error:     'libs/filesystem/test/issues'
         # regex/tests/de_fuzz depends on an external Fuzzer library:
         # ld: library not found for -lFuzzer
-##      find_test_dirs "${BOOST_LIBS[@]}" | \
-##      grep -v \
-##           -e 'date_time/' \
-##           -e 'filesystem/test/issues' \
-##           -e 'regex/test/de_fuzz' \
-##          | \
-
-        echo 'libs/thread/test//sync_pq_single_thread_p' | \
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/test/issues' \
+             -e 'regex/test/de_fuzz' \
+            | \
         run_tests toolset=darwin variant=release -a -q \
                   "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
 
