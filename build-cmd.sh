@@ -126,9 +126,31 @@ run_tests()
     return 0
 }
 
+last_file="$(mktemp -t build-cmd.XXXXXXXX)"
+last_time="$(python -c "import os.path; print(int(os.path.getmtime(r'$last_file')))")"
+start_time="$last_time"
+trap "rm '$last_file'" EXIT
+
 sep()
 {
-    python -c "print ' $* '.center(72, '=')"
+    python -c "
+from __future__ import print_function
+import os
+import sys
+import time
+start = $start_time
+last_file = r'$last_file'
+last = int(os.path.getmtime(last_file))
+now = int(time.time())
+os.utime(last_file, (now, now))
+def since(baseline, now):
+    duration = now - baseline
+    rest, secs = divmod(duration, 60)
+    hours, mins = divmod(rest, 60)
+    return '%2d:%02d:%02d' % (hours, mins, secs)
+print('((((( %s )))))' % since(last, now), file=sys.stderr)
+print(since(start, now), ' $* '.center(72, '='), file=sys.stderr)
+"
 }
 
 # bjam doesn't support a -sICU_LIBPATH to point to the location
