@@ -61,7 +61,8 @@ BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE architecture=x86 --layout=
 # we're about to add) go into a single array entry.
 BOOST_BJAM_OPTIONS=($BOOST_BJAM_OPTIONS)
 # Append cxxflags as a single entry containing all of LL_BUILD_RELEASE.
-BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=$LL_BUILD_RELEASE"
+# But clang doesn't like -gdwarf-with-dsym!?
+BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=${LL_BUILD_RELEASE/-gdwarf-with-dsym/-gdwarf-2}"
 
 stage_lib="${stage}"/lib
 stage_release="${stage_lib}"/release
