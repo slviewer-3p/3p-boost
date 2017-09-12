@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../../../doc/src/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="The Boost C++ Libraries BoostBook Documentation Subset">
-<link rel="up" href="../predef.html" title="Chapter&#160;28.&#160;Boost.Predef 1.5">
+<link rel="up" href="../predef.html" title="Chapter&#160;28.&#160;Boost.Predef 1.6">
 <link rel="prev" href="adding_new_predefs.html" title="Adding new predefs">
 <link rel="next" href="check_utilities.html" title="Check Utilities">
 </head>
@@ -242,6 +242,18 @@
 <tr>
 <td>
                 <p>
+                  <code class="computeroutput"><span class="identifier">_M_ARM64</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>detection</strong></span>
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
                   <code class="computeroutput"><span class="identifier">__arm64</span></code>
                 </p>
               </td>
@@ -284,6 +296,18 @@
 <td>
                 <p>
                   V.0.0
+                </p>
+              </td>
+</tr>
+<tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">_M_ARM64</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  8.0.0
                 </p>
               </td>
 </tr>
@@ -3175,6 +3199,16 @@
               </td>
 </tr>
 </tbody>
+</table></div>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+          Because of an Intel mistake in the release version numbering when <code class="computeroutput"><span class="identifier">__INTEL_COMPILER</span></code> is <code class="computeroutput"><span class="number">9999</span></code>
+          it is detected as version 12.1.0.
+        </p></td></tr>
 </table></div>
 <h5>
 <a name="predef.reference.boost_comp_compiler_macros.h16"></a>
@@ -7028,6 +7062,44 @@
 </h3></div></div></div>
 <h5>
 <a name="predef.reference.boost_plat_platform_macros.h0"></a>
+        <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_ios_device"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_ios_device"><code class="computeroutput"><span class="identifier">BOOST_PLAT_IOS_DEVICE</span></code></a>
+      </h5>
+<h5>
+<a name="predef.reference.boost_plat_platform_macros.h1"></a>
+        <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_ios_simulator"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_ios_simulator"><code class="computeroutput"><span class="identifier">BOOST_PLAT_IOS_SIMULATOR</span></code></a>
+      </h5>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                <p>
+                  Symbol
+                </p>
+              </th>
+<th>
+                <p>
+                  Version
+                </p>
+              </th>
+</tr></thead>
+<tbody><tr>
+<td>
+                <p>
+                  <code class="computeroutput"><span class="identifier">TARGET_IPHONE_SIMULATOR</span></code>
+                </p>
+              </td>
+<td>
+                <p>
+                  <span class="bold"><strong>detection</strong></span>
+                </p>
+              </td>
+</tr></tbody>
+</table></div>
+<h5>
+<a name="predef.reference.boost_plat_platform_macros.h2"></a>
         <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_mingw"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_mingw"><code class="computeroutput"><span class="identifier">BOOST_PLAT_MINGW</span></code></a>
       </h5>
 <p>
@@ -7105,7 +7177,7 @@
 </tbody>
 </table></div>
 <h5>
-<a name="predef.reference.boost_plat_platform_macros.h1"></a>
+<a name="predef.reference.boost_plat_platform_macros.h3"></a>
         <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_windows_desktop"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_windows_desktop"><code class="computeroutput"><span class="identifier">BOOST_PLAT_WINDOWS_DESKTOP</span></code></a>
       </h5>
 <div class="informaltable"><table class="table">
@@ -7153,7 +7225,7 @@
 </tbody>
 </table></div>
 <h5>
-<a name="predef.reference.boost_plat_platform_macros.h2"></a>
+<a name="predef.reference.boost_plat_platform_macros.h4"></a>
         <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_windows_phone"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_windows_phone"><code class="computeroutput"><span class="identifier">BOOST_PLAT_WINDOWS_PHONE</span></code></a>
       </h5>
 <div class="informaltable"><table class="table">
@@ -7187,7 +7259,7 @@
 </tr></tbody>
 </table></div>
 <h5>
-<a name="predef.reference.boost_plat_platform_macros.h3"></a>
+<a name="predef.reference.boost_plat_platform_macros.h5"></a>
         <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_windows_runtime"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_windows_runtime"><code class="computeroutput"><span class="identifier">BOOST_PLAT_WINDOWS_RUNTIME</span></code></a>
       </h5>
 <div class="informaltable"><table class="table">
@@ -7235,7 +7307,7 @@
 </tbody>
 </table></div>
 <h5>
-<a name="predef.reference.boost_plat_platform_macros.h4"></a>
+<a name="predef.reference.boost_plat_platform_macros.h6"></a>
         <span class="phrase"><a name="predef.reference.boost_plat_platform_macros.boost_plat_windows_store"></a></span><a class="link" href="reference.html#predef.reference.boost_plat_platform_macros.boost_plat_windows_store"><code class="computeroutput"><span class="identifier">BOOST_PLAT_WINDOWS_STORE</span></code></a>
       </h5>
 <div class="informaltable"><table class="table">
@@ -8064,6 +8136,18 @@
                   </p>
                 </td>
 </tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">_M_ARM64</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    <span class="bold"><strong>detection</strong></span>
+                  </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <div class="informaltable"><table class="table">
@@ -8112,6 +8196,18 @@
 <td>
                   <p>
                     <code class="computeroutput"><span class="identifier">_M_ARM</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    BOOST_HW_SIMD_ARM_NEON_VERSION
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">_M_ARM64</span></code>
                   </p>
                 </td>
 <td>
@@ -8591,6 +8687,69 @@
             Generally available searches for headers that define endianness.
           </li>
 </ol></div>
+<h5>
+<a name="predef.reference.other_macros.h1"></a>
+        <span class="phrase"><a name="predef.reference.other_macros.boost_predef_workaround"></a></span><a class="link" href="reference.html#predef.reference.other_macros.boost_predef_workaround"><code class="computeroutput"><span class="identifier">BOOST_PREDEF_WORKAROUND</span></code></a>
+      </h5>
+<pre class="programlisting"><span class="identifier">BOOST_PREDEF_WORKAROUND</span><span class="special">(</span><span class="identifier">symbol</span><span class="special">,</span><span class="identifier">comp</span><span class="special">,</span><span class="identifier">major</span><span class="special">,</span><span class="identifier">minor</span><span class="special">,</span><span class="identifier">patch</span><span class="special">)</span>
+</pre>
+<p>
+        Usage:
+      </p>
+<pre class="programlisting"><span class="preprocessor">#if</span> <span class="identifier">BOOST_PREDEF_WORKAROUND</span><span class="special">(</span><span class="identifier">BOOST_COMP_CLANG</span><span class="special">,&lt;,</span><span class="number">3</span><span class="special">,</span><span class="number">0</span><span class="special">,</span><span class="number">0</span><span class="special">)</span>
+    <span class="comment">// Workaround for old clang compilers..</span>
+<span class="preprocessor">#endif</span>
+</pre>
+<p>
+        Defines a comparison against two version numbers that depends on the definion
+        of <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code>. When
+        <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code> is defined
+        this will expand to a value convertible to <code class="computeroutput"><span class="keyword">false</span></code>.
+        Which has the effect of disabling all code conditionally guarded by <code class="computeroutput"><span class="identifier">BOOST_PREDEF_WORKAROUND</span></code>. When <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code> is undefine this expand
+        to test the given <code class="computeroutput"><span class="identifier">symbol</span></code>
+        version value with the <code class="computeroutput"><span class="identifier">comp</span></code>
+        comparison against <code class="computeroutput"><span class="identifier">BOOST_VERSION_NUMBER</span><span class="special">(</span><span class="identifier">major</span><span class="special">,</span><span class="identifier">minor</span><span class="special">,</span><span class="identifier">patch</span><span class="special">)</span></code>.
+      </p>
+<h5>
+<a name="predef.reference.other_macros.h2"></a>
+        <span class="phrase"><a name="predef.reference.other_macros.boost_predef_tested_at"></a></span><a class="link" href="reference.html#predef.reference.other_macros.boost_predef_tested_at"><code class="computeroutput"><span class="identifier">BOOST_PREDEF_TESTED_AT</span></code></a>
+      </h5>
+<pre class="programlisting"><span class="identifier">BOOST_PREDEF_TESTED_AT</span><span class="special">(</span><span class="identifier">symbol</span><span class="special">,</span><span class="identifier">major</span><span class="special">,</span><span class="identifier">minor</span><span class="special">,</span><span class="identifier">patch</span><span class="special">)</span>
+</pre>
+<p>
+        Usage:
+      </p>
+<pre class="programlisting"><span class="preprocessor">#if</span> <span class="identifier">BOOST_PREDEF_TESTED_AT</span><span class="special">(</span><span class="identifier">BOOST_COMP_CLANG</span><span class="special">,</span><span class="number">3</span><span class="special">,</span><span class="number">5</span><span class="special">,</span><span class="number">0</span><span class="special">)</span>
+    <span class="comment">// Needed for clang, and last checked for 3.5.0.</span>
+<span class="preprocessor">#endif</span>
+</pre>
+<p>
+        Defines a comparison against two version numbers that depends on the definion
+        of <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code> and
+        <code class="computeroutput"><span class="identifier">BOOST_DETECT_OUTDATED_WORKAROUNDS</span></code>.
+        When <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code>
+        is defined this will expand to a value convertible to <code class="computeroutput"><span class="keyword">false</span></code>.
+        Which has the effect of disabling all code conditionally guarded by <code class="computeroutput"><span class="identifier">BOOST_PREDEF_TESTED_AT</span></code>. When <code class="computeroutput"><span class="identifier">BOOST_STRICT_CONFIG</span></code> is undefined this expand
+        to either:
+      </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+            A value convertible to <code class="computeroutput"><span class="keyword">true</span></code>
+            when <code class="computeroutput"><span class="identifier">BOOST_DETECT_OUTDATED_WORKAROUNDS</span></code>
+            is not defined.
+          </li>
+<li class="listitem">
+            A value convertible <code class="computeroutput"><span class="keyword">true</span></code>
+            when the expansion of <code class="computeroutput"><span class="identifier">BOOST_PREDEF_WORKAROUND</span><span class="special">(</span><span class="identifier">symbol</span><span class="special">,</span> <span class="special">&lt;=,</span> <span class="identifier">major</span><span class="special">,</span> <span class="identifier">minor</span><span class="special">,</span> <span class="identifier">patch</span><span class="special">)</span></code>
+            is <code class="computeroutput"><span class="keyword">true</span></code> and <code class="computeroutput"><span class="identifier">BOOST_DETECT_OUTDATED_WORKAROUNDS</span></code> is
+            defined.
+          </li>
+<li class="listitem">
+            A compile error when the expansion of <code class="computeroutput"><span class="identifier">BOOST_PREDEF_WORKAROUND</span><span class="special">(</span><span class="identifier">symbol</span><span class="special">,</span> <span class="special">&gt;,</span> <span class="identifier">major</span><span class="special">,</span> <span class="identifier">minor</span><span class="special">,</span> <span class="identifier">patch</span><span class="special">)</span></code>
+            is true and <code class="computeroutput"><span class="identifier">BOOST_DETECT_OUTDATED_WORKAROUNDS</span></code>
+            is defined.
+          </li>
+</ul></div>
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">

@@ -184,18 +184,18 @@ chlid c2("ls", on_exit=exit_code);
 <header name="boost/process/async_system.hpp">
 <para>Defines the asynchrounous version of the system function. </para><namespace name="boost">
 <namespace name="process">
+
+
+
+
+
+
 <function name="async_system"><type><emphasis>unspecified</emphasis></type><template>
           <template-type-parameter name="ExitHandler"/>
           <template-nontype-parameter name="Args"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="ios"><paramtype>boost::asio::io_service &amp;</paramtype><description><para>A reference to an <ulink url="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference.html">io_service</ulink> </para></description></parameter><parameter name="exit_handler"><paramtype>ExitHandler &amp;&amp;</paramtype><description><para>The exit-handler for the signature <computeroutput>void(boost::system::error_code, int)</computeroutput></para></description></parameter><parameter name="args"><paramtype>Args &amp;&amp;...</paramtype></parameter><description><para>This function provides an asynchronous interface to process launching.</para><para>It uses the same properties and parameters as the other launching function, but is similar to the asynchronous functions in <ulink url="http://www.boost.org/doc/libs/release/doc/html/boost_asio.html">boost.asio</ulink></para><para>It uses <ulink url="http://www.boost.org/doc/libs/release/doc/html/boost_asio/reference/async_result.html">asio::async_result</ulink> to determine the return value (from the second parameter, <computeroutput>exit_handler</computeroutput>).</para><para>
 <note><para>This function does not allow custom error handling, since those are done through the <computeroutput>exit_handler</computeroutput>. </para></note>
 </para></description></function>
-
-
-
-
-
-
 </namespace>
 </namespace>
 </header>
@@ -1095,11 +1095,11 @@ std_out.null();
 <namespace name="process">
 <typedef name="codecvt_type"><purpose>The internally used type for code conversion. </purpose><type>std::codecvt&lt; wchar_t, char, std::mbstate_t &gt;</type></typedef>
 
+
+
 <function name="codecvt_category"><type>const std::error_category &amp;</type><purpose>Internally used error cateory for code conversion. </purpose></function>
 <function name="codecvt"><type>const codecvt_type &amp;</type><purpose>Get a reference to the currently used code converter. </purpose></function>
 <function name="imbue"><type>std::locale</type><parameter name="loc"><paramtype>const std::locale &amp;</paramtype></parameter><purpose>Set the locale of the library. </purpose></function>
-
-
 
 </namespace>
 </namespace>
@@ -1305,11 +1305,11 @@ sig(handler);
 <namespace name="process">
 
 
-
-
 <function name="search_path"><type>boost::filesystem::path</type><parameter name="filename"><paramtype>const boost::filesystem::path &amp;</paramtype><description><para>The base of the filename to find</para></description></parameter><parameter name="path"><paramtype>const std::vector&lt; boost::filesystem::path &gt;</paramtype><default>::boost::this_process::path()</default><description><para>the set of paths so search, defaults to "PATH" environment variable.</para></description></parameter><description><para>Searches for an executable in path.</para><para>filename must be a basename including the file extension. It must not include any directory separators (like a slash). On Windows the file extension may be omitted. The function will then try the various file extensions for executables on Windows to find filename.</para><para>
 
 </para></description><returns><para>the absolute path to the executable filename or an empty string if filename isn't found </para></returns></function>
+
+
 
 
 </namespace>
@@ -1347,15 +1347,15 @@ shell_cmd = shell(ec);
 <para>Defines the spawn function. </para><namespace name="boost">
 <namespace name="process">
 
-
-
-
-
 <function name="spawn"><type>void</type><template>
           <template-nontype-parameter name="Args"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="args"><paramtype>Args &amp;&amp;...</paramtype></parameter><description><para>Launch a process and detach it. Returns no handle.</para><para>This function starts a process and immediately detaches it. It thereby prevents the system from creating a zombie process, but will also cause the system to be unable to wait for the child to exit.</para><para><note><para>This will set <computeroutput>SIGCHLD</computeroutput> to <computeroutput>SIGIGN</computeroutput> on posix.</para></note>
 <warning><para>This function does not allow asynchronous operations, since it cannot wait for the end of the process. It will fail to compile if a reference to <computeroutput>boost::asio::io_service</computeroutput> is passed. </para></warning>
 </para></description></function>
+
+
+
+
 
 </namespace>
 </namespace>
@@ -1387,17 +1387,17 @@ start_dir(path)
 <header name="boost/process/system.hpp">
 <para>Defines a system function. </para><namespace name="boost">
 <namespace name="process">
-
-
-
-
-
-
 <function name="system"><type>int</type><template>
           <template-nontype-parameter name="Args"><type>typename...</type></template-nontype-parameter>
         </template><parameter name="args"><paramtype>Args &amp;&amp;...</paramtype></parameter><description><para>Launches a process and waits for its exit. It works as std::system, though it allows all the properties boost.process provides. It will execute the process and wait for it's exit; then return the exit_code.</para><para><programlisting language="c++">int ret = system("ls");
 </programlisting></para><para><note><para>Using this function with synchronous pipes leads to many potential deadlocks.</para></note>
 When using this function with an asynchronous properties and NOT passing an io_service object, the system function will create one and run it. When the io_service is passed to the function, the system function will check if it is active, and call the io_service::run function if not. </para></description></function>
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>

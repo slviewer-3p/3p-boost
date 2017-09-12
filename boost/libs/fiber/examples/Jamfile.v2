@@ -18,6 +18,9 @@ project boost/fiber/example
     : requirements
       <library>../build//boost_fiber
       <library>/boost/thread//boost_thread
+      <target-os>solaris:<linkflags>"-llgrp"
+      <target-os>solaris:<linkflags>"-lsocket"
+      <target-os>windows:<define>_WIN32_WINNT=0x0601
       <toolset>gcc,<segmented-stacks>on:<cxxflags>-fsplit-stack
       <toolset>gcc,<segmented-stacks>on:<cxxflags>-DBOOST_USE_SEGMENTED_STACKS
       <toolset>clang,<segmented-stacks>on:<cxxflags>-fsplit-stack
@@ -39,6 +42,7 @@ exe segmented_stack : segmented_stack.cpp ;
 exe simple : simple.cpp ;
 exe wait_stuff : wait_stuff.cpp ;
 exe work_sharing : work_sharing.cpp ;
+exe work_stealing : work_stealing.cpp ;
 
 exe asio/autoecho : asio/autoecho.cpp ;
 exe asio/exchange : asio/exchange.cpp ;
