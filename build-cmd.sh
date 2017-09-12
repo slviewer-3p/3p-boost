@@ -352,6 +352,7 @@ case "$AUTOBUILD_PLATFORM" in
         find_test_dirs "${BOOST_LIBS[@]}" | \
         grep -v \
              -e 'date_time/' \
+             -e 'filesystem/test/issues' \
             | \
         run_tests variant=release -a -q \
                   --prefix="${stage}" --libdir="${stage}"/lib/release \
