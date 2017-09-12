@@ -459,7 +459,49 @@
       <template-type-parameter name="T"/>
       <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
     </template><description><para>Helper metafunction to define a <computeroutput><classname alt="boost::intrusive::avl_multiset">avl_multiset</classname></computeroutput> that yields to the same type when the same options (either explicitly or implicitly) are used. </para></description><typedef name="type"><type>implementation_defined</type></typedef>
-</struct><function name="operator!="><type>bool</type><template>
+</struct>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<function name="operator!="><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype>const <classname>avl_set</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype>const <classname>avl_set</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
@@ -499,48 +541,6 @@
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype><classname>avl_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype><classname>avl_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </namespace>
 </namespace>
 </header>
@@ -1400,6 +1400,28 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <function name="operator!="><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
@@ -1440,28 +1462,6 @@
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype><classname>bs_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype><classname>bs_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3312,6 +3312,16 @@ BOOST_STATIC_ASSERT(( is_incremental == true ));
 
 
 
+
+
+
+
+
+
+
+
+
+
 <function name="get_parent_from_member"><type>Parent *</type><template>
           <template-type-parameter name="Parent"/>
           <template-type-parameter name="Member"/>
@@ -3320,16 +3330,6 @@ BOOST_STATIC_ASSERT(( is_incremental == true ));
           <template-type-parameter name="Parent"/>
           <template-type-parameter name="Member"/>
         </template><parameter name="member"><paramtype>const Member *</paramtype></parameter><parameter name="ptr_to_member"><paramtype>const Member Parent::*</paramtype></parameter><description><para>Given a const pointer to a member and its corresponding const pointer to data member, this function returns the const pointer of the parent containing that member. Note: this function does not work with pointer to members that rely on virtual inheritance. </para></description></function>
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4520,8 +4520,6 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
 
 
 
-
-
 <function name="operator!="><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
@@ -4562,6 +4560,8 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype><classname>multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype><classname>multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
+
+
 
 
 
@@ -5055,28 +5055,6 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <function name="operator!="><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
@@ -5117,6 +5095,28 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype><classname>sg_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype><classname>sg_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -6259,49 +6259,7 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
       <template-type-parameter name="T"/>
       <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
     </template><description><para>Helper metafunction to define a <computeroutput><classname alt="boost::intrusive::splay_multiset">splay_multiset</classname></computeroutput> that yields to the same type when the same options (either explicitly or implicitly) are used. </para></description><typedef name="type"><type>implementation_defined</type></typedef>
-</struct>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<function name="operator!="><type>bool</type><template>
+</struct><function name="operator!="><type>bool</type><template>
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype>const <classname>splay_set</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype>const <classname>splay_set</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
@@ -6341,6 +6299,48 @@ typename rebind_pointer&lt;U&gt;::type</programlisting></description><type>U *</
           <template-type-parameter name="T"/>
           <template-nontype-parameter name="Options"><type>class...</type></template-nontype-parameter>
         </template><parameter name="x"><paramtype><classname>splay_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter><parameter name="y"><paramtype><classname>splay_multiset</classname>&lt; T, Options...&gt; &amp;</paramtype></parameter></function>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </namespace>
 </namespace>
 </header>

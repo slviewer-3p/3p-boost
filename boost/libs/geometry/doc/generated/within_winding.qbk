@@ -55,6 +55,22 @@ class strategy::within::winding
 [heading Member Function(s)]
 [table
 [[Function] [Description] [Parameters]  [Returns]]
+[[``envelope_strategy_type get_envelope_strategy()``
+
+] [] [
+
+][
+
+]
+]
+[[``disjoint_strategy_type get_disjoint_strategy()``
+
+] [] [
+
+][
+
+]
+]
 [[``bool apply(Point const & point, PointOfSegment const & s1, PointOfSegment const & s2,
            counter & state)``
 

@@ -169,6 +169,7 @@ how to download, build, and install the libraries.</p>
     <li><a href="parameter/index.html">Parameter</a> - Boost.Parameter Library - Write functions that accept arguments by name, from David Abrahams and Daniel Wallin</li>
     <li><a href="phoenix/index.html">Phoenix</a> - Define small unnamed function objects at the actual call site, and more, from Joel de Guzman, Dan Marsden, Thomas Heller and John Fletcher</li>
     <li><a href="ptr_container/index.html">Pointer Container</a> - Containers for storing heap-allocated polymorphic objects to ease OO-programming, from Thorsten Ottosen</li>
+    <li><a href="poly_collection/index.html">PolyCollection</a> - Fast containers of polymorphic objects, from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz</li>
     <li><a href="polygon/index.html">Polygon</a> - Voronoi diagram construction and booleans/clipping, resizing/offsetting and more for planar polygons with integral coordinates, from Lucanus Simonson and Andrii Sydorchuk</li>
     <li><a href="pool/index.html">Pool</a> - Memory pool management, from Steve Cleary</li>
     <li><a href="predef/index.html">Predef</a> - This library defines a set of compiler, architecture, operating system, library, and other version numbers from the information it can gather of C, C++, Objective C, and Objective C++ predefined macros or those defined in generally available headers, from Rene Rivera</li>
@@ -191,9 +192,10 @@ how to download, build, and install the libraries.</p>
     <li><a href="serialization/index.html">Serialization</a> - Serialization for persistence and marshalling, from Robert Ramey</li>
     <li><a href="signals/index.html">Signals</a> - Managed signals &amp; slots callback implementation, from Doug Gregor</li>
     <li><a href="signals2/index.html">Signals2</a> - Managed signals &amp; slots callback implementation (thread-safe version 2), from Frank Mori Hess</li>
-    <li><a href="smart_ptr/smart_ptr.htm">Smart Ptr</a> - Smart pointer class templates, from Greg Colvin, Beman Dawes, Peter Dimov, Darin Adler and Glen Fernandes</li>
+    <li><a href="smart_ptr/index.html">Smart Ptr</a> - Smart pointer class templates, from Greg Colvin, Beman Dawes, Peter Dimov, Darin Adler and Glen Fernandes</li>
     <li><a href="sort/index.html">Sort</a> - High-performance templated sort functions, from Steven Ross</li>
     <li><a href="spirit/index.html">Spirit</a> - LL parser framework represents parsers directly as EBNF grammars in inlined C++, from Joel de Guzman, Hartmut Kaiser and Dan Nuffer</li>
+    <li><a href="stacktrace/index.html">Stacktrace</a> - Gather, store, copy and print backtraces, from Antony Polukhin</li>
     <li><a href="statechart/index.html">Statechart</a> - Boost.Statechart - Arbitrarily complex finite state machines can be implemented in easily readable and maintainable C++ code, from Andreas Huber D&ouml;nni</li>
     <li><a href="static_assert/index.html">Static Assert</a> - Static assertions (compile time assertions), from John Maddock</li>
     <li><a href="algorithm/string/index.html">String Algo</a> - String algorithms library, from Pavol Droba</li>
@@ -204,7 +206,6 @@ how to download, build, and install the libraries.</p>
     <li><a href="throw_exception/index.html">ThrowException</a> - A common infrastructure for throwing exceptions from Boost libraries, from Emil Dotchevski</li>
     <li><a href="timer/index.html">Timer</a> - Event timer, progress timer, and progress display classes, from Beman Dawes</li>
     <li><a href="tokenizer/index.html">Tokenizer</a> - Break of a string or other character sequence into a series of tokens, from John Bandela</li>
-    <li><a href="tr1/index.html">TR1</a> - The TR1 library provides an implementation of the C++ Technical Report on Standard Library Extensions. This library does not itself implement the TR1 components, rather it's a thin wrapper that will include your standard library's TR1 implementation (if it has one), otherwise it will include the Boost Library equivalents, and import them into namespace std::tr1, from John Maddock</li>
     <li><a href="../doc/html/tribool.html">Tribool</a> - 3-state boolean type library, from Doug Gregor</li>
     <li><a href="tti/index.html">TTI</a> - Type Traits Introspection library, from Edward Diener</li>
     <li><a href="tuple/index.html">Tuple</a> - Ease definition of functions returning multiple values, and more, from Jaakko J&auml;rvi</li>
@@ -285,6 +286,7 @@ how to download, build, and install the libraries.</p>
     <li><a href="multi_array/index.html">Multi-Array</a> - Boost.MultiArray provides a generic N-dimensional array concept definition and common implementations of that interface, from Ron Garcia</li>
     <li><a href="multi_index/index.html">Multi-Index</a> - The Boost Multi-index Containers Library provides a class template named multi_index_container which enables the construction of containers maintaining one or more indices with different sorting and access semantics, from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz</li>
     <li><a href="ptr_container/index.html">Pointer Container</a> - Containers for storing heap-allocated polymorphic objects to ease OO-programming, from Thorsten Ottosen</li>
+    <li><a href="poly_collection/index.html">PolyCollection</a> - Fast containers of polymorphic objects, from Joaqu&iacute;n M L&oacute;pez Mu&ntilde;oz</li>
     <li><a href="property_map/index.html">Property Map</a> - Concepts defining interfaces which map key objects to value objects, from Jeremy Siek</li>
     <li><a href="property_tree/index.html">Property Tree</a> - A tree data structure especially suited to storing configuration data, from Marcin Kalicinski and Sebastian Redl</li>
     <li><a href="unordered/index.html">Unordered</a> - Unordered associative containers, from Daniel James</li>
@@ -296,6 +298,7 @@ how to download, build, and install the libraries.</p>
 <ul>
     <li><a href="assert/index.html">Assert</a> - Customizable assert macros, from Peter Dimov</li>
     <li><a href="concept_check/index.html">Concept Check</a> - Tools for generic programming, from Jeremy Siek</li>
+    <li><a href="stacktrace/index.html">Stacktrace</a> - Gather, store, copy and print backtraces, from Antony Polukhin</li>
     <li><a href="static_assert/index.html">Static Assert</a> - Static assertions (compile time assertions), from John Maddock</li>
     <li><a href="test/index.html">Test</a> - Support for simple program testing, full unit testing, and for program execution monitoring, from Gennadiy Rozental and Raffi Enficiaud</li>
 </ul>
@@ -450,7 +453,7 @@ how to download, build, and install the libraries.</p>
 <ul>
     <li><a href="align/index.html">Align</a> - Memory alignment functions, allocators, and traits, from Glen Fernandes</li>
     <li><a href="pool/index.html">Pool</a> - Memory pool management, from Steve Cleary</li>
-    <li><a href="smart_ptr/smart_ptr.htm">Smart Ptr</a> - Smart pointer class templates, from Greg Colvin, Beman Dawes, Peter Dimov, Darin Adler and Glen Fernandes</li>
+    <li><a href="smart_ptr/index.html">Smart Ptr</a> - Smart pointer class templates, from Greg Colvin, Beman Dawes, Peter Dimov, Darin Adler and Glen Fernandes</li>
     <li><a href="utility/utility.htm">Utility</a> - Class noncopyable plus checked_delete(), checked_array_delete(), next(), prior() function templates, plus base-from-member idiom, from Dave Abrahams and others</li>
 </ul>
 
@@ -518,6 +521,7 @@ how to download, build, and install the libraries.</p>
     <li><a href="fiber/index.html">Fiber</a> - (C++11) Userland threads library, from Oliver Kowalke</li>
     <li><a href="filesystem/index.html">Filesystem</a> - The Boost Filesystem Library provides portable facilities to query and manipulate paths, files, and directories, from Beman Dawes</li>
     <li><a href="process/index.html">Process</a> - Library to create processes in a portable way, from Merino Vidal, Ilya Sokolov, Felipe Tanus, Jeff Flinn, Thomas Jarosch, Boris Schaeling and Klemens D. Morgenstern</li>
+    <li><a href="stacktrace/index.html">Stacktrace</a> - Gather, store, copy and print backtraces, from Antony Polukhin</li>
     <li><a href="system/index.html">System</a> - Operating system support, including the diagnostics support that will be part of the C++0x standard library, from Beman Dawes</li>
     <li><a href="thread/index.html">Thread</a> - Portable C++ multi-threading. C++11, C++14, from Anthony Williams and Vicente J. Botet Escriba</li>
 </ul>
@@ -550,7 +554,6 @@ how to download, build, and install the libraries.</p>
     <li><a href="core/swap.html">Swap</a> - Enhanced generic swap function, from Joseph Gauterin</li>
     <li><a href="throw_exception/index.html">ThrowException</a> - A common infrastructure for throwing exceptions from Boost libraries, from Emil Dotchevski</li>
     <li><a href="timer/index.html">Timer</a> - Event timer, progress timer, and progress display classes, from Beman Dawes</li>
-    <li><a href="tr1/index.html">TR1</a> - The TR1 library provides an implementation of the C++ Technical Report on Standard Library Extensions. This library does not itself implement the TR1 components, rather it's a thin wrapper that will include your standard library's TR1 implementation (if it has one), otherwise it will include the Boost Library equivalents, and import them into namespace std::tr1, from John Maddock</li>
     <li><a href="../doc/html/tribool.html">Tribool</a> - 3-state boolean type library, from Doug Gregor</li>
     <li><a href="utility/utility.htm">Utility</a> - Class noncopyable plus checked_delete(), checked_array_delete(), next(), prior() function templates, plus base-from-member idiom, from Dave Abrahams and others</li>
     <li><a href="utility/value_init.htm">Value Initialized</a> - Wrapper for uniform-syntax value initialization, based on the original idea of David Abrahams, from Fernando Cacciola</li>

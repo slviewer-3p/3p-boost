@@ -35,19 +35,19 @@
 </span>
 <span class="keyword">struct</span> <a class="link" href="handler.html" title="Struct handler">handler</a> <span class="special">{</span>
 
-  <span class="comment">// <a class="link" href="handler.html#idp24951072-bb">public member functions</a></span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp24951632-bb"><span class="identifier">on_setup</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="comment">// <a class="link" href="handler.html#idp38454944-bb">public member functions</a></span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp38455504-bb"><span class="identifier">on_setup</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-    <span class="keyword">void</span> <a class="link" href="handler.html#idp24955456-bb"><span class="identifier">on_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp24959872-bb"><span class="identifier">on_success</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+    <span class="keyword">void</span> <a class="link" href="handler.html#idp38459328-bb"><span class="identifier">on_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp38463744-bb"><span class="identifier">on_success</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-    <span class="keyword">void</span> <a class="link" href="handler.html#idp24963584-bb"><span class="identifier">on_fork_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
-  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp24968448-bb"><span class="identifier">on_exec_setup</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+    <span class="keyword">void</span> <a class="link" href="handler.html#idp38467456-bb"><span class="identifier">on_fork_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+  <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a class="link" href="handler.html#idp38472320-bb"><span class="identifier">on_exec_setup</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
   <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-    <span class="keyword">void</span> <a class="link" href="handler.html#idp24973680-bb"><span class="identifier">on_exec_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+    <span class="keyword">void</span> <a class="link" href="handler.html#idp38477552-bb"><span class="identifier">on_exec_error</span></a><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
 <span class="special">}</span><span class="special">;</span></pre></div>
 <div class="refsect1">
-<a name="idp432403616"></a><h2>Description</h2>
+<a name="idp435100624"></a><h2>Description</h2>
 <p>This class is the base for every initializer, to be used for extensions.</p>
 <p>The usage is done through compile-time polymorphism, so that the required functions can be overloaded.</p>
 <div class="note"><table border="0" summary="Note">
@@ -60,11 +60,11 @@
 <p>
 </p>
 <div class="refsect2">
-<a name="idp432406128"></a><h3>
-<a name="idp24951072-bb"></a><code class="computeroutput">handler</code> public member functions</h3>
+<a name="idp435103136"></a><h3>
+<a name="idp38454944-bb"></a><code class="computeroutput">handler</code> public member functions</h3>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp24951632-bb"></a><span class="identifier">on_setup</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>This function is invoked before the process launch. <div class="note"><table border="0" summary="Note">
+<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp38455504-bb"></a><span class="identifier">on_setup</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>This function is invoked before the process launch. <div class="note"><table border="0" summary="Note">
 <tr>
 <td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../doc/src/images/note.png"></td>
 <th align="left">Note</th>
@@ -76,7 +76,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-  <span class="keyword">void</span> <a name="idp24955456-bb"></a><span class="identifier">on_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+  <span class="keyword">void</span> <a name="idp38459328-bb"></a><span class="identifier">on_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>This function is invoked if an error occured while trying to launch the process. </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -89,7 +89,7 @@
 </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp24959872-bb"></a><span class="identifier">on_success</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp38463744-bb"></a><span class="identifier">on_success</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>This function is invoked if the process was successfully launched. </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -103,7 +103,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-  <span class="keyword">void</span> <a name="idp24963584-bb"></a><span class="identifier">on_fork_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+  <span class="keyword">void</span> <a name="idp38467456-bb"></a><span class="identifier">on_fork_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>This function is invoked if an error occured during the call of <code class="computeroutput">fork</code>. </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -116,7 +116,7 @@
 </p>
 </li>
 <li class="listitem">
-<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp24968448-bb"></a><span class="identifier">on_exec_setup</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> <span class="keyword">void</span> <a name="idp38472320-bb"></a><span class="identifier">on_exec_setup</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>This function is invoked if the call of <code class="computeroutput">fork</code> was successful, before calling <code class="computeroutput">execve</code>. </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
@@ -139,7 +139,7 @@
 </li>
 <li class="listitem">
 <pre class="literallayout"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> Executor<span class="special">&gt;</span> 
-  <span class="keyword">void</span> <a name="idp24973680-bb"></a><span class="identifier">on_exec_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+  <span class="keyword">void</span> <a name="idp38477552-bb"></a><span class="identifier">on_exec_error</span><span class="special">(</span><span class="identifier">Executor</span> <span class="special">&amp;</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">error_code</span> <span class="special">&amp;</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
 <p>This function is invoked if the call of <code class="computeroutput">execve</code> failed. </p>
 <div class="note"><table border="0" summary="Note">
 <tr>
