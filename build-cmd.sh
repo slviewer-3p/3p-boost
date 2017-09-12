@@ -19,7 +19,7 @@ if [ -z "$AUTOBUILD" ] ; then
 fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
-BOOST_LIBS=(context coroutine2 date_time filesystem iostreams program_options \
+BOOST_LIBS=(context date_time filesystem iostreams program_options \
             regex signals system thread wave)
 
 BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compilation to be examined
