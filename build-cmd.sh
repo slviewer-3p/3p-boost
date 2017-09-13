@@ -350,10 +350,14 @@ case "$AUTOBUILD_PLATFORM" in
 
         # conditionally run unit tests
         # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        # libs/regex/test/de_fuzz produces:
+        # error: "clang" is not a known value of feature <toolset>
+        # error: legal values: "gcc"
         find_test_dirs "${BOOST_LIBS[@]}" | \
         grep -v \
              -e 'date_time/' \
              -e 'filesystem/test/issues' \
+             -e 'regex/test/de_fuzz' \
             | \
         run_tests variant=release -a -q \
                   --prefix="${stage}" --libdir="${stage}"/lib/release \
