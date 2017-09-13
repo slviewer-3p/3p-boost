@@ -341,7 +341,8 @@ case "$AUTOBUILD_PLATFORM" in
         RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib/" \
             "-sZLIB_LIBPATH=$stage/packages/lib/release" \
             "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
-            "${BOOST_BJAM_OPTIONS[@]}")
+            "${BOOST_BJAM_OPTIONS[@]}" \
+            cxxflags=-std=c++11)
         sep "build"
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
