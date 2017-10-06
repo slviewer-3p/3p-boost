@@ -311,7 +311,8 @@ case "$AUTOBUILD_PLATFORM" in
              -e 'regex/test/de_fuzz' \
             | \
         run_tests toolset=darwin variant=release -a -q \
-                  "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
+                  "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM \
+                  cxxflags="-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED"
 
         mv "${stage_lib}"/*.a "${stage_release}"
 
