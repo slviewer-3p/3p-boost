@@ -304,11 +304,14 @@ case "$AUTOBUILD_PLATFORM" in
         # error:     'libs/filesystem/test/issues'
         # regex/tests/de_fuzz depends on an external Fuzzer library:
         # ld: library not found for -lFuzzer
+        # Sadly, as of Boost 1.65.1, the Stacktrace self-tests just do not
+        # seem ready for prime time on Mac.
         find_test_dirs "${BOOST_LIBS[@]}" | \
         grep -v \
              -e 'date_time/' \
              -e 'filesystem/test/issues' \
              -e 'regex/test/de_fuzz' \
+             -e 'stacktrace/' \
             | \
         run_tests toolset=darwin variant=release -a -q \
                   "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM \
