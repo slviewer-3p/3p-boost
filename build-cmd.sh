@@ -280,6 +280,8 @@ case "$AUTOBUILD_PLATFORM" in
         # Boost.Context and Boost.Coroutine2 now require C++14 support.
         # Without the -Wno-etc switches, clang spams the build output with
         # many hundreds of pointless warnings.
+        # Building Boost.Regex without --disable-icu causes the viewer link to
+        # fail for lack of an ICU library.
         DARWIN_BJAM_OPTIONS=("${BOOST_BJAM_OPTIONS[@]}" \
             "include=${stage}/packages/include" \
             "include=${stage}/packages/include/zlib/" \
@@ -287,7 +289,8 @@ case "$AUTOBUILD_PLATFORM" in
             cxxflags=-std=c++14 \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
             cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable \
-            cxxflags=-Wno-unused-local-typedef)
+            cxxflags=-Wno-unused-local-typedef \
+            --disable-icu)
 
         RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
             "-sZLIB_LIBPATH=${stage}/packages/lib/release")
