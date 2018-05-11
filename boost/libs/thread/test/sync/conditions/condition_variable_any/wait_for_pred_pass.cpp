@@ -54,7 +54,7 @@ int runs = 0;
 typedef boost::chrono::system_clock Clock;
 typedef boost::chrono::milliseconds milliseconds;
 
-#ifdef BOOST_THREAD_PLATFORM_WIN32
+#if 1 //def BOOST_THREAD_PLATFORM_WIN32
 const milliseconds max_diff(250);
 #else
 const milliseconds max_diff(75);
