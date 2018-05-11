@@ -95,7 +95,6 @@ void test_pull_for()
   boost::queue_op_status st = pq.pull_for(tc.timeout, val);
   tc.check();
   BOOST_TEST(boost::queue_op_status::timeout == st);
-  std::cout << "diff= " << diff.count();
 }
 
 void test_pull_until()
