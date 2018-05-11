@@ -217,7 +217,7 @@ case "$AUTOBUILD_PLATFORM" in
             "-sZLIB_NAME=zlib")
         sep "build"
         "${bjam}" link=static variant=release \
-            --prefix="${stage}" --libdir="${stage_release}" \
+            --prefix="$(native "${stage}")" --libdir="$(native "${stage_release}")" \
             "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # Constraining Windows unit tests to link=static produces unit-test
