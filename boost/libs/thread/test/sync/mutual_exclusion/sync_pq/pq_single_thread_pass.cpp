@@ -25,40 +25,6 @@ using namespace boost::chrono;
 
 typedef boost::concurrent::sync_priority_queue<int> sync_pq;
 
-// nat 2017-08-10: A number of tests in this source check whether a particular
-// function (pull_for(), pull_until()), when passed a specified timeout,
-// returns within a small delta (50ms) of that timeout. Unfortunately those
-// small deltas were hard-coded in each such test, and unfortunately some of
-// our build machines do not respond that quickly. I can't resist pointing out
-// that unless you're on a real-time OS, which we are not, timeout
-// functionality is always specified as "not before," without making any
-// promises whatsoever about how soon after that timeout you might regain
-// control. Anyway, this struct encapsulates the timer logic for such tests.
-struct TimeoutCheck
-{
-    TimeoutCheck(steady_clock::duration t,
-                 steady_clock::duration s=milliseconds(200)):
-        start(steady_clock::now()),
-        timeout(t),
-        slop(s)
-    {}
-
-    // we put this logic in a named method rather than the destructor for
-    // obvious reasons
-    void check()
-    {
-        steady_clock::duration diff = steady_clock::now() - start;
-        // stdout from a test program is only displayed when the test fails
-        std::cout << "subject function took " << duration_cast<milliseconds>(diff)
-                  << "; expecting " << duration_cast<milliseconds>(timeout) 
-                  << " - " << duration_cast<milliseconds>(timeout + slop) << std::endl;
-        BOOST_TEST(timeout <= diff && diff < (timeout + slop));
-    }
-
-    const steady_clock::time_point start;
-    const steady_clock::duration timeout, slop;
-};
-
 class non_copyable
 {
   BOOST_THREAD_MOVABLE_ONLY(non_copyable)
@@ -80,6 +46,46 @@ public:
   }
 };
 
+#ifdef BOOST_THREAD_PLATFORM_WIN32
+const milliseconds max_diff(250);
+#else
+const milliseconds max_diff(75);
+#endif
+
+// nat 2017-08-10: A number of tests in this source check whether a particular
+// function (pull_for(), pull_until()), when passed a specified timeout,
+// returns within a small delta (50ms) of that timeout. Unfortunately those
+// small deltas were hard-coded in each such test, and unfortunately some of
+// our build machines do not respond that quickly. I can't resist pointing out
+// that unless you're on a real-time OS, which we are not, timeout
+// functionality is always specified as "not before," without making any
+// promises whatsoever about how soon after that timeout you might regain
+// control. Anyway, this struct encapsulates the timer logic for such tests.
+struct TimeoutCheck
+{
+    TimeoutCheck(steady_clock::duration t,
+                 steady_clock::duration s=max_diff):
+        start(steady_clock::now()),
+        timeout(t),
+        slop(s)
+    {}
+
+    // we put this logic in a named method rather than the destructor for
+    // obvious reasons
+    void check()
+    {
+        steady_clock::duration diff = steady_clock::now() - start;
+        // stdout from a test program is only displayed when the test fails
+        std::cout << "subject function took " << duration_cast<milliseconds>(diff)
+                  << "; expecting " << duration_cast<milliseconds>(timeout) 
+                  << " - " << duration_cast<milliseconds>(timeout + slop) << std::endl;
+        BOOST_TEST(timeout <= diff && diff < (timeout + slop));
+    }
+
+    const steady_clock::time_point start;
+    const steady_clock::duration timeout, slop;
+};
+
 
 void test_pull_for()
 {
@@ -89,6 +95,7 @@ void test_pull_for()
   boost::queue_op_status st = pq.pull_for(tc.timeout, val);
   tc.check();
   BOOST_TEST(boost::queue_op_status::timeout == st);
+  std::cout << "diff= " << diff.count();
 }
 
 void test_pull_until()
