@@ -36,7 +36,7 @@ if [ "$OSTYPE" = "cygwin" ] ; then
     # convert from bash path to native OS pathname
     native()
     {
-        cygpath -m "$@"
+        cygpath -w "$@"
     }
 else
     autobuild="$AUTOBUILD"
@@ -178,9 +178,9 @@ print(since(start, now), ' $* '.center(72, '='), file=sys.stderr)
 case "$AUTOBUILD_PLATFORM" in
 
     windows*)
-        INCLUDE_PATH="$(cygpath -m "${stage}"/packages/include)"
-        ZLIB_RELEASE_PATH="$(cygpath -m "${stage}"/packages/lib/release)"
-        ICU_PATH="$(cygpath -m "${stage}"/packages)"
+        INCLUDE_PATH="$(native "${stage}"/packages/include)"
+        ZLIB_RELEASE_PATH="$(native "${stage}"/packages/lib/release)"
+        ICU_PATH="$(native "${stage}"/packages)"
 
         case "$AUTOBUILD_VSVER" in
             120)
@@ -243,7 +243,7 @@ case "$AUTOBUILD_PLATFORM" in
              -e 'thread/' \
              | \
         run_tests variant=release \
-                  --prefix="${stage}" --libdir="${stage_release}" \
+                  --prefix="$(native "${stage}")" --libdir="$(native "${stage_release}")" \
                   $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
 
         # Move the libs
@@ -256,9 +256,9 @@ case "$AUTOBUILD_PLATFORM" in
         # populate version_file
         cl /DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            /DVERSION_MACRO="$VERSION_MACRO" \
-           /Fo"$(cygpath -w "$stage/version.obj")" \
-           /Fe"$(cygpath -w "$stage/version.exe")" \
-           "$(cygpath -w "$top/version.c")"
+           /Fo"$(native "$stage/version.obj")" \
+           /Fe"$(native "$stage/version.exe")" \
+           "$(native "$top/version.c")"
         # Boost's VERSION_MACRO emits (e.g.) "1_55"
         "$stage/version.exe" | tr '_' '.' > "$stage/version.txt"
         rm "$stage"/version.{obj,exe}
