@@ -32,7 +32,7 @@ typedef Clock::duration duration;
 typedef boost::chrono::milliseconds ms;
 typedef boost::chrono::nanoseconds ns;
 
-#ifdef BOOST_THREAD_PLATFORM_WIN32
+#if 1 //def BOOST_THREAD_PLATFORM_WIN32
 const ms max_diff(250);
 #else
 const ms max_diff(75);

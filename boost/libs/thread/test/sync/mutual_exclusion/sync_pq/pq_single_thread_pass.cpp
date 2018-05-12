@@ -46,7 +46,7 @@ public:
   }
 };
 
-#ifdef BOOST_THREAD_PLATFORM_WIN32
+#if 1 //def BOOST_THREAD_PLATFORM_WIN32
 const milliseconds max_diff(250);
 #else
 const milliseconds max_diff(75);

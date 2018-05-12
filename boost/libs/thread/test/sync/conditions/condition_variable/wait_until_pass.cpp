@@ -49,7 +49,7 @@ int test2 = 0;
 
 int runs = 0;
 
-#ifdef BOOST_THREAD_PLATFORM_WIN32
+#if 1 //def BOOST_THREAD_PLATFORM_WIN32
 const Clock::duration max_diff(250);
 #else
 const Clock::duration max_diff(75);
