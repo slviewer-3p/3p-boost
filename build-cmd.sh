@@ -240,6 +240,7 @@ case "$AUTOBUILD_PLATFORM" in
              -e 'filesystem/' \
              -e 'iostreams/' \
              -e 'regex/' \
+             -e 'stacktrace/' \
              -e 'thread/' \
              | \
         run_tests variant=release \
