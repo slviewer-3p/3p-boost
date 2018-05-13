@@ -36,7 +36,7 @@ boost::mutex m;
 
 #if ! defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) && ! defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && ! defined BOOST_THREAD_NO_MAKE_LOCK_GUARD
 
-#ifdef BOOST_THREAD_PLATFORM_WIN32
+#if 1 //def BOOST_THREAD_PLATFORM_WIN32
 const ms max_diff(250);
 #else
 const ms max_diff(75);
