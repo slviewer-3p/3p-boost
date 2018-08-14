@@ -1,29 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd "$(dirname "$0")"
 top="$(pwd)"
 
 # turn on verbose debugging output for parabuild logs.
-set -x
+exec 4>&1; export BASH_XTRACEFD=4; set -x
 # make errors fatal
 set -e
+# error on undefined environment variables
+set -u
 
 BOOST_SOURCE_DIR="boost"
 VERSION_HEADER_FILE="$BOOST_SOURCE_DIR/boost/version.hpp"
 VERSION_MACRO="BOOST_LIB_VERSION"
 
 if [ -z "$AUTOBUILD" ] ; then 
-    fail
+    exit 1
 fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
 BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
-            regex signals system thread)
-
-# Explicitly request each of the libraries named in BOOST_LIBS.
-# Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
-BOOST_BJAM_OPTIONS="address-model=32 architecture=x86 --layout=tagged -sNO_BZIP2=1
-                    ${BOOST_LIBS[*]/#/--with-}"
+            regex signals system thread wave)
 
 # Optionally use this function in a platform build to SUPPRESS running unit
 # tests on one or more specific libraries: sadly, it happens that some
@@ -61,20 +58,31 @@ stage="$(pwd)/stage"
 [ -f "$stage"/packages/include/zlib/zlib.h ] || fail "You haven't installed the zlib package yet."
                                                      
 if [ "$OSTYPE" = "cygwin" ] ; then
-    export AUTOBUILD="$(cygpath -u $AUTOBUILD)"
+    autobuild="$(cygpath -u $AUTOBUILD)"
     # Bjam doesn't know about cygwin paths, so convert them!
+else
+    autobuild="$AUTOBUILD"
 fi
 
 # load autobuild provided shell functions and variables
-set +x
-eval "$("$AUTOBUILD" source_environment)"
-set -x
+source_environment_tempfile="$stage/source_environment.sh"
+"$autobuild" source_environment > "$source_environment_tempfile"
+. "$source_environment_tempfile"
+
+# Explicitly request each of the libraries named in BOOST_LIBS.
+# Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
+BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE architecture=x86 --layout=tagged -sNO_BZIP2=1 \
+                    ${BOOST_LIBS[*]/#/--with-}"
+
+# Turn these into a bash array: it's important that all of cxxflags (which
+# we're about to add) go into a single array entry.
+BOOST_BJAM_OPTIONS=($BOOST_BJAM_OPTIONS)
+# Append cxxflags as a single entry containing all of LL_BUILD_RELEASE.
+BOOST_BJAM_OPTIONS[${#BOOST_BJAM_OPTIONS[*]}]="cxxflags=$LL_BUILD_RELEASE"
 
 stage_lib="${stage}"/lib
 stage_release="${stage_lib}"/release
-stage_debug="${stage_lib}"/debug
 mkdir -p "${stage_release}"
-mkdir -p "${stage_debug}"
 
 # Restore all .sos
 restore_sos ()
@@ -96,6 +104,21 @@ restore_dylibs ()
     done
 }
 
+find_test_jamfile_dir_for()
+{
+    # Not every Boost library contains a libs/x/test/Jamfile.v2 file. Some
+    # have libs/x/test/build/Jamfile.v2. Try to be general about it.
+    local Jamfiles="$(find libs/$1/test -name 'Jam????*' -type f -print)"
+    local lines=$(echo "$Jamfiles" | wc -l)
+    if [ $lines -ne 1 ]
+    then echo "Found $lines Jamfiles under libs/$1/test:
+$Jamfiles" 1>&2
+         exit 1
+    fi
+    # show caller the directory name containing the Jamfile.
+    echo "$(dirname "$Jamfiles")"
+}
+
 # bjam doesn't support a -sICU_LIBPATH to point to the location
 # of the icu libraries like it does for zlib. Instead, it expects
 # the library files to be immediately in the ./lib directory
@@ -109,30 +132,46 @@ restore_dylibs ()
 
 case "$AUTOBUILD_PLATFORM" in
 
-    "windows")
+    windows*)
         INCLUDE_PATH="$(cygpath -m "${stage}"/packages/include)"
         ZLIB_RELEASE_PATH="$(cygpath -m "${stage}"/packages/lib/release)"
-        ZLIB_DEBUG_PATH="$(cygpath -m "${stage}"/packages/lib/debug)"
         ICU_PATH="$(cygpath -m "${stage}"/packages)"
+
+        case "$AUTOBUILD_VSVER" in
+            120)
+                bootstrapver="vc12"
+                bjamtoolset="msvc-12.0"
+                ;;
+            *)
+                echo "Unrecognized AUTOBUILD_VSVER='$AUTOBUILD_VSVER'" 1>&2 ; exit 1
+                ;;
+        esac
 
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
-        cmd.exe /C bootstrap.bat vc12
+        cmd.exe /C bootstrap.bat "$bootstrapver"
 
-        # Windows build of viewer expects /Zc:wchar_t-, have to match that
+        # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD_RELEASE.
         # Without --abbreviate-paths, some compilations fail with:
         # failed to write output file 'some\long\path\something.rsp'!
-        WINDOWS_BJAM_OPTIONS="--toolset=msvc-12.0 -j2 \
-            --abbreviate-paths \
-            include=$INCLUDE_PATH -sICU_PATH=$ICU_PATH \
-            -sZLIB_INCLUDE=$INCLUDE_PATH/zlib \
-            cxxflags=-Zc:wchar_t- \
-            $BOOST_BJAM_OPTIONS"
+        # Without /FS, some compilations fail with:
+        # fatal error C1041: cannot open program database '...\vc120.pdb';
+        # if multiple CL.EXE write to the same .PDB file, please use /FS
+        WINDOWS_BJAM_OPTIONS=("--toolset=$bjamtoolset" -j2 \
+            --abbreviate-paths 
+            "include=$INCLUDE_PATH" "-sICU_PATH=$ICU_PATH" \
+            "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib" \
+            cxxflags=/FS \
+            "${BOOST_BJAM_OPTIONS[@]}")
 
-        DEBUG_BJAM_OPTIONS="$WINDOWS_BJAM_OPTIONS -sZLIB_LIBPATH=$ZLIB_DEBUG_PATH -sZLIB_LIBRARY_PATH=$ZLIB_DEBUG_PATH -sZLIB_NAME=zlibd"
-        "${bjam}" link=static variant=debug \
-            --prefix="${stage}" --libdir="${stage_debug}" $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+        RELEASE_BJAM_OPTIONS=("${WINDOWS_BJAM_OPTIONS[@]}" \
+            "-sZLIB_LIBPATH=$ZLIB_RELEASE_PATH" \
+            "-sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH" \
+            "-sZLIB_NAME=zlib")
+        "${bjam}" link=static variant=release \
+            --prefix="${stage}" --libdir="${stage_release}" \
+            "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # Constraining Windows unit tests to link=static produces unit-test
         # link errors. While it may be possible to edit the test/Jamfile.v2
@@ -151,37 +190,19 @@ case "$AUTOBUILD_PLATFORM" in
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"$blib"/test
-                    # link=static
-                    "${bjam}" variant=debug \
-                        --prefix="${stage}" --libdir="${stage_debug}" \
-                        $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
-                popd
-            done
-        fi
-
-        RELEASE_BJAM_OPTIONS="$WINDOWS_BJAM_OPTIONS -sZLIB_LIBPATH=$ZLIB_RELEASE_PATH -sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH -sZLIB_NAME=zlib"
-        "${bjam}" link=static variant=release \
-            --prefix="${stage}" --libdir="${stage_release}" $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
-
-        # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"$blib"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     # link=static
                     "${bjam}" variant=release \
-                        --prefix="${stage}" --libdir="${stage_debug}" \
+                        --prefix="${stage}" --libdir="${stage_release}" \
                         $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
                 popd
             done
         fi
 
-        # Move the debug libs first, then the leftover release libs
-        mv "${stage_lib}"/*-gd.lib "${stage_debug}"
+        # Move the libs
         mv "${stage_lib}"/*.lib "${stage_release}"
 
         # bjam doesn't need vsvars, but our hand compilation does
-        eval "$("$AUTOBUILD" source_environment)"
         load_vsvars
 
         # populate version_file
@@ -195,10 +216,9 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage"/version.{obj,exe}
         ;;
 
-    "darwin")
+    darwin*)
         # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
         suppress_tests date_time
-        BOOST_CXXFLAGS="-gdwarf-2"
 
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
@@ -211,48 +231,27 @@ case "$AUTOBUILD_PLATFORM" in
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
-        # All viewer packages must be built with -mmacosx-version-min=10.7.
-        SDK="-iwithsysroot=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk"
-        MINVER="-mmacosx-version-min=10.7"
         # Without the -Wno-etc switches, clang spams the build output with
         # many hundreds of pointless warnings.
-        DARWIN_BJAM_OPTIONS="${BOOST_BJAM_OPTIONS} \
-            include=\"${stage}\"/packages/include \
-            include=\"${stage}\"/packages/include/zlib/ \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            cxxflags=$SDK cxxflags=$MINVER cxxflags=-stdlib=libstdc++ \
-            linkflags=$SDK linkflags=$MINVER cxxflags=-stdlib=libstdc++ \
+        DARWIN_BJAM_OPTIONS=("${BOOST_BJAM_OPTIONS[@]}" \
+            "include=${stage}/packages/include" \
+            "include=${stage}/packages/include/zlib/" \
+            "-sZLIB_INCLUDE=${stage}/packages/include/zlib/" \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
-            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable"
+            cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable \
+            cxxflags=-Wno-unused-local-typedef)
 
-        DEBUG_BJAM_OPTIONS="${DARWIN_BJAM_OPTIONS} \
-            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/debug"
+        RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
+            "-sZLIB_LIBPATH=${stage}/packages/lib/release")
 
-        RELEASE_BJAM_OPTIONS="${DARWIN_BJAM_OPTIONS} \
-            -sZLIB_LIBPATH=\"${stage}\"/packages/lib/release"
-
-        "${bjam}" toolset=darwin variant=debug $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
-
-        # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
-                    "${bjam}" toolset=darwin variant=debug -a -q \
-                        $DEBUG_BJAM_OPTIONS $BOOST_BUILD_SPAM cxxflags="$BOOST_CXXFLAGS"
-                popd
-            done
-        fi
-
-        mv "${stage_lib}"/*.a "${stage_debug}"
-
-        "${bjam}" toolset=darwin variant=release $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+        "${bjam}" toolset=darwin variant=release "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
         
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     "${bjam}" toolset=darwin variant=release -a -q \
-                        $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM cxxflags="$BOOST_CXXFLAGS"
+                        "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
                 popd
             done
         fi
@@ -268,7 +267,7 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage/version"
         ;;
 
-    "linux")
+    linux*)
         # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
         suppress_tests date_time
         # Force static linkage to libz by moving .sos out of the way
@@ -281,44 +280,21 @@ case "$AUTOBUILD_PLATFORM" in
             
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
-        DEBUG_BOOST_BJAM_OPTIONS="toolset=gcc include=$stage/packages/include/zlib/ \
-            -sZLIB_LIBPATH=$stage/packages/lib/debug \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            $BOOST_BJAM_OPTIONS"
-        "${bjam}" variant=debug --reconfigure \
-            --prefix="${stage}" --libdir="${stage}"/lib/debug \
-            $DEBUG_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
-
-        # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
-                    "${bjam}" variant=debug -a -q \
-                        --prefix="${stage}" --libdir="${stage}"/lib/debug \
-                        $DEBUG_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM
-                popd
-            done
-        fi
-
-        mv "${stage_lib}"/libboost* "${stage_debug}"
-
-        "${bjam}" --clean
-
-        RELEASE_BOOST_BJAM_OPTIONS="toolset=gcc include=$stage/packages/include/zlib/ \
-            -sZLIB_LIBPATH=$stage/packages/lib/release \
-            -sZLIB_INCLUDE=\"${stage}\"/packages/include/zlib/ \
-            $BOOST_BJAM_OPTIONS"
+        RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib/" \
+            "-sZLIB_LIBPATH=$stage/packages/lib/release" \
+            "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
+            "${BOOST_BJAM_OPTIONS[@]}")
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
-            $RELEASE_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM stage
+            "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # conditionally run unit tests
         if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
             for blib in "${BOOST_LIBS[@]}"; do
-                pushd libs/"${blib}"/test
+                pushd "$(find_test_jamfile_dir_for "$blib")"
                     "${bjam}" variant=release -a -q \
                         --prefix="${stage}" --libdir="${stage}"/lib/release \
-                        $RELEASE_BOOST_BJAM_OPTIONS $BOOST_BUILD_SPAM
+                        "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
                 popd
             done
         fi
@@ -345,5 +321,3 @@ mkdir -p "${stage}"/docs/boost/
 cp -a "$top"/README.Linden "${stage}"/docs/boost/
 
 cd "$top"
-
-pass
