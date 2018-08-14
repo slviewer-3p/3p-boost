@@ -29,29 +29,65 @@
             <key>name</key>
             <string>darwin</string>
           </map>
+          <key>darwin64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>2c34cb4e62d1f155d5dad798e69d03c8</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/466/1005/icu4c-4.8.1-darwin64-500388.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>darwin64</string>
+          </map>
           <key>linux</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ad0852eedefeb0f7cf5f93d8a9ba0528</string>
+              <string>0a4423cfd26409f33ae81fb9806a9972</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/Linux/installer/icu4c-4.8.1-linux-295486.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/Linux/installer/icu4c-4.8.1-linux-314152.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
+          </map>
+          <key>linux64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>b327031733c36efe2eee4582aefb2d66</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/462/995/icu4c-4.8.1-linux64-500388.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>linux64</string>
           </map>
           <key>windows</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>abecfe844b7ee1f54c8069914c2d59dd</string>
+              <string>af354f6ab6d2cecf266c79031977e3e0</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/CYGWIN/installer/icu4c-4.8.1-windows-295486.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/492/1078/icu4c-4.8.1-windows-500388.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
+          </map>
+          <key>windows64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>e8b20cea748b90ea18bb63dfba06e059</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/491/1075/icu4c-4.8.1-windows64-500388.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>windows64</string>
           </map>
         </map>
         <key>version</key>
@@ -83,33 +119,69 @@
             <key>name</key>
             <string>darwin</string>
           </map>
+          <key>darwin64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>e204dee29902549f50af1af2bb098df5</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/867/1903/zlib-1.2.8.500857-darwin64-500857.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>darwin64</string>
+          </map>
           <key>linux</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>2eb8e59b6464222dcf4435016ad5f618</string>
+              <string>98a8c775c581ca80bb559e8b4e8eaae7</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/296881/arch/Linux/installer/zlib-1.2.8.296881-linux-296881.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-zlib/rev/314131/arch/Linux/installer/zlib-1.2.8.314131-linux-314131.tar.bz2</string>
             </map>
             <key>name</key>
             <string>linux</string>
+          </map>
+          <key>linux64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>dab6be8b0596c1e3354f2b6d41335131</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/866/1898/zlib-1.2.8.500857-linux64-500857.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>linux64</string>
           </map>
           <key>windows</key>
           <map>
             <key>archive</key>
             <map>
               <key>hash</key>
-              <string>ae420ec6d30411c07aac2502d7bbc0f3</string>
+              <string>f92cbb0ab5e5d20789bf6102f9a27aa6</string>
               <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/296881/arch/CYGWIN/installer/zlib-1.2.8.296881-windows-296881.tar.bz2</string>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/868/1906/zlib-1.2.8.500857-windows-500857.tar.bz2</string>
             </map>
             <key>name</key>
             <string>windows</string>
           </map>
+          <key>windows64</key>
+          <map>
+            <key>archive</key>
+            <map>
+              <key>hash</key>
+              <string>70a56767f6a109af412838875d0b5f1b</string>
+              <key>url</key>
+              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/ct2/869/1909/zlib-1.2.8.500857-windows64-500857.tar.bz2</string>
+            </map>
+            <key>name</key>
+            <string>windows64</string>
+          </map>
         </map>
         <key>version</key>
-        <string>1.2.8.296881</string>
+        <string>1.2.8.500857</string>
       </map>
     </map>
     <key>package_description</key>
@@ -175,7 +247,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.a</string>
-            <string>lib/debug/*.a</string>
           </array>
           <key>name</key>
           <string>darwin</string>
@@ -198,7 +269,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.a</string>
-            <string>lib/debug/*.a</string>
           </array>
           <key>name</key>
           <string>linux</string>
@@ -221,7 +291,6 @@
           <key>manifest</key>
           <array>
             <string>lib/release/*.lib</string>
-            <string>lib/debug/*.lib</string>
           </array>
           <key>name</key>
           <string>windows</string>

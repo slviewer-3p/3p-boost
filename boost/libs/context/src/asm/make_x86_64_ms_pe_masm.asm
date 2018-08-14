@@ -115,6 +115,10 @@ make_fcontext PROC EXPORT FRAME
     ; save address of context stack limit as 'dealloction stack'
     mov  [rax+0c0h], rcx
 
+    ; ND: Zero argument for fiber local storage, or it gets assigned some random garbage 
+	xor rcx,rcx
+	mov [rax+0b8h],rcx
+	
     ; save MMX control- and status-word
     stmxcsr  [rax+0a8h]
     ; save x87 control-word
