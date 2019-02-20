@@ -155,6 +155,13 @@ case "$AUTOBUILD_PLATFORM" in
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
         cmd.exe /C bootstrap.bat "$bootstrapver"
+        # Failure of this bootstrap.bat file doesn't produce nonzero rc --
+        # check for the program it should have built.
+        if [ ! -x "$bjam.exe" ]
+        then cat "bootstrap.log"
+             echo "bootstrap failed" 1>&2
+             exit 1
+        fi
 
         # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD_RELEASE.
         # Without --abbreviate-paths, some compilations fail with:
