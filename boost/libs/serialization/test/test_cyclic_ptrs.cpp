@@ -20,7 +20,7 @@ namespace std{
 #endif
 
 #include "test_tools.hpp"
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/version.hpp>
@@ -143,6 +143,7 @@ int test2(){
         ia >> BOOST_SERIALIZATION_NVP(j2);
     }
     BOOST_CHECK(*j1 == *j2);
+    delete j1;
     BOOST_CHECK(j2 == j2->j);
     std::remove(testfile);
     return EXIT_SUCCESS;

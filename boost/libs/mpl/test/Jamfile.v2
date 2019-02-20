@@ -1,4 +1,5 @@
 
+compile aux_/increased_arity.cpp ;
 compile aux_/largest_int.cpp ;
 compile aux_/msvc_is_class.cpp ;
 compile aux_/template_arity.cpp ;
@@ -36,6 +37,7 @@ compile find_if.cpp ;
 compile fold.cpp ;
 run for_each.cpp ;
 compile front.cpp ;
+compile get_tag_def.cpp ;
 compile has_xxx.cpp ;
 compile identity.cpp ;
 compile if.cpp ;

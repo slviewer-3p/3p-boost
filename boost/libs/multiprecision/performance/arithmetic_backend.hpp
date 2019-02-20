@@ -14,6 +14,7 @@
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/multiprecision/number.hpp>
 #include <boost/math/common_factor_rt.hpp>
+#include <boost/type_traits/common_type.hpp>
 
 namespace boost{
 namespace multiprecision{
@@ -32,7 +33,10 @@ struct arithmetic_backend
    typedef mpl::list<float, double, long double>                                       float_types;
    typedef int                                                                         exponent_type;
 
-   arithmetic_backend(){}
+   arithmetic_backend()
+   {
+      m_value = 0;
+   }
    arithmetic_backend(const arithmetic_backend& o)
    {
       m_value = o.m_value;
@@ -60,14 +64,18 @@ struct arithmetic_backend
    }
    arithmetic_backend& operator = (const char* s)
    {
+#ifndef BOOST_NO_EXCEPTIONS
       try
       {
+#endif
          m_value = boost::lexical_cast<Arithmetic>(s);
+#ifndef BOOST_NO_EXCEPTIONS
       }
       catch(const bad_lexical_cast&)
       {
          throw std::runtime_error(std::string("Unable to interpret the string provided: \"") + s + std::string("\" as a compatible number type."));
       }
+#endif
       return *this;
    }
    void swap(arithmetic_backend& o)
@@ -109,7 +117,24 @@ private:
 };
 
 template <class R, class Arithmetic>
-inline void eval_convert_to(R* result, const arithmetic_backend<Arithmetic>& backend)
+inline typename enable_if_c<boost::is_integral<R>::value>::type eval_convert_to(R* result, const arithmetic_backend<Arithmetic>& backend)
+{
+   typedef typename boost::common_type<R, Arithmetic>::type c_type;
+   static const c_type max = static_cast<c_type>((std::numeric_limits<R>::max)());
+   static const c_type min = static_cast<c_type>((std::numeric_limits<R>::min)());
+   c_type ct = static_cast<c_type>(backend.data());
+   if ((backend.data() < 0) && !std::numeric_limits<R>::is_signed)
+      BOOST_THROW_EXCEPTION(std::range_error("Attempt to convert negative number to unsigned type."));
+   if (ct > max)
+      *result = (std::numeric_limits<R>::max)();
+   else if (std::numeric_limits<Arithmetic>::is_signed && (ct < min))
+      *result = (std::numeric_limits<R>::min)();
+   else
+      *result = backend.data();
+}
+
+template <class R, class Arithmetic>
+inline typename disable_if_c<boost::is_integral<R>::value>::type eval_convert_to(R* result, const arithmetic_backend<Arithmetic>& backend)
 {
    *result = backend.data();
 }
@@ -545,17 +570,54 @@ struct double_precision_type<arithmetic_backend<boost::int32_t> >
 }
 
 }} // namespaces
-
+#if !(defined(__SGI_STL_PORT) || defined(BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS))
+//
+// We shouldn't need these to get code to compile, however for the sake of
+// "level playing field" performance comparisons they avoid the very slow
+// lexical_cast's that would otherwise take place.  Definition has to be guarded
+// by the inverse of pp-logic in real_concept.hpp which defines these as a workaround
+// for STLPort plus some other old/broken standartd libraries.
+//
 namespace boost{ namespace math{ namespace tools{
 
-template <>
-inline double real_cast<double, concepts::real_concept>(concepts::real_concept r)
-{
-   return static_cast<double>(r.value());
-}
+   template <>
+   inline unsigned int real_cast<unsigned int, concepts::real_concept>(concepts::real_concept r)
+   {
+      return static_cast<unsigned int>(r.value());
+   }
+
+   template <>
+   inline int real_cast<int, concepts::real_concept>(concepts::real_concept r)
+   {
+      return static_cast<int>(r.value());
+   }
+
+   template <>
+   inline long real_cast<long, concepts::real_concept>(concepts::real_concept r)
+   {
+      return static_cast<long>(r.value());
+   }
+
+   // Converts from T to narrower floating-point types, float, double & long double.
+
+   template <>
+   inline float real_cast<float, concepts::real_concept>(concepts::real_concept r)
+   {
+      return static_cast<float>(r.value());
+   }
+   template <>
+   inline double real_cast<double, concepts::real_concept>(concepts::real_concept r)
+   {
+      return static_cast<double>(r.value());
+   }
+   template <>
+   inline long double real_cast<long double, concepts::real_concept>(concepts::real_concept r)
+   {
+      return r.value();
+   }
 
 }}}
-
+#endif
 
 namespace std{
 

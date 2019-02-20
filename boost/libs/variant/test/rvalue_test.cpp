@@ -16,8 +16,22 @@
 #include "boost/type_traits/is_nothrow_move_assignable.hpp"
 #include "boost/mpl/bool.hpp"
 
-// Most part of tests from this file require rvalue references support
+#include <boost/blank.hpp>
+#include <boost/swap.hpp>
 
+namespace swap_ambiguouty_test_ns {
+    struct A {};
+    struct B {};
+
+    void swap_ambiguouty_test() {
+        // If boost::blank is not used, then it compiles.
+        typedef boost::variant<boost::blank, A, B> Variant;
+        Variant v1, v2;
+        swap(v1, v2);
+    }
+} // namespace swap_ambiguouty_test_ns
+
+// Most part of tests from this file require rvalue references support
 
 class move_copy_conting_class {
 public:
@@ -213,18 +227,27 @@ void run_move_only()
     vi2 = static_cast<move_only_structure&&>(mo);
     BOOST_CHECK(vi.which() == 1);
 
+    boost::variant<move_only_structure, int > rvi (1);
+    BOOST_CHECK(rvi.which() == 1);
+    rvi = static_cast<move_only_structure&&>(mo);
+    BOOST_CHECK(rvi.which() == 0);
+    rvi = 1;
+    BOOST_CHECK(rvi.which() == 1);
+    rvi = static_cast<boost::variant<int, move_only_structure >&&>(vi2);
+    BOOST_CHECK(rvi.which() == 0);
+
     move_only_structure from_visitor = boost::apply_visitor(visitor_returning_move_only_type(), vi);
     (void)from_visitor;
 }
 
 void run_moves_are_noexcept() {
-#ifndef BOOST_NO_CXX11_NOEXCEPT
+#if !defined(BOOST_NO_CXX11_NOEXCEPT) && (!defined(__GNUC__) || defined(__clang__) || __GNUC__ > 4 || __GNUC_MINOR__ >= 8)
     typedef boost::variant<int, short, double> variant_noexcept_t;
-    //BOOST_CHECK(boost::is_nothrow_move_assignable<variant_noexcept_t>::value);
+    BOOST_CHECK(boost::is_nothrow_move_assignable<variant_noexcept_t>::value);
     BOOST_CHECK(boost::is_nothrow_move_constructible<variant_noexcept_t>::value);
 
     typedef boost::variant<int, short, double, move_only_structure> variant_except_t;
-    //BOOST_CHECK(!boost::is_nothrow_move_assignable<variant_except_t>::value);
+    BOOST_CHECK(!boost::is_nothrow_move_assignable<variant_except_t>::value);
     BOOST_CHECK(!boost::is_nothrow_move_constructible<variant_except_t>::value);
 #endif
 }
@@ -288,6 +311,7 @@ void run_is_container_compilation_test()
 
 int test_main(int , char* [])
 {
+   swap_ambiguouty_test_ns::swap_ambiguouty_test();
    run();
    run1();
    run_move_only();

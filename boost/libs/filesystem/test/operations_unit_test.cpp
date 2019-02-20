@@ -1,6 +1,6 @@
 //  operations_unit_test.cpp  ----------------------------------------------------------//
 
-//  Copyright Beman Dawes 2008, 2009
+//  Copyright Beman Dawes 2008, 2009, 2015
 
 //  Distributed under the Boost Software License, Version 1.0.
 //  See http://www.boost.org/LICENSE_1_0.txt
@@ -9,7 +9,7 @@
 
 //  ------------------------------------------------------------------------------------//
 
-//  This program is misnamed - it is really a smoke test rather than a unit_test
+//  This program is misnamed - it is really a smoke test rather than a unit test
 
 //  ------------------------------------------------------------------------------------//
 
@@ -31,7 +31,6 @@
 #   error Configuration not supported: Boost.Filesystem V3 and later requires std::wstring support
 # endif
 
-#include <boost/foreach.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/detail/lightweight_test.hpp>
 #include <boost/detail/lightweight_main.hpp>
@@ -47,6 +46,7 @@ using std::string;
 
 namespace
 {
+  bool cleanup = true;
 
   void check(bool ok, const char* file, int line)
   {
@@ -160,10 +160,10 @@ namespace
     }
 #endif
 
-    BOOST_FOREACH(directory_entry& x, directory_iterator("."))
+    for (directory_iterator itr("."); itr != directory_iterator(); ++itr)
     {
-      CHECK(!x.path().empty());
-      //cout << "  " << x.path() << "\n";
+      CHECK(!itr->path().empty());
+      //cout << "  " << itr->path() << "\n";
     }
 
     cout << "directory_iterator_test complete" << endl;
@@ -177,7 +177,7 @@ namespace
 
     recursive_directory_iterator end;
 
-    recursive_directory_iterator it("..");
+    recursive_directory_iterator it(".");
 
     CHECK(!it->path().empty());
 
@@ -221,10 +221,11 @@ namespace
     }
 #endif
 
-    BOOST_FOREACH(directory_entry& x, recursive_directory_iterator(".."))
+    for (recursive_directory_iterator itr("..");
+      itr != recursive_directory_iterator(); ++itr)
     {
-      CHECK(!x.path().empty());
-      //cout << "  " << x.path() << "\n";
+      CHECK(!itr->path().empty());
+      //cout << "  " << itr->path() << "\n";
     }
 
     cout << "recursive_directory_iterator_test complete" << endl;
@@ -312,6 +313,21 @@ namespace
     CHECK(!create_directory("/", ec));
   }
 
+  //  string_file_tests  ---------------------------------------------------------------//
+
+  void string_file_tests(const path& temp_dir)
+  {
+    cout << "string_file_tests..." << endl;
+    std::string contents("0123456789");
+    path p(temp_dir / "string_file");
+    save_string_file(p, contents);
+    save_string_file(p, contents);
+    BOOST_TEST_EQ(file_size(p), 10u);
+    std::string round_trip;
+    load_string_file(p, round_trip);
+    BOOST_TEST_EQ(contents, round_trip);
+  }
+
 }  // unnamed namespace
 
 //--------------------------------------------------------------------------------------//
@@ -320,7 +336,7 @@ namespace
 //                                                                                      //
 //--------------------------------------------------------------------------------------//
 
-int cpp_main(int, char*[])
+int cpp_main(int argc, char* argv[])
 {
 // document state of critical macros
 #ifdef BOOST_POSIX_API
@@ -334,6 +350,26 @@ int cpp_main(int, char*[])
   
   cout << "current_path() is " << current_path().string() << endl;
 
+  if (argc >= 2)
+  {
+    cout << "argv[1] is '" << argv[1] << "', changing current_path() to it" << endl;
+
+    error_code ec;
+    current_path( argv[1], ec );
+
+    if (ec)
+    {
+      cout << "current_path('" << argv[1] << "') failed: " << ec << ": " << ec.message() << endl;
+    }
+
+    cout << "current_path() is " << current_path().string() << endl;
+  }
+
+  const path temp_dir(current_path() / ".." / unique_path("op-unit_test-%%%%-%%%%-%%%%"));
+  cout << "temp_dir is " << temp_dir.string() << endl;
+
+  create_directory(temp_dir);
+
   file_status_test();
   query_test();
   directory_iterator_test();
@@ -342,11 +378,25 @@ int cpp_main(int, char*[])
   directory_entry_test();
   directory_entry_overload_test();
   error_handling_test();
+  string_file_tests(temp_dir);
 
   cout << unique_path() << endl;
   cout << unique_path("foo-%%%%%-%%%%%-bar") << endl;
   cout << unique_path("foo-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%-bar") << endl;
   cout << unique_path("foo-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-%%%%%-bar") << endl;
+  
+  cout << "testing complete" << endl;
+
+  // post-test cleanup
+  if (cleanup)
+  {
+    cout << "post-test removal of " << temp_dir << endl;
+    BOOST_TEST(remove_all(temp_dir) != 0);
+    // above was added just to simplify testing, but it ended up detecting
+    // a bug (failure to close an internal search handle). 
+    cout << "post-test removal complete" << endl;
+//    BOOST_TEST(!fs::exists(dir));  // nice test, but doesn't play well with TortoiseGit cache
+  }
 
   return ::boost::report_errors();
 }

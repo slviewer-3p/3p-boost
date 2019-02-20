@@ -11,14 +11,14 @@
 #include <string>
 #include "test.hpp"
 
-int
-main()
+int main()
 {
     using spirit_test::test;
     using spirit_test::test_attr;
     using namespace boost::spirit::x3::ascii;
     using boost::spirit::x3::raw;
     using boost::spirit::x3::eps;
+    using boost::spirit::x3::lit;
     using boost::spirit::x3::_attr;
 
     {
@@ -41,11 +41,18 @@ main()
         BOOST_TEST((test("x", raw[alpha])));
         BOOST_TEST((test_attr("x", raw[alpha], range)));
     }
-    
+
     {
         boost::iterator_range<char const*> range;
         BOOST_TEST((test("x", raw[alpha][ ([&](auto& ctx){ range = _attr(ctx); }) ])));
         BOOST_TEST(range.size() == 1 && *range.begin() == 'x');
+    }
+
+    {
+        boost::iterator_range<char const*> range;
+        BOOST_TEST((test("x123x", lit('x') >> raw[+digit] >> lit('x'))));
+        BOOST_TEST((test_attr("x123x", lit('x') >> raw[+digit] >> lit('x'), range)));
+        BOOST_TEST((std::string(range.begin(), range.end()) == "123"));
     }
 
     return boost::report_errors();

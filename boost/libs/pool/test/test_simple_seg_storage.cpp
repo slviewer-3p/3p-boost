@@ -7,18 +7,22 @@
 
 #include "test_simple_seg_storage.hpp"
 #include "track_allocator.hpp"
+#include "random_shuffle.hpp"
 
 #include <boost/pool/simple_segregated_storage.hpp>
 #include <boost/assert.hpp>
-#include <boost/math/common_factor_ct.hpp>
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1400)
+#include <boost/integer/common_factor_ct.hpp>
+#if defined(BOOST_MSVC) && (BOOST_MSVC <= 1600)
 #pragma warning(push)
-#pragma warning(disable:4244)
+#pragma warning(disable: 4244)
+// ..\..\boost/random/uniform_int_distribution.hpp(171) :
+//   warning C4127: conditional expression is constant
+#pragma warning(disable: 4127)
 #endif
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/variate_generator.hpp>
-#if defined(BOOST_MSVC) && (BOOST_MSVC == 1400)
+#if defined(BOOST_MSVC) && (BOOST_MSVC <= 1600)
 #pragma warning(pop)
 #endif
 
@@ -87,7 +91,7 @@ int main()
 
     /* Store::segregate(block, sz, partition_sz, end) */
     std::size_t partition_sz
-        = boost::math::static_lcm<sizeof(void*), sizeof(int)>::value;
+        = boost::integer::static_lcm<sizeof(void*), sizeof(int)>::value;
     boost::uniform_int<> dist(partition_sz, 10000);
     boost::variate_generator<boost::mt19937&,
         boost::uniform_int<> > die(gen, dist);
@@ -226,7 +230,7 @@ int main()
         std::vector<void*> vpv;
         for(std::size_t i=0; i < 6; ++i) { vpv.push_back(tstore.malloc()); }
         BOOST_ASSERT(tstore.empty());
-        std::random_shuffle(vpv.begin(), vpv.end());
+        pool_test_random_shuffle(vpv.begin(), vpv.end());
 
         for(std::size_t i=0; i < 6; ++i)
         {

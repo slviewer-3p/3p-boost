@@ -2,6 +2,10 @@
 //
 // Copyright (c) 2011-2012 Barend Gehrels, Amsterdam, the Netherlands.
 
+// This file was modified by Oracle on 2018.
+// Modifications copyright (c) 2018, Oracle and/or its affiliates.
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
+
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -26,6 +30,7 @@
 \defgroup covered_by covered_by: detect if a geometry is inside or on the border of another geometry, a.o. point-in-polygon (border included)
 \defgroup crosses crosses: detect if two geometries crosses each other
 \defgroup cs coordinate systems
+\defgroup densify densify: add points to geometry, keeping shape
 \defgroup difference difference: difference of two geometries
 \defgroup disjoint disjoint: detect if geometries are not spatially related
 \defgroup distance distance: calculate distance between two geometries
@@ -40,6 +45,7 @@
 \defgroup interior_rings interior_rings: interior_rings
 \defgroup intersection intersection: calculate new geometry
 \defgroup intersects intersects: detect if a geometry self-intersects or if two geometries intersect
+\defgroup is_empty is_empty: detect if a geometry is the empty set
 \defgroup is_simple is_simple: detect if a geometry is simple
 \defgroup is_valid is_valid: detect if a geometry is valid
 \defgroup iterators iterators: iterators
@@ -55,10 +61,13 @@
 \defgroup projections projections: Projections
 \defgroup ranges ranges: ranges
 \defgroup register register: Macros for registration
+\defgroup relate relate: check spatial relation between two geometries
+\defgroup relation relation: calculate spatial relation between two geometries
 \defgroup reverse reverse: reverse a geometry
 \defgroup selected selection: check if a geometry is "selected" by a point
 \defgroup set set: set geometries
 \defgroup simplify simplify: remove points from a geometry, keeping shape (simplification or generalization)
+\defgroup srs srs: Spatial Reference System definition
 \defgroup strategies strategies: strategies
 \defgroup svg svg: Stream SVG (Scalable Vector Graphics)
 \defgroup sym_difference sym_difference: sym_difference of two geometries

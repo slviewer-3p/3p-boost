@@ -5,15 +5,15 @@
 <!--
   Boost.Geometry (aka GGL, Generic Geometry Library)
 
-  Copyright (c) 2009-2014 Mateusz Loskot, London, UK.
-  Copyright (c) 2009-2014 Barend Gehrels, Amsterdam, the Netherlands.
-  Copyright (c) 2009-2014 Bruno Lalande, Paris, France.
-  Copyright (c) 2013-2014 Adam Wulkiewicz, Lodz, Poland.
+  Copyright (c) 2009-2015 Mateusz Loskot, London, UK.
+  Copyright (c) 2009-2015 Barend Gehrels, Amsterdam, the Netherlands.
+  Copyright (c) 2009-2015 Bruno Lalande, Paris, France.
+  Copyright (c) 2013-2015 Adam Wulkiewicz, Lodz, Poland.
 
-  This file was modified by Oracle on 2014.
-  Modifications copyright (c) 2014, Oracle and/or its affiliates.
-
+  This file was modified by Oracle on 2014, 2015, 2017, 2018.
+  Modifications copyright (c) 2014-2018, Oracle and/or its affiliates.
   Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+  Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
   Use, modification and distribution is subject to the Boost Software License,
   Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -114,6 +114,7 @@
      <member><link linkend="geometry.reference.adapted.boost_polygon.point_data">Boost.Polygon's point_data</link></member>
      <member><link linkend="geometry.reference.adapted.boost_tuple">Boost.Tuple</link></member>
      <member><link linkend="geometry.reference.adapted.c_array">C arrays</link></member>
+     <member><link linkend="geometry.reference.adapted.std_array">C++11 array containers</link></member>
     </simplelist>
    </entry>
    <entry valign="top">
@@ -243,6 +244,7 @@
     <member><link linkend="geometry.reference.constants.min_corner">min_corner</link></member>
     <member><link linkend="geometry.reference.enumerations.order_selector">order_selector</link></member>
     <member><link linkend="geometry.reference.enumerations.closure_selector">closure_selector</link></member>
+    <member><link linkend="geometry.reference.enumerations.validity_failure_type">validity_failure_type</link></member>
     </simplelist>
    </entry>
    <entry valign="top">
@@ -328,6 +330,7 @@
      <member><link linkend="geometry.reference.algorithms.disjoint">disjoint</link></member>
      <member><link linkend="geometry.reference.algorithms.equals">equals</link></member>
      <member><link linkend="geometry.reference.algorithms.intersects">intersects</link></member>
+     <member><link linkend="geometry.reference.algorithms.is_empty">is_empty</link></member>
      <member><link linkend="geometry.reference.algorithms.is_simple">is_simple</link></member>
      <member><link linkend="geometry.reference.algorithms.is_valid">is_valid</link></member>
      <member><link linkend="geometry.reference.algorithms.overlaps">overlaps</link></member>
@@ -387,6 +390,10 @@
   </row>
   <row>
    <entry valign="top">
+    <bridgehead renderas="sect3">Densify</bridgehead>
+    <simplelist type="vert" columns="1">
+     <member><link linkend="geometry.reference.algorithms.densify">densify</link></member>
+    </simplelist>
     <bridgehead renderas="sect3">Distance</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.distance">distance</link></member>
@@ -408,35 +415,38 @@
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.for_each">for each (point, segment)</link></member>
     </simplelist>
+   </entry>
+   <entry valign="top">
     <bridgehead renderas="sect3">Intersection</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.intersection">intersection</link></member>
     </simplelist>
-   </entry>
-   <entry valign="top">
     <bridgehead renderas="sect3">Length</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.length">length</link></member>
-    </simplelist>
-    
+    </simplelist>    
     <bridgehead renderas="sect3">Num_ (counting)</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.num_interior_rings">num_interior_rings</link></member>
      <member><link linkend="geometry.reference.algorithms.num_geometries">num_geometries</link></member>
      <member><link linkend="geometry.reference.algorithms.num_points">num_points</link></member>
+     <member><link linkend="geometry.reference.algorithms.num_segments">num_segments</link></member>
     </simplelist>
-    
-    
     <bridgehead renderas="sect3">Perimeter</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.perimeter">perimeter</link></member>
     </simplelist>
+    <bridgehead renderas="sect3">Relate</bridgehead>
+    <simplelist type="vert" columns="1">
+     <member><link linkend="geometry.reference.algorithms.relate">relate</link></member>
+     <member><link linkend="geometry.reference.algorithms.relation">relation</link></member>
+    </simplelist>
+   </entry>
+   <entry valign="top">
     <bridgehead renderas="sect3">Reverse</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.reverse">reverse</link></member>
     </simplelist>
-   </entry>
-   <entry valign="top">
     <bridgehead renderas="sect3">Simplify</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.algorithms.simplify">simplify</link></member>
@@ -512,8 +522,9 @@
    <entry valign="top">
     <bridgehead renderas="sect3">Area</bridgehead>
     <simplelist type="vert" columns="1">
-     <member><link linkend="geometry.reference.strategies.strategy_area_surveyor">strategy::area::surveyor</link></member>
-     <member><link linkend="geometry.reference.strategies.strategy_area_huiller">strategy::area::huiller</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_area_cartesian">strategy::area::cartesian</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_area_spherical">strategy::area::spherical</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_area_geographic">strategy::area::geographic</link></member>
     </simplelist>
    </entry>
    <entry valign="top">
@@ -546,6 +557,14 @@
     </simplelist>
    </entry>
    <entry valign="top">
+    <bridgehead renderas="sect3">Densify</bridgehead>
+    <simplelist type="vert" columns="1">
+     <member><link linkend="geometry.reference.strategies.strategy_densify_cartesian">strategy::densify::cartesian</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_densify_geographic">strategy::densify::geographic</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_densify_spherical">strategy::densify::spherical</link></member>
+    </simplelist>
+   </entry>
+   <entry valign="top">
     <bridgehead renderas="sect3">Distance</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.strategies.strategy_distance_projected_point">strategy::distance::projected_point</link></member>
@@ -553,19 +572,21 @@
      <member><link linkend="geometry.reference.strategies.strategy_distance_pythagoras_box_box">strategy::distance::pythagoras_box_box</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_distance_pythagoras_point_box">strategy::distance::pythagoras_point_box</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_distance_cross_track">strategy::distance::cross_track</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_distance_cross_track_point_box">strategy::distance::cross_track_point_box</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_distance_haversine">strategy::distance::haversine</link></member>
     </simplelist>
    </entry>
+  </row>
+  <row>
    <entry valign="top">
     <bridgehead renderas="sect3">Side</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.strategies.strategy_side_side_by_triangle">strategy::side::side_by_triangle</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_side_side_by_cross_track">strategy::side::side_by_cross_track</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_side_spherical_side_formula">strategy::side::spherical_side_formula</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_side_geographic">strategy::side::geographic</link></member>
     </simplelist>
    </entry>
-  </row>
-  <row>
    <entry valign="top">
     <bridgehead renderas="sect3">Simplify</bridgehead>
     <simplelist type="vert" columns="1">
@@ -577,13 +598,15 @@
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.strategies.strategy_transform_inverse_transformer">strategy::transform::inverse_transformer</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_transform_map_transformer">strategy::transform::map_transformer</link></member>
-     <member><link linkend="geometry.reference.strategies.strategy_transform_ublas_transformer">strategy::transform::ublas_transformer</link></member>
+     <member><link linkend="geometry.reference.strategies.strategy_transform_matrix_transformer">strategy::transform::matrix_transformer</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_transform_translate_transformer">strategy::transform::translate_transformer</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_transform_scale_transformer">strategy::transform::scale_transformer</link></member>
      <member><link linkend="geometry.reference.strategies.strategy_transform_rotate_transformer">strategy::transform::rotate_transformer</link></member>
     </simplelist>
    </entry>
-   <entry valign="top">
+  </row>
+  <row>
+   <entry valign="top" namest="a" nameend="c">
     <bridgehead renderas="sect3">Within</bridgehead>
     <simplelist type="vert" columns="1">
      <member><link linkend="geometry.reference.strategies.strategy_within_winding">strategy::winding</link></member>

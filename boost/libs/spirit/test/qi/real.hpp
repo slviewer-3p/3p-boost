@@ -31,10 +31,13 @@ struct ts_real_policies : boost::spirit::qi::ureal_policies<T>
     //  2 decimal places Max
     template <typename Iterator, typename Attribute>
     static bool
-    parse_frac_n(Iterator& first, Iterator const& last, Attribute& attr)
+    parse_frac_n(Iterator& first, Iterator const& last, Attribute& attr, int& frac_digits)
     {
         namespace qi = boost::spirit::qi;
-        return qi::extract_uint<T, 10, 1, 2, true>::call(first, last, attr);
+        Iterator savef = first;
+        bool r = qi::extract_uint<Attribute, 10, 1, 2, true>::call(first, last, attr);
+        frac_digits = static_cast<int>(std::distance(savef, first));
+        return r;
     }
 
     //  No exponent
@@ -64,11 +67,12 @@ struct ts_real_policies : boost::spirit::qi::ureal_policies<T>
         uint_parser<unsigned, 10, 1, 3> uint3;
         uint_parser<unsigned, 10, 3, 3> uint3_3;
 
-        T result = 0;
+        typedef typename boost::spirit::traits::real_accumulator<T>::type acc_type;
+        acc_type result = 0;
         if (parse(first, last, uint3, result))
         {
             bool hit = false;
-            T n;
+            acc_type n;
             Iterator save = first;
 
             while (qi::parse(first, last, ',') && qi::parse(first, last, uint3_3, n))
