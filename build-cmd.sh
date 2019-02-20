@@ -188,7 +188,7 @@ case "$AUTOBUILD_PLATFORM" in
                 bjamtoolset="msvc-12.0"
                 ;;
             150)
-                bootstrapver="vc15"
+                bootstrapver="vc141"
                 bjamtoolset="msvc-15.0"
                 ;;
             *)
@@ -200,12 +200,11 @@ case "$AUTOBUILD_PLATFORM" in
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
-        cmd.exe /C bootstrap.bat "$bootstrapver"
-        # Failure of this bootstrap.bat file doesn't produce nonzero rc --
-        # check for the program it should have built.
+        cmd.exe /C bootstrap.bat "$bootstrapver" || echo bootstrap failed 1>&2
+        # Failure of this bootstrap.bat file may or may not produce nonzero rc
+        # -- check for the program it should have built.
         if [ ! -x "$bjam.exe" ]
         then cat "bootstrap.log"
-             echo "bootstrap failed" 1>&2
              exit 1
         fi
 
