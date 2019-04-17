@@ -32,7 +32,7 @@
 
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
-#include <boost/context/fcontext.hpp>
+#include <boost/context/detail/fcontext.hpp>
 #include <boost/coroutine/stack_traits.hpp>
 #include <boost/coroutine/stack_allocator.hpp>
 #include <boost/noncopyable.hpp>
