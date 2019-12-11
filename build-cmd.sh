@@ -214,11 +214,16 @@ case "$AUTOBUILD_PLATFORM" in
         # Without /FS, some compilations fail with:
         # fatal error C1041: cannot open program database '...\vc120.pdb';
         # if multiple CL.EXE write to the same .PDB file, please use /FS
+        # BOOST_STACKTRACE_LINK (not _DYN_LINK) requests external library:
+        # https://www.boost.org/doc/libs/release/doc/html/stacktrace/configuration_and_build.html
+        # This helps avoid macro collisions in consuming source files:
+        # https://github.com/boostorg/stacktrace/issues/76#issuecomment-489347839
         WINDOWS_BJAM_OPTIONS=("--toolset=$bjamtoolset" -j2 \
             --abbreviate-paths 
             "include=$INCLUDE_PATH" "-sICU_PATH=$ICU_PATH" \
             "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib" \
             cxxflags=/FS \
+            cxxflags=/DBOOST_STACKTRACE_LINK \
             "${BOOST_BJAM_OPTIONS[@]}")
 
         RELEASE_BJAM_OPTIONS=("${WINDOWS_BJAM_OPTIONS[@]}" \
