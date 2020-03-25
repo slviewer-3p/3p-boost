@@ -12,14 +12,6 @@
 #include "boost/fiber/exceptions.hpp"
 #include "boost/fiber/scheduler.hpp"
 
-// On Mac, got:
-// #error "Boost.Stacktrace requires `_Unwind_Backtrace` function. Define
-// `_GNU_SOURCE` macro or `BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED` if
-// _Unwind_Backtrace is available without `_GNU_SOURCE`."
-#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
-#include "boost/stacktrace/stacktrace.hpp"
-#include <sstream>
-
 #ifdef BOOST_HAS_ABI_HEADERS
 #  include BOOST_ABI_PREFIX
 #endif
@@ -61,12 +53,9 @@ timed_mutex::lock() {
         // store this fiber in order to be notified later
         detail::spinlock_lock lk{ wait_queue_splk_ };
         if ( BOOST_UNLIKELY( active_ctx == owner_) ) {
-            std::ostringstream out;
-            out << boost::stacktrace::stacktrace();
             throw lock_error{
                     std::make_error_code( std::errc::resource_deadlock_would_occur),
-                    "boost::fibers::timed_mutex::lock(): a deadlock is detected at:\n" +
-                    out.str() + "\ncode" };
+                    "boost fiber: a deadlock is detected" };
         } else if ( nullptr == owner_) {
             owner_ = active_ctx;
             return;
@@ -85,12 +74,9 @@ timed_mutex::try_lock() {
     context * active_ctx = context::active();
     detail::spinlock_lock lk{ wait_queue_splk_ };
     if ( BOOST_UNLIKELY( active_ctx == owner_) ) {
-        std::ostringstream out;
-        out << boost::stacktrace::stacktrace();
         throw lock_error{
                 std::make_error_code( std::errc::resource_deadlock_would_occur),
-                "boost::fibers::timed_mutex::try_lock(): a deadlock is detected at:\n" +
-                out.str() + "\ncode" };
+                "boost fiber: a deadlock is detected" };
     } else if ( nullptr == owner_) {
         owner_ = active_ctx;
     }
