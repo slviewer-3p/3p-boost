@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>std::numeric_limits&lt;&gt; constants</title>
-<link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
+<link rel="stylesheet" href="../../../multiprecision.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../../../index.html" title="Chapter&#160;1.&#160;Boost.Multiprecision">
 <link rel="up" href="../limits.html" title="Numeric Limits">
@@ -487,13 +487,30 @@
 </tr>
 <tr><td align="left" valign="top">
 <p>
-            For Microsoft Visual Studio before 2013, and default float format, a
-            small range of values approximately 0.0001 to 0.004, with exponent values
-            of 3F2 to 3F6, are wrongly input by one least significant bit, probably
-            every third value of significand.
+            For Microsoft Visual Studio before 2013 and the default floating-point
+            format, a small range of double-precision floating-point values with
+            a significand of approximately 0.0001 to 0.004 and exponent values of
+            1010 to 1014 do not round-trip exactly being off by one least significant
+            bit, for probably every third value of the significand.
           </p>
 <p>
-            A workaround is using scientific or exponential format <code class="computeroutput"><span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">scientific</span></code>.
+            A workaround is using the scientific or exponential format <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">scientific</span></code>.
+          </p>
+<p>
+            Other compilers also fail to implement round-tripping entirely fault-free,
+            for example, see <a href="https://www.exploringbinary.com/incorrectly-rounded-conversions-in-gcc-and-glibc/" target="_top">Incorrectly
+            Rounded Conversions in GCC and GLIBC</a>.
+          </p>
+<p>
+            For more details see <a href="https://www.exploringbinary.com/incorrect-round-trip-conversions-in-visual-c-plus-plus/" target="_top">Incorrect
+            Round-Trip Conversions in Visual C++</a>, and references therein
+            and <a href="https://arxiv.org/pdf/1310.8121.pdf" target="_top">Easy Accurate Reading
+            and Writing of Floating-Point Numbers, Aubrey Jaffer (August 2018)</a>.
+          </p>
+<p>
+            Microsoft VS2017 and other recent compilers, now use the <a href="https://doi.org/10.1145/3192366.3192369" target="_top">Ryu
+            fast float-to-string conversion by Ulf Adams</a> algorithm, claimed
+            to be both exact and fast for 32 and 64-bit floating-point numbers.
           </p>
 </td></tr>
 </table></div>
@@ -506,6 +523,17 @@
             BOOST_NO_CXX11_NUMERIC_LIMITS is a suitable feature-test macro to determine
             if <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="keyword">float</span><span class="special">&gt;::</span><span class="identifier">max_digits10</span></code> is implemented on any
             platform.
+          </p></td></tr>
+</table></div>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../../../../../doc/src/images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            <span class="emphasis"><em>requires cxx11_numeric_limits</em></span> is a suitable test
+            for use of <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">numeric_limits</span><span class="special">&lt;</span><span class="keyword">float</span><span class="special">&gt;::</span><span class="identifier">max_digits10</span></code> to control if a target
+            in a jamfile used by a Boost B2/bjam program is built, or not.
           </p></td></tr>
 </table></div>
 <p>
@@ -724,7 +752,8 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2013 John Maddock and Christopher Kormanyos<p>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2019 John Maddock
+      and Christopher Kormanyos<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
       </p>

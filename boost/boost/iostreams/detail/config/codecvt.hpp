@@ -43,11 +43,14 @@
 
 //------------------Normalize codecvt::length---------------------------------//
 
-// boost/config/codecvt_do_length_const.hpp already tries hard to detect
-// compilers for which do_length() accepts a non-const mbstate_t reference.
-// Instead of repeating that logic here, and probably getting out of sync,
-// just reuse that definition.
-#define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER BOOST_CODECVT_DO_LENGTH_CONST
+#if !defined(__MSL_CPP__) && !defined(__LIBCOMO__) && !defined(__clang__) && \
+    (!defined(BOOST_RWSTD_VER) || BOOST_RWSTD_VER < 0x04010300) && \
+    (!defined(__MACH__) || !defined(__INTEL_COMPILER))
+    /**/
+# define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER const
+#else
+# define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER
+#endif
 
 //------------------Check for codecvt::max_length-----------------------------//
 

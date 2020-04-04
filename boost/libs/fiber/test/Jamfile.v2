@@ -34,16 +34,6 @@ project boost/fiber/test
     ;
 
 
-rule numa-impl ( properties * )
-{
-    local result  ;
-    if ( <target-os>darwin in $(properties) )
-    {
-        result = <build>no ;
-    }
-    return $(result) ;
-}
-
 rule native-impl ( properties * )
 {
     local result  ;
@@ -62,27 +52,6 @@ rule native-impl ( properties * )
     return $(result) ;
 }
 
-# NUMA tests
-##test-suite numa :
-##[ run test_numa.cpp :
-##    : :
-##    <conditional>@numa-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ] ] ;
-
 
 # tests using assembler API
 test-suite asm :
@@ -94,7 +63,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -114,7 +82,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -134,7 +101,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -154,7 +120,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -174,7 +139,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -194,7 +158,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -214,7 +177,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -234,7 +196,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -254,7 +215,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -274,7 +234,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -294,7 +253,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -314,7 +272,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -334,7 +291,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -354,7 +310,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -374,7 +329,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -394,7 +348,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -414,7 +367,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -434,7 +386,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -454,7 +405,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -474,7 +424,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -494,7 +443,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -514,7 +462,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -534,7 +481,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -554,7 +500,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -574,7 +519,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -594,7 +538,6 @@ test-suite asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -608,527 +551,44 @@ test-suite asm :
 
 
 # tests using native API
-##test-suite native :
-##[ run test_fiber_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_fiber_post_native ]
+test-suite native :
+[ run test_fiber_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_fiber_post_native ]
 
-##[ run test_fiber_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_fiber_dispatch_native ]
-
-##[ run test_mutex_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_mutex_post_native ]
-
-##[ run test_mutex_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_mutex_dispatch_native ]
-
-##[ run test_condition_variable_any_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_cond_var_any_post_native ]
-
-##[ run test_condition_variable_any_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_cond_vare_any_dispatch_native ]
-
-##[ run test_condition_variable_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_cond_var_post_native ]
-
-##[ run test_condition_variable_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_cond_var_dispatch_native ]
-
-##[ run test_barrier_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_barrier_post_native ]
-
-##[ run test_barrier_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_barrier_dispatch_native ]
-
-##[ run test_buffered_channel_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_buf_channel_post_native ]
-
-##[ run test_buffered_channel_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_buf_channel_dispatch_native ]
-
-##[ run test_unbuffered_channel_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_unbuf_channel_post_native ]
-
-##[ run test_unbuffered_channel_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_unbuf_channel_dispatch_native ]
-
-##[ run test_fss_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_fss_post_native ]
-
-##[ run test_fss_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_fss_dispatch_native ]
-
-##[ run test_promise_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_promise_post_native ]
-
-##[ run test_promise_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_promise_dispatch_native ]
-
-##[ run test_future_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_future_post_native ]
-
-##[ run test_future_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_future_dispatch_native ]
-
-##[ run test_shared_future_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_shared_future_post_native ]
-
-##[ run test_shared_future_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_shared_future_dispatch_native ]
-
-##[ run test_packaged_task_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_packaged_task_post_native ]
-
-##[ run test_packaged_task_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_packaged_task_dispatch_native ]
-
-##[ run test_async_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_async_post_native ]
-
-##[ run test_async_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_async_dispatch_native ] ;
-
+[ run test_fiber_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_fiber_dispatch_native ]
 
 #etra tests using asm API
 test-suite extra-asm :
@@ -1140,7 +600,6 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1160,7 +619,6 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1180,7 +638,6 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1200,7 +657,6 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1220,7 +676,6 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1240,7 +695,465 @@ test-suite extra-asm :
                cxx11_defaulted_functions
                cxx11_final
                cxx11_hdr_mutex
-               cxx11_hdr_regex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_mt_dispatch_asm ] ;
+
+[ run test_barrier_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_barrier_post_native ]
+
+[ run test_barrier_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_barrier_dispatch_native ]
+
+[ run test_buffered_channel_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_buf_channel_post_native ]
+
+[ run test_buffered_channel_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_buf_channel_dispatch_native ]
+
+[ run test_unbuffered_channel_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_unbuf_channel_post_native ]
+
+[ run test_unbuffered_channel_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_unbuf_channel_dispatch_native ]
+
+[ run test_fss_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_fss_post_native ]
+
+[ run test_fss_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_fss_dispatch_native ]
+
+[ run test_promise_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_promise_post_native ]
+
+[ run test_promise_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_promise_dispatch_native ]
+
+[ run test_future_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_post_native ]
+
+[ run test_future_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_dispatch_native ]
+
+[ run test_shared_future_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_shared_future_post_native ]
+
+[ run test_shared_future_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_shared_future_dispatch_native ]
+
+[ run test_packaged_task_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_packaged_task_post_native ]
+
+[ run test_packaged_task_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_packaged_task_dispatch_native ]
+
+[ run test_async_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_async_post_native ]
+
+[ run test_async_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_async_dispatch_native ] ;
+
+
+#etra tests using asm API
+test-suite extra-asm :
+[ run test_mutex_mt_post.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_mutex_mt_post_asm ]
+
+[ run test_mutex_mt_dispatch.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_mutex_mt_dispatch_asm ]
+
+[ run test_condition_mt_post.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_condition_mt_post_asm ]
+
+[ run test_condition_mt_dispatch.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_condition_mt_dispatch_asm ]
+
+[ run test_future_mt_post.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_mt_post_asm ]
+
+[ run test_future_mt_dispatch.cpp :
+    : :
+    <context-impl>fcontext
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
                cxx11_hdr_thread
                cxx11_hdr_tuple
                cxx11_lambdas
@@ -1254,131 +1167,124 @@ test-suite extra-asm :
 
 
 #etra tests using native API
-##test-suite extra-native :
-##[ run test_mutex_mt_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_mutex_mt_post_native ]
+test-suite extra-native :
+[ run test_mutex_mt_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_mutex_mt_post_native ]
 
-##[ run test_mutex_mt_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_mutex_mt_dispatch_native ]
+[ run test_mutex_mt_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_mutex_mt_dispatch_native ]
 
-##[ run test_condition_mt_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_condition_mt_post_native ]
+[ run test_condition_mt_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_condition_mt_post_native ]
 
-##[ run test_condition_mt_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_condition_mt_dispatch_native ]
+[ run test_condition_mt_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_condition_mt_dispatch_native ]
 
-##[ run test_future_mt_post.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_future_mt_post_native ]
+[ run test_future_mt_post.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_mt_post_native ]
 
-##[ run test_future_mt_dispatch.cpp :
-##    : :
-##    <conditional>@native-impl
-##    [ requires cxx11_auto_declarations
-##               cxx11_constexpr
-##               cxx11_defaulted_functions
-##               cxx11_final
-##               cxx11_hdr_mutex
-##               cxx11_hdr_regex
-##               cxx11_hdr_thread
-##               cxx11_hdr_tuple
-##               cxx11_lambdas
-##               cxx11_noexcept
-##               cxx11_nullptr
-##               cxx11_rvalue_references
-##               cxx11_template_aliases
-##               cxx11_thread_local
-##               cxx11_variadic_templates ]
-##    : test_future_mt_dispatch_native ] ;
+[ run test_future_mt_dispatch.cpp :
+    : :
+    <conditional>@native-impl
+    [ requires cxx11_auto_declarations
+               cxx11_constexpr
+               cxx11_defaulted_functions
+               cxx11_final
+               cxx11_hdr_mutex
+               cxx11_hdr_thread
+               cxx11_hdr_tuple
+               cxx11_lambdas
+               cxx11_noexcept
+               cxx11_nullptr
+               cxx11_rvalue_references
+               cxx11_template_aliases
+               cxx11_thread_local
+               cxx11_variadic_templates ]
+    : test_future_mt_dispatch_native ] ;
 
 
 test-suite minimal :
-##  numa asm native ;
-    asm ;
+    asm native ;
 
 test-suite extra :
 ##  extra-asm extra-native ;
