@@ -26,7 +26,10 @@ BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compil
 
 top="$(pwd)"
 cd "$BOOST_SOURCE_DIR"
-bjam="$(pwd)/bjam"
+# As of Boost 1.72, the Boost build engine b2 (aka bjam) is no longer copied
+# to the top-level Boost directory, but is found instead in
+# tools/build/src/engine.
+bjam="$(pwd)/tools/build/src/engine/bjam"
 stage="$(pwd)/stage"
 
 [ -f "$stage"/packages/include/zlib/zlib.h ] || fail "You haven't installed the zlib package yet."
