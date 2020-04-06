@@ -113,7 +113,6 @@ test-suite minimal :
                cxx11_variadic_templates ]
     : test_fiber_asm ]
 
-;
 ## On macOS, get SIGSEGV, likely because of this:
 ## https://lists.apple.com/archives/darwin-dev/2008/Jan/msg00232.html
 ## However, adding _XOPEN_SOURCE causes

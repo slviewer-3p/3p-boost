@@ -590,11 +590,9 @@ test-suite native :
                cxx11_variadic_templates ]
     : test_fiber_dispatch_native ]
 
-#etra tests using asm API
-test-suite extra-asm :
-[ run test_mutex_mt_post.cpp :
+[ run test_mutex_post.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -609,11 +607,11 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_mutex_mt_post_asm ]
+    : test_mutex_post_native ]
 
-[ run test_mutex_mt_dispatch.cpp :
+[ run test_mutex_dispatch.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -628,11 +626,11 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_mutex_mt_dispatch_asm ]
+    : test_mutex_dispatch_native ]
 
-[ run test_condition_mt_post.cpp :
+[ run test_condition_variable_any_post.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -647,11 +645,11 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_condition_mt_post_asm ]
+    : test_cond_var_any_post_native ]
 
-[ run test_condition_mt_dispatch.cpp :
+[ run test_condition_variable_any_dispatch.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -666,11 +664,11 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_condition_mt_dispatch_asm ]
+    : test_cond_vare_any_dispatch_native ]
 
-[ run test_future_mt_post.cpp :
+[ run test_condition_variable_post.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -685,11 +683,11 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_future_mt_post_asm ]
+    : test_cond_var_post_native ]
 
-[ run test_future_mt_dispatch.cpp :
+[ run test_condition_variable_dispatch.cpp :
     : :
-    <context-impl>fcontext
+    <conditional>@native-impl
     [ requires cxx11_auto_declarations
                cxx11_constexpr
                cxx11_defaulted_functions
@@ -704,7 +702,7 @@ test-suite extra-asm :
                cxx11_template_aliases
                cxx11_thread_local
                cxx11_variadic_templates ]
-    : test_future_mt_dispatch_asm ] ;
+    : test_cond_var_dispatch_native ]
 
 [ run test_barrier_post.cpp :
     : :

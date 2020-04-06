@@ -1281,7 +1281,7 @@ namespace
     error_code ec;
 
     // test status, ec, for existing file
-    ec.assign(-1,static_category());
+    ec.assign(-1,poison_category());
     BOOST_TEST(ec.value() == -1);
     BOOST_TEST(&ec.category() == &poison_category());
     fs::file_status s = fs::status(".",ec);
@@ -1292,7 +1292,7 @@ namespace
 
     // test status, ec, for non-existing file
     fs::path p ("nosuch");
-    ec.assign(-1,static_category());
+    ec.assign(-1,poison_category());
     s = fs::status(p,ec);
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category());
@@ -1306,7 +1306,7 @@ namespace
     BOOST_TEST(!fs::is_other(s));
 
     // test queries, ec, for existing file
-    ec.assign(-1,static_category());
+    ec.assign(-1,poison_category());
     BOOST_TEST(fs::exists(".", ec));
     BOOST_TEST(ec.value() == 0);
     BOOST_TEST(ec.category() == system_category());
@@ -1320,7 +1320,7 @@ namespace
     BOOST_TEST(ec.category() == system_category());
 
     // test queries, ec, for non-existing file
-    ec.assign(-1,static_category());
+    ec.assign(-1,poison_category());
     BOOST_TEST(!fs::exists(p, ec));
     BOOST_TEST(ec.value() != 0);
     BOOST_TEST(ec.category() == system_category());
