@@ -328,6 +328,8 @@ case "$AUTOBUILD_PLATFORM" in
         # ld: library not found for -lFuzzer
         # Sadly, as of Boost 1.65.1, the Stacktrace self-tests just do not
         # seem ready for prime time on Mac.
+        # Bump the timeout for Boost.Thread tests because our TeamCity Mac
+        # build hosts are getting a bit long in the tooth.
         find_test_dirs "${BOOST_LIBS[@]}" | \
         grep -v \
              -e 'date_time/' \
@@ -337,7 +339,8 @@ case "$AUTOBUILD_PLATFORM" in
             | \
         run_tests toolset=darwin variant=release -a -q \
                   "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM \
-                  cxxflags="-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED"
+                  cxxflags="-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED" \
+                  cxxflags='-DBOOST_THREAD_TEST_TIME_MS=250"
 
         mv "${stage_lib}"/*.a "${stage_release}"
 
