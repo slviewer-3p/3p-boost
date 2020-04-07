@@ -340,7 +340,7 @@ case "$AUTOBUILD_PLATFORM" in
         run_tests toolset=darwin variant=release -a -q \
                   "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM \
                   cxxflags="-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED" \
-                  cxxflags='-DBOOST_THREAD_TEST_TIME_MS=250"
+                  cxxflags="-DBOOST_THREAD_TEST_TIME_MS=250"
 
         mv "${stage_lib}"/*.a "${stage_release}"
 
