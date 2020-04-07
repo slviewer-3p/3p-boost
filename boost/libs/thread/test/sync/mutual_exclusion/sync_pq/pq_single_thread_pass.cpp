@@ -89,7 +89,7 @@ struct TimeoutCheck
 void test_pull_for()
 {
   sync_pq pq;
-  TimeoutCheck tc(milliseconds(500));
+  steady_clock::time_point start = steady_clock::now();
   int val;
   boost::queue_op_status st = pq.pull_for(milliseconds(500), val);
   ns d = steady_clock::now() - start - milliseconds(500);
@@ -100,7 +100,7 @@ void test_pull_for()
 void test_pull_until()
 {
   sync_pq pq;
-  TimeoutCheck tc(milliseconds(500));
+  steady_clock::time_point start = steady_clock::now();
   int val;
   boost::queue_op_status st = pq.pull_until(start + milliseconds(500), val);
   ns d = steady_clock::now() - start - milliseconds(500);
@@ -111,7 +111,7 @@ void test_pull_until()
 void test_nonblocking_pull()
 {
   sync_pq pq;
-  TimeoutCheck tc(milliseconds(0), milliseconds(5));
+  steady_clock::time_point start = steady_clock::now();
   int val;
   boost::queue_op_status st = pq.nonblocking_pull(val);
   ns d = steady_clock::now() - start;
@@ -123,7 +123,7 @@ void test_pull_for_when_not_empty()
 {
   sync_pq pq;
   pq.push(1);
-  TimeoutCheck tc(milliseconds(0), milliseconds(5));
+  steady_clock::time_point start = steady_clock::now();
   int val;
   boost::queue_op_status st = pq.pull_for(milliseconds(500), val);
   ns d = steady_clock::now() - start;
@@ -136,7 +136,7 @@ void test_pull_until_when_not_empty()
 {
   sync_pq pq;
   pq.push(1);
-  TimeoutCheck tc(milliseconds(0), milliseconds(5));
+  steady_clock::time_point start = steady_clock::now();
   int val;
   boost::queue_op_status st = pq.pull_until(start + milliseconds(500), val);
   ns d = steady_clock::now() - start;
