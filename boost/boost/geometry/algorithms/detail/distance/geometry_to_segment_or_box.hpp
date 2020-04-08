@@ -1,8 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2014, Oracle and/or its affiliates.
+// Copyright (c) 2014, 2019, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -34,6 +35,8 @@
 #include <boost/geometry/algorithms/detail/closest_feature/point_to_range.hpp>
 
 #include <boost/geometry/algorithms/detail/distance/is_comparable.hpp>
+
+#include <boost/geometry/util/condition.hpp>
 
 
 namespace boost { namespace geometry
@@ -163,6 +166,27 @@ private:
         }
     };
 
+    template
+    <
+        typename SegOrBox,
+        typename SegOrBoxTag = typename tag<SegOrBox>::type
+    >
+    struct intersects
+    {
+        static inline bool apply(Geometry const& g1, SegOrBox const& g2, Strategy const&)
+        {
+            return geometry::intersects(g1, g2);
+        }
+    };
+
+    template <typename SegOrBox>
+    struct intersects<SegOrBox, segment_tag>
+    {
+        static inline bool apply(Geometry const& g1, SegOrBox const& g2, Strategy const& s)
+        {
+            return geometry::intersects(g1, g2, s.get_relate_segment_segment_strategy());
+        }
+    };
 
 public:
     typedef typename strategy::distance::services::return_type
@@ -183,16 +207,16 @@ public:
                 Geometry const
             > segment_iterator_type;
 
-        typedef typename std::vector
+        typedef typename boost::range_const_iterator
             <
-                segment_or_box_point
-            >::const_iterator seg_or_box_iterator_type;
+                std::vector<segment_or_box_point>
+            >::type seg_or_box_const_iterator;
 
         typedef assign_new_min_iterator<SegmentOrBox> assign_new_value;
 
 
         if (check_intersection
-            && geometry::intersects(geometry, segment_or_box))
+            && intersects<SegmentOrBox>::apply(geometry, segment_or_box, strategy))
         {
             return 0;
         }
@@ -215,10 +239,11 @@ public:
 
         // consider all distances of the points in the geometry to the
         // segment or box
-        comparable_return_type cd_min1;
+        comparable_return_type cd_min1(0);
         point_iterator_type pit_min;
-        seg_or_box_iterator_type it_min1 = seg_or_box_points.begin();
-        seg_or_box_iterator_type it_min2 = ++seg_or_box_points.begin();
+        seg_or_box_const_iterator it_min1 = boost::const_begin(seg_or_box_points);
+        seg_or_box_const_iterator it_min2 = it_min1;
+        ++it_min2;
         bool first = true;
 
         for (point_iterator_type pit = points_begin(geometry);
@@ -227,11 +252,11 @@ public:
             comparable_return_type cd;
             std::pair
                 <
-                    seg_or_box_iterator_type, seg_or_box_iterator_type
+                    seg_or_box_const_iterator, seg_or_box_const_iterator
                 > it_pair
                 = point_to_point_range::apply(*pit,
-                                              seg_or_box_points.begin(),
-                                              seg_or_box_points.end(),
+                                              boost::const_begin(seg_or_box_points),
+                                              boost::const_end(seg_or_box_points),
                                               cstrategy,
                                               cd);
 
@@ -246,14 +271,13 @@ public:
 
         // consider all distances of the points in the segment or box to the
         // segments of the geometry
-        comparable_return_type cd_min2;
+        comparable_return_type cd_min2(0);
         segment_iterator_type sit_min;
-        typename std::vector<segment_or_box_point>::const_iterator it_min;
+        seg_or_box_const_iterator it_min;
 
         first = true;
-        for (typename std::vector<segment_or_box_point>::const_iterator it
-                 = seg_or_box_points.begin();
-             it != seg_or_box_points.end(); ++it, first = false)
+        for (seg_or_box_const_iterator it = boost::const_begin(seg_or_box_points);
+             it != boost::const_end(seg_or_box_points); ++it, first = false)
         {
             comparable_return_type cd;
             segment_iterator_type sit
@@ -271,7 +295,7 @@ public:
             }
         }
 
-        if (is_comparable<Strategy>::value)
+        if (BOOST_GEOMETRY_CONDITION(is_comparable<Strategy>::value))
         {
             return (std::min)(cd_min1, cd_min2);
         }

@@ -13,16 +13,16 @@
 #include <boost/iostreams/detail/config/wide_streams.hpp>
 #include <cstddef>
 
-#include <boost/config/codecvt_do_length_const.hpp> // BOOST_CODECVT_DO_LENGTH_CONST
+#if defined(_MSC_VER)
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
 # pragma once
 #endif       
 
 //------------------Support for codecvt with user-defined state types---------//
 
 #if defined(__MSL_CPP__) || defined(__LIBCOMO__) || \
-    BOOST_WORKAROUND(_STLPORT_VERSION, <= 0x450) \
+    BOOST_WORKAROUND(_STLPORT_VERSION, <= 0x450) || \
+    defined(_LIBCPP_VERSION) \
     /**/
 # define BOOST_IOSTREAMS_NO_PRIMARY_CODECVT_DEFINITION
 #endif
@@ -43,11 +43,14 @@
 
 //------------------Normalize codecvt::length---------------------------------//
 
-// boost/config/codecvt_do_length_const.hpp already tries hard to detect
-// compilers for which do_length() accepts a non-const mbstate_t reference.
-// Instead of repeating that logic here, and probably getting out of sync,
-// just reuse that definition.
-#define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER BOOST_CODECVT_DO_LENGTH_CONST
+#if !defined(__MSL_CPP__) && !defined(__LIBCOMO__) && !defined(__clang__) && \
+    (!defined(BOOST_RWSTD_VER) || BOOST_RWSTD_VER < 0x04010300) && \
+    (!defined(__MACH__) || !defined(__INTEL_COMPILER))
+    /**/
+# define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER const
+#else
+# define BOOST_IOSTREAMS_CODECVT_CV_QUALIFIER
+#endif
 
 //------------------Check for codecvt::max_length-----------------------------//
 

@@ -9,17 +9,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <boost/container/detail/config_begin.hpp>
-#include <algorithm>
 #include <memory>
 #include <deque>
 #include <iostream>
-#include <functional>
 #include <list>
 
 #include <boost/container/deque.hpp>
 #include <boost/container/allocator.hpp>
-#include <boost/container/node_allocator.hpp>
-#include <boost/container/adaptive_pool.hpp>
 
 #include "print_container.hpp"
 #include "check_equal_containers.hpp"
@@ -35,49 +31,20 @@
 #include "vector_test.hpp"
 #include "default_init_test.hpp"
 #include <boost/core/no_exceptions_support.hpp>
+#include "../../intrusive/test/iterator_test.hpp"
 
 using namespace boost::container;
 
-namespace boost {
-namespace container {
-
-//Explicit instantiation to detect compilation errors
-template class boost::container::deque
- < test::movable_and_copyable_int
- , test::simple_allocator<test::movable_and_copyable_int> >;
-
-template class boost::container::deque
- < test::movable_and_copyable_int
- , test::dummy_test_allocator<test::movable_and_copyable_int> >;
-
-template class boost::container::deque
- < test::movable_and_copyable_int
- , std::allocator<test::movable_and_copyable_int> >;
-
-template class boost::container::deque
-   < test::movable_and_copyable_int
-   , allocator<test::movable_and_copyable_int> >;
-
-template class boost::container::deque
-   < test::movable_and_copyable_int
-   , adaptive_pool<test::movable_and_copyable_int> >;
-
-template class boost::container::deque
-   < test::movable_and_copyable_int
-   , node_allocator<test::movable_and_copyable_int> >;
-
-}}
-
 //Function to check if both sets are equal
 template<class V1, class V2>
-bool deque_copyable_only(V1 &, V2 &, container_detail::false_type)
+bool deque_copyable_only(V1 &, V2 &, dtl::false_type)
 {
    return true;
 }
 
 //Function to check if both sets are equal
 template<class V1, class V2>
-bool deque_copyable_only(V1 &cntdeque, V2 &stddeque, container_detail::true_type)
+bool deque_copyable_only(V1 &cntdeque, V2 &stddeque, dtl::true_type)
 {
    typedef typename V1::value_type IntType;
    std::size_t size = cntdeque.size();
@@ -265,7 +232,7 @@ bool do_test()
       }
 
       if(!deque_copyable_only(cntdeque, stddeque
-                     ,container_detail::bool_<boost::container::test::is_copyable<IntType>::value>())){
+                     ,dtl::bool_<boost::container::test::is_copyable<IntType>::value>())){
          return false;
       }
 
@@ -300,6 +267,20 @@ bool do_test()
       stddeque.resize(200);
       if(!test::CheckEqualContainers(cntdeque, stddeque)) return 1;
    }
+
+#ifndef BOOST_CONTAINER_NO_CXX17_CTAD
+   //Check Constructor Template Auto Deduction
+   {
+      auto gold = MyStdDeque{ 1, 2, 3 };
+      auto test = deque(gold.begin(), gold.end());
+      if(!test::CheckEqualContainers(gold, test)) return false;
+   }
+   {
+      auto gold = MyStdDeque{ 1, 2, 3 };
+      auto test = deque(gold.begin(), gold.end(), new_allocator<int>());
+      if(!test::CheckEqualContainers(gold, test)) return false;
+   }
+#endif
 
    std::cout << std::endl << "Test OK!" << std::endl;
    return true;
@@ -337,36 +318,21 @@ int test_cont_variants()
    return 0;
 }
 
-bool test_support_for_initialization_list()
+struct boost_container_deque;
+
+namespace boost { namespace container {   namespace test {
+
+template<>
+struct alloc_propagate_base<boost_container_deque>
 {
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
-   const std::initializer_list<int> il = {1, 10, 11};
-   const deque<int> expectedDeque(il.begin(), il.end());
+   template <class T, class Allocator>
+   struct apply
+   {
+      typedef boost::container::deque<T, Allocator> type;
+   };
+};
 
-   const deque<int> testConstructor = il;
-   if(testConstructor != expectedDeque)
-      return false;
-
-   deque<int> testAssignmentOperator = {11, 12, 23};
-   testAssignmentOperator = il;
-   if(testConstructor != expectedDeque)
-      return false;
-
-   deque<int> testAssignmentMethod = {11, 12, 23};
-   testAssignmentMethod.assign(il);
-   if(testConstructor != expectedDeque)
-      return false;
-
-   deque<int> testInsertMethod = {11};
-   testInsertMethod.insert(testInsertMethod.cbegin(), {12, 23});
-   if(testConstructor != expectedDeque)
-      return false;
-
-   return true;
-#endif
-   return true;
-
-}
+}}}   //namespace boost::container::test
 
 int main ()
 {
@@ -404,16 +370,6 @@ int main ()
       std::cerr << "test_cont_variants< allocator<void> > failed" << std::endl;
       return 1;
    }
-   //       boost::container::node_allocator
-   if(test_cont_variants< node_allocator<void> >()){
-      std::cerr << "test_cont_variants< node_allocator<void> > failed" << std::endl;
-      return 1;
-   }
-   //       boost::container::adaptive_pool
-   if(test_cont_variants< adaptive_pool<void> >()){
-      std::cerr << "test_cont_variants< adaptive_pool<void> > failed" << std::endl;
-      return 1;
-   }
    ////////////////////////////////////
    //    Default init test
    ////////////////////////////////////
@@ -421,9 +377,6 @@ int main ()
       std::cerr << "Default init test failed" << std::endl;
       return 1;
    }
-
-   if(!test_support_for_initialization_list())
-      return 1;
 
    ////////////////////////////////////
    //    Emplace testing
@@ -436,8 +389,56 @@ int main ()
    ////////////////////////////////////
    //    Allocator propagation testing
    ////////////////////////////////////
-   if(!boost::container::test::test_propagate_allocator<deque>())
+   if(!boost::container::test::test_propagate_allocator<boost_container_deque>())
       return 1;
+
+   ////////////////////////////////////
+   //    Initializer lists testing
+   ////////////////////////////////////
+   if(!boost::container::test::test_vector_methods_with_initializer_list_as_argument_for
+      < boost::container::deque<int> >()) {
+      return 1;
+   }
+
+   ////////////////////////////////////
+   //    Iterator testing
+   ////////////////////////////////////
+   {
+      typedef boost::container::deque<int> cont_int;
+      cont_int a; a.push_back(0); a.push_back(1); a.push_back(2);
+      boost::intrusive::test::test_iterator_random< cont_int >(a);
+      if(boost::report_errors() != 0) {
+         return 1;
+      }
+   }
+
+   ////////////////////////////////////
+   //    has_trivial_destructor_after_move testing
+   ////////////////////////////////////
+   // default allocator
+   {
+      typedef boost::container::deque<int> cont;
+      typedef cont::allocator_type allocator_type;
+      typedef boost::container::allocator_traits<allocator_type>::pointer pointer;
+      if (boost::has_trivial_destructor_after_move<cont>::value !=
+          boost::has_trivial_destructor_after_move<allocator_type>::value &&
+          boost::has_trivial_destructor_after_move<pointer>::value) {
+         std::cerr << "has_trivial_destructor_after_move(default allocator) test failed" << std::endl;
+         return 1;
+      }
+   }
+   // std::allocator
+   {
+      typedef boost::container::deque<int, std::allocator<int> > cont;
+      typedef cont::allocator_type allocator_type;
+      typedef boost::container::allocator_traits<allocator_type>::pointer pointer;
+      if (boost::has_trivial_destructor_after_move<cont>::value !=
+          boost::has_trivial_destructor_after_move<allocator_type>::value &&
+          boost::has_trivial_destructor_after_move<pointer>::value) {
+         std::cerr << "has_trivial_destructor_after_move(std::allocator) test failed" << std::endl;
+         return 1;
+      }
+   }
 
    return 0;
 }

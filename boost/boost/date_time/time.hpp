@@ -49,6 +49,8 @@ namespace date_time {
       > >
   {
   public:
+    // A tag for type categorization. Can be used to detect Boost.DateTime time points in generic code.
+    typedef void _is_boost_date_time_time_point;
     typedef T time_type;
     typedef typename time_system::time_rep_type time_rep_type;
     typedef typename time_system::date_type date_type;
@@ -162,7 +164,7 @@ namespace date_time {
     }
     time_type operator+=(const time_duration_type& td)
     {
-      time_ = (time_system::get_time_rep(date(), time_of_day() + td));
+      time_ = time_system::add_time_duration(time_,td);
       return time_type(time_);
     }
     //! subtract time durations
@@ -172,7 +174,7 @@ namespace date_time {
     }
     time_type operator-=(const time_duration_type& td) 
     {
-      time_ = (time_system::get_time_rep(date(), time_of_day() - td));
+      time_ = time_system::subtract_time_duration(time_, td);
       return time_type(time_);
     }
     

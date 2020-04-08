@@ -1,8 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2014, Oracle and/or its affiliates.
+// Copyright (c) 2014, 2019, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -18,7 +19,7 @@
 #include <boost/geometry/strategies/distance.hpp>
 #include <boost/geometry/strategies/tags.hpp>
 
-#include <boost/geometry/algorithms/within.hpp>
+#include <boost/geometry/algorithms/covered_by.hpp>
 
 #include <boost/geometry/algorithms/dispatch/distance.hpp>
 
@@ -113,19 +114,21 @@ template <typename MultiPoint, typename Areal, typename Strategy>
 class multipoint_to_areal
 {
 private:
-    struct within_areal
+    template <typename CoveredByStrategy>
+    struct not_covered_by_areal
     {
-        within_areal(Areal const& areal)
-            : m_areal(areal)
+        not_covered_by_areal(Areal const& areal, CoveredByStrategy const& strategy)
+            : m_areal(areal), m_strategy(strategy)
         {}
 
         template <typename Point>
         inline bool apply(Point const& point) const
         {
-            return geometry::within(point, m_areal);
+            return !geometry::covered_by(point, m_areal, m_strategy);
         }
 
         Areal const& m_areal;
+        CoveredByStrategy const& m_strategy;
     };
 
 public:
@@ -140,27 +143,31 @@ public:
                                     Areal const& areal,
                                     Strategy const& strategy)
     {
-        within_areal predicate(areal);
+        typedef not_covered_by_areal
+            <
+                typename Strategy::point_in_geometry_strategy_type
+            > predicate_type;
+        
+        predicate_type predicate(areal, strategy.get_point_in_geometry_strategy());
 
         if (check_iterator_range
                 <
-                    within_areal, false
+                    predicate_type, false
                 >::apply(boost::begin(multipoint),
                          boost::end(multipoint),
                          predicate))
         {
-            return 0;
+            return detail::distance::point_or_segment_range_to_geometry_rtree
+                <
+                    typename boost::range_iterator<MultiPoint const>::type,
+                    Areal,
+                    Strategy
+                >::apply(boost::begin(multipoint),
+                         boost::end(multipoint),
+                         areal,
+                         strategy);
         }
-
-        return detail::distance::point_or_segment_range_to_geometry_rtree
-            <
-                typename boost::range_iterator<MultiPoint const>::type,
-                Areal,
-                Strategy
-            >::apply(boost::begin(multipoint),
-                     boost::end(multipoint),
-                     areal,
-                     strategy);
+        return 0;
     }
 
     static inline return_type apply(Areal const& areal,
@@ -193,6 +200,7 @@ struct distance
             MultiPoint1, MultiPoint2, Strategy
         >
 {};
+
 
 template <typename MultiPoint, typename Linear, typename Strategy>
 struct distance

@@ -20,9 +20,9 @@ http://www.boost.org/LICENSE_1_0.txt)
 [[2002 - bimap at Code Project]
 [
 Joaquin Lopez Muñoz posted his first 
-[@http://www.codeproject.com/vcpp/stl/bimap.asp#test_suite bimap library]
+[@https://www.codeproject.com/Articles/3016/An-STL-like-bidirectional-map#test_suite bimap library]
 in 2002. Tons of users have been using it. He then
-[@http://aspn.activestate.com/ASPN/Mail/Message/boost/1404881 asked the
+[@https://lists.boost.org/Archives/boost/2002/10/38123.php asked the
 list for interest] in his library in 2003. Luckily, there was a lot of
 interest and Joaquin started to boostify the code. At some point all the
 developers seemed to agree that, rather than a bidirectional map, it would
@@ -51,7 +51,7 @@ map should be coded in top of this container.
 [
 Once in Boost, the library switched to the now familiar name
 "Boost.MultiIndex". Late in 2004, it formally became a member of Boost.
-Joaquin continued to enchance the library and added new features such as
+Joaquin continued to enhance the library and added new features such as
 composite keys and random-access indices.
 ]]
 
@@ -71,7 +71,7 @@ the library was queued for a formal review.
 
 [[2007 - Boost.Bimap]
 [
-The formal review took place at the beggining of the year and Boost.Bimap 
+The formal review took place at the beginning of the year and Boost.Bimap 
 was accepted in Boost.
 ]]
 ]

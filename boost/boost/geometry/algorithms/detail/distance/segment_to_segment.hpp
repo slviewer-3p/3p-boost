@@ -1,8 +1,9 @@
 // Boost.Geometry (aka GGL, Generic Geometry Library)
 
-// Copyright (c) 2014, Oracle and/or its affiliates.
+// Copyright (c) 2014, 2019, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
+// Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 
 // Licensed under the Boost Software License version 1.0.
 // http://www.boost.org/users/license.html
@@ -17,6 +18,8 @@
 
 #include <boost/geometry/core/point_type.hpp>
 #include <boost/geometry/core/tags.hpp>
+
+#include <boost/geometry/util/condition.hpp>
 
 #include <boost/geometry/strategies/distance.hpp>
 #include <boost/geometry/strategies/tags.hpp>
@@ -68,7 +71,7 @@ public:
     apply(Segment1 const& segment1, Segment2 const& segment2,
           Strategy const& strategy)
     {
-        if (geometry::intersects(segment1, segment2))
+        if (geometry::intersects(segment1, segment2, strategy.get_relate_segment_segment_strategy()))
         {
             return 0;
         }
@@ -96,7 +99,7 @@ public:
         std::size_t imin = std::distance(boost::addressof(d[0]),
                                          std::min_element(d, d + 4));
 
-        if (is_comparable<Strategy>::value)
+        if (BOOST_GEOMETRY_CONDITION(is_comparable<Strategy>::value))
         {
             return d[imin];
         }

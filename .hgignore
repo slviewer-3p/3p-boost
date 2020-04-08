@@ -1,5 +1,0 @@
-syntax: glob
-
-boost/bin.v2
-boost/stage
-boost/tools/build

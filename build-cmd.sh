@@ -19,49 +19,35 @@ if [ -z "$AUTOBUILD" ] ; then
 fi
 
 # Libraries on which we depend - please keep alphabetized for maintenance
-BOOST_LIBS=(context coroutine date_time filesystem iostreams program_options \
-            regex signals system thread wave)
-
-# Optionally use this function in a platform build to SUPPRESS running unit
-# tests on one or more specific libraries: sadly, it happens that some
-# libraries we care about might fail their unit tests on a particular platform
-# for a particular Boost release.
-# Usage: suppress_tests date_time regex
-function suppress_tests {
-  set +x
-  for lib
-  do for ((i=0; i<${#BOOST_LIBS[@]}; ++i))
-     do if [[ "${BOOST_LIBS[$i]}" == "$lib" ]]
-        then unset BOOST_LIBS[$i]
-             # From -x trace output, it appears that the above 'unset' command
-             # doesn't immediately close the gaps in the BOOST_LIBS array. In
-             # fact it seems that although the count ${#BOOST_LIBS[@]} is
-             # decremented, there's a hole at [$i], and subsequent elements
-             # remain at their original subscripts. Reset the array: remove
-             # any such holes.
-             BOOST_LIBS=("${BOOST_LIBS[@]}")
-             break
-        fi
-     done
-  done
-  echo "BOOST_LIBS=${BOOST_LIBS[*]}"
-  set -x
-}
+BOOST_LIBS=(context date_time fiber filesystem iostreams program_options \
+            regex stacktrace system thread wave)
 
 BOOST_BUILD_SPAM="-d2 -d+4"             # -d0 is quiet, "-d2 -d+4" allows compilation to be examined
 
 top="$(pwd)"
 cd "$BOOST_SOURCE_DIR"
-bjam="$(pwd)/bjam"
+# As of sometime between Boost 1.67 and 1.72, the Boost build engine b2's
+# legacy bjam alias is no longer copied to the top-level Boost directory. Use
+# b2 directly.
+bjam="$(pwd)/b2"
 stage="$(pwd)/stage"
 
 [ -f "$stage"/packages/include/zlib/zlib.h ] || fail "You haven't installed the zlib package yet."
                                                      
 if [ "$OSTYPE" = "cygwin" ] ; then
     autobuild="$(cygpath -u $AUTOBUILD)"
-    # Bjam doesn't know about cygwin paths, so convert them!
+    # convert from bash path to native OS pathname
+    native()
+    {
+        cygpath -w "$@"
+    }
 else
     autobuild="$AUTOBUILD"
+    # no pathname conversion needed
+    native()
+    {
+        echo "$*"
+    }
 fi
 
 # load autobuild provided shell functions and variables
@@ -107,16 +93,78 @@ restore_dylibs ()
 find_test_jamfile_dir_for()
 {
     # Not every Boost library contains a libs/x/test/Jamfile.v2 file. Some
-    # have libs/x/test/build/Jamfile.v2. Try to be general about it.
-    local Jamfiles="$(find libs/$1/test -name 'Jam????*' -type f -print)"
-    local lines=$(echo "$Jamfiles" | wc -l)
-    if [ $lines -ne 1 ]
-    then echo "Found $lines Jamfiles under libs/$1/test:
-$Jamfiles" 1>&2
-         exit 1
+    # have libs/x/test/build/Jamfile.v2. Some have more than one test
+    # subdirectory with a Jamfile. Try to be general about it.
+    # You can't use bash 'read' from a pipe, though truthfully I've always
+    # wished that worked. What you *can* do is read from redirected stdin, but
+    # that must follow 'done'.
+    while read path
+    do # caller doesn't want the actual Jamfile name, just its directory
+       dirname "$path"
+    done < <(find libs/$1/test -name 'Jam????*' -type f -print)
+    # Credit to https://stackoverflow.com/a/11100252/5533635 for the
+    # < <(command) trick. Empirically, it does iterate 0 times on empty input.
+}
+
+find_test_dirs()
+{
+    # Pass in the libraries of interest. This shell function emits to stdout
+    # the corresponding set of test directories, one per line: the specific
+    # library directories containing the Jamfiles of interest. Passing each of
+    # these directories to bjam should cause it to build and run that set of
+    # tests.
+    for blib
+    do
+        find_test_jamfile_dir_for "$blib"
+    done
+}
+
+# conditionally run unit tests
+run_tests()
+{
+    # This shell function wants to accept two different sets of arguments,
+    # each of arbitrary length: the list of library test directories, and the
+    # list of bjam arguments for each test. Since we don't have a good way to
+    # do that in bash, we read library test directories from stdin, one per
+    # line; command-line arguments are simply forwarded to the bjam command.
+    if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
+        # read individual directories from stdin below
+        while read testdir
+        do  sep "$testdir"
+            # link=static
+            "${bjam}" "$testdir" "$@"
+        done < /dev/stdin
     fi
-    # show caller the directory name containing the Jamfile.
-    echo "$(dirname "$Jamfiles")"
+    return 0
+}
+
+last_file="$(mktemp -t build-cmd.XXXXXXXX)"
+trap "rm '$last_file'" EXIT
+# from here on, the only references to last_file will be from Python
+last_file="$(native "$last_file")"
+last_time="$(python -c "import os.path; print(int(os.path.getmtime(r'$last_file')))")"
+start_time="$last_time"
+
+sep()
+{
+    python -c "
+from __future__ import print_function
+import os
+import sys
+import time
+start = $start_time
+last_file = r'$last_file'
+last = int(os.path.getmtime(last_file))
+now = int(time.time())
+os.utime(last_file, (now, now))
+def since(baseline, now):
+    duration = now - baseline
+    rest, secs = divmod(duration, 60)
+    hours, mins = divmod(rest, 60)
+    return '%2d:%02d:%02d' % (hours, mins, secs)
+print('((((( %s )))))' % since(last, now), file=sys.stderr)
+print(since(start, now), ' $* '.center(72, '='), file=sys.stderr)
+"
 }
 
 # bjam doesn't support a -sICU_LIBPATH to point to the location
@@ -133,24 +181,35 @@ $Jamfiles" 1>&2
 case "$AUTOBUILD_PLATFORM" in
 
     windows*)
-        INCLUDE_PATH="$(cygpath -m "${stage}"/packages/include)"
-        ZLIB_RELEASE_PATH="$(cygpath -m "${stage}"/packages/lib/release)"
-        ICU_PATH="$(cygpath -m "${stage}"/packages)"
+        INCLUDE_PATH="$(native "${stage}"/packages/include)"
+        ZLIB_RELEASE_PATH="$(native "${stage}"/packages/lib/release)"
+        ICU_PATH="$(native "${stage}"/packages)"
 
         case "$AUTOBUILD_VSVER" in
             120)
                 bootstrapver="vc12"
                 bjamtoolset="msvc-12.0"
                 ;;
+            150)
+                bootstrapver="vc141"
+                bjamtoolset="msvc-14.1"
+                ;;
             *)
                 echo "Unrecognized AUTOBUILD_VSVER='$AUTOBUILD_VSVER'" 1>&2 ; exit 1
                 ;;
         esac
 
+        sep "bootstrap"
         # Odd things go wrong with the .bat files:  branch targets
         # not recognized, file tests incorrect.  Inexplicable but
         # dropping 'echo on' into the .bat files seems to help.
-        cmd.exe /C bootstrap.bat "$bootstrapver"
+        cmd.exe /C bootstrap.bat "$bootstrapver" || echo bootstrap failed 1>&2
+        # Failure of this bootstrap.bat file may or may not produce nonzero rc
+        # -- check for the program it should have built.
+        if [ ! -x "$bjam.exe" ]
+        then cat "bootstrap.log"
+             exit 1
+        fi
 
         # Windows build of viewer expects /Zc:wchar_t-, etc., from LL_BUILD_RELEASE.
         # Without --abbreviate-paths, some compilations fail with:
@@ -158,19 +217,25 @@ case "$AUTOBUILD_PLATFORM" in
         # Without /FS, some compilations fail with:
         # fatal error C1041: cannot open program database '...\vc120.pdb';
         # if multiple CL.EXE write to the same .PDB file, please use /FS
+        # BOOST_STACKTRACE_LINK (not _DYN_LINK) requests external library:
+        # https://www.boost.org/doc/libs/release/doc/html/stacktrace/configuration_and_build.html
+        # This helps avoid macro collisions in consuming source files:
+        # https://github.com/boostorg/stacktrace/issues/76#issuecomment-489347839
         WINDOWS_BJAM_OPTIONS=("--toolset=$bjamtoolset" -j2 \
             --abbreviate-paths 
             "include=$INCLUDE_PATH" "-sICU_PATH=$ICU_PATH" \
             "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib" \
             cxxflags=/FS \
+            cxxflags=/DBOOST_STACKTRACE_LINK \
             "${BOOST_BJAM_OPTIONS[@]}")
 
         RELEASE_BJAM_OPTIONS=("${WINDOWS_BJAM_OPTIONS[@]}" \
             "-sZLIB_LIBPATH=$ZLIB_RELEASE_PATH" \
             "-sZLIB_LIBRARY_PATH=$ZLIB_RELEASE_PATH" \
             "-sZLIB_NAME=zlib")
+        sep "build"
         "${bjam}" link=static variant=release \
-            --prefix="${stage}" --libdir="${stage_release}" \
+            --prefix="$(native "${stage}")" --libdir="$(native "${stage_release}")" \
             "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # Constraining Windows unit tests to link=static produces unit-test
@@ -185,41 +250,40 @@ case "$AUTOBUILD_PLATFORM" in
         # tests. Certain libraries depend on ICU; thread tests are so deeply
         # nested that even with --abbreviate-paths, the .rsp file pathname is
         # too long for Windows. Poor sad broken Windows.
-        suppress_tests date_time filesystem iostreams regex thread
 
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    # link=static
-                    "${bjam}" variant=release \
-                        --prefix="${stage}" --libdir="${stage_release}" \
-                        $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
-                popd
-            done
-        fi
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/' \
+             -e 'iostreams/' \
+             -e 'regex/' \
+             -e 'stacktrace/' \
+             -e 'thread/' \
+             | \
+        run_tests variant=release \
+                  --prefix="$(native "${stage}")" --libdir="$(native "${stage_release}")" \
+                  $RELEASE_BJAM_OPTIONS $BOOST_BUILD_SPAM -a -q
 
         # Move the libs
         mv "${stage_lib}"/*.lib "${stage_release}"
 
+        sep "version"
         # bjam doesn't need vsvars, but our hand compilation does
         load_vsvars
 
         # populate version_file
         cl /DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            /DVERSION_MACRO="$VERSION_MACRO" \
-           /Fo"$(cygpath -w "$stage/version.obj")" \
-           /Fe"$(cygpath -w "$stage/version.exe")" \
-           "$(cygpath -w "$top/version.c")"
+           /Fo"$(native "$stage/version.obj")" \
+           /Fe"$(native "$stage/version.exe")" \
+           "$(native "$top/version.c")"
         # Boost's VERSION_MACRO emits (e.g.) "1_55"
         "$stage/version.exe" | tr '_' '.' > "$stage/version.txt"
         rm "$stage"/version.{obj,exe}
         ;;
 
     darwin*)
-        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
-        suppress_tests date_time
-
         # Force zlib static linkage by moving .dylibs out of the way
         trap restore_dylibs EXIT
         for dylib in "${stage}"/packages/lib/{debug,release}/*.dylib; do
@@ -227,38 +291,61 @@ case "$AUTOBUILD_PLATFORM" in
                 mv "$dylib" "$dylib".disable
             fi
         done
-            
+
+        sep "bootstrap"
         stage_lib="${stage}"/lib
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages
 
+        # Boost.Context and Boost.Coroutine2 now require C++14 support.
         # Without the -Wno-etc switches, clang spams the build output with
         # many hundreds of pointless warnings.
+        # Building Boost.Regex without --disable-icu causes the viewer link to
+        # fail for lack of an ICU library.
         DARWIN_BJAM_OPTIONS=("${BOOST_BJAM_OPTIONS[@]}" \
             "include=${stage}/packages/include" \
             "include=${stage}/packages/include/zlib/" \
             "-sZLIB_INCLUDE=${stage}/packages/include/zlib/" \
+            cxxflags=-std=c++14 \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
             cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable \
-            cxxflags=-Wno-unused-local-typedef)
+            cxxflags=-Wno-unused-local-typedef \
+            --disable-icu)
 
         RELEASE_BJAM_OPTIONS=("${DARWIN_BJAM_OPTIONS[@]}" \
             "-sZLIB_LIBPATH=${stage}/packages/lib/release")
 
+        sep "build"
         "${bjam}" toolset=darwin variant=release "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
-        
+
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    "${bjam}" toolset=darwin variant=release -a -q \
-                        "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
-                popd
-            done
-        fi
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        # With Boost 1.64, skip filesystem/tests/issues -- we get:
+        # error: Unable to find file or target named
+        # error:     '6638-convert_aux-fails-init-global.cpp'
+        # error: referred to from project at
+        # error:     'libs/filesystem/test/issues'
+        # regex/tests/de_fuzz depends on an external Fuzzer library:
+        # ld: library not found for -lFuzzer
+        # Sadly, as of Boost 1.65.1, the Stacktrace self-tests just do not
+        # seem ready for prime time on Mac.
+        # Bump the timeout for Boost.Thread tests because our TeamCity Mac
+        # build hosts are getting a bit long in the tooth.
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/test/issues' \
+             -e 'regex/test/de_fuzz' \
+             -e 'stacktrace/' \
+            | \
+        run_tests toolset=darwin variant=release -a -q \
+                  "${RELEASE_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM \
+                  cxxflags="-DBOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED" \
+                  cxxflags="-DBOOST_THREAD_TEST_TIME_MS=250"
 
         mv "${stage_lib}"/*.a "${stage_release}"
 
         # populate version_file
+        sep "version"
         cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            -DVERSION_MACRO="$VERSION_MACRO" \
            -o "$stage/version" "$top/version.c"
@@ -268,8 +355,6 @@ case "$AUTOBUILD_PLATFORM" in
         ;;
 
     linux*)
-        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
-        suppress_tests date_time
         # Force static linkage to libz by moving .sos out of the way
         trap restore_sos EXIT
         for solib in "${stage}"/packages/lib/debug/libz.so* "${stage}"/packages/lib/release/libz.so*; do
@@ -277,33 +362,42 @@ case "$AUTOBUILD_PLATFORM" in
                 mv -f "$solib" "$solib".disable
             fi
         done
-            
+
+        sep "bootstrap"
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
         RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib/" \
             "-sZLIB_LIBPATH=$stage/packages/lib/release" \
             "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
-            "${BOOST_BJAM_OPTIONS[@]}")
+            "${BOOST_BJAM_OPTIONS[@]}" \
+            cxxflags=-std=c++11)
+        sep "build"
         "${bjam}" variant=release --reconfigure \
             --prefix="${stage}" --libdir="${stage}"/lib/release \
             "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
         # conditionally run unit tests
-        if [ "${DISABLE_UNIT_TESTS:-0}" = "0" ]; then
-            for blib in "${BOOST_LIBS[@]}"; do
-                pushd "$(find_test_jamfile_dir_for "$blib")"
-                    "${bjam}" variant=release -a -q \
-                        --prefix="${stage}" --libdir="${stage}"/lib/release \
-                        "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
-                popd
-            done
-        fi
+        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
+        # libs/regex/test/de_fuzz produces:
+        # error: "clang" is not a known value of feature <toolset>
+        # error: legal values: "gcc"
+        find_test_dirs "${BOOST_LIBS[@]}" | \
+        grep -v \
+             -e 'date_time/' \
+             -e 'filesystem/test/issues' \
+             -e 'regex/test/de_fuzz' \
+            | \
+        run_tests variant=release -a -q \
+                  --prefix="${stage}" --libdir="${stage}"/lib/release \
+                  "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
 
         mv "${stage_lib}"/libboost* "${stage_release}"
 
+        sep "clean"
         "${bjam}" --clean
 
         # populate version_file
+        sep "version"
         cc -DVERSION_HEADER_FILE="\"$VERSION_HEADER_FILE\"" \
            -DVERSION_MACRO="$VERSION_MACRO" \
            -o "$stage/version" "$top/version.c"
@@ -312,7 +406,8 @@ case "$AUTOBUILD_PLATFORM" in
         rm "$stage/version"
         ;;
 esac
-    
+
+sep "includes and text"
 mkdir -p "${stage}"/include
 cp -a boost "${stage}"/include/
 mkdir -p "${stage}"/LICENSES
