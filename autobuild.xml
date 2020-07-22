@@ -17,18 +17,6 @@
         <string>icu4c</string>
         <key>platforms</key>
         <map>
-          <key>darwin</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>910edfc0b936389bc8804c42d1008aa8</string>
-              <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/icu4c_3p-update-icu4c/rev/295486/arch/Darwin/installer/icu4c-4.8.1-darwin-295486.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>darwin</string>
-          </map>
           <key>darwin64</key>
           <map>
             <key>archive</key>
@@ -40,18 +28,6 @@
             </map>
             <key>name</key>
             <string>darwin64</string>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>0a4423cfd26409f33ae81fb9806a9972</string>
-              <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-icu4c/rev/314152/arch/Linux/installer/icu4c-4.8.1-linux-314152.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>linux</string>
           </map>
           <key>linux64</key>
           <map>
@@ -107,18 +83,6 @@
         <string>zlib</string>
         <key>platforms</key>
         <map>
-          <key>darwin</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>1a79eeac199c2d94e4ae4e5d0194e25f</string>
-              <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/zlib_3p-update-zlib/rev/296881/arch/Darwin/installer/zlib-1.2.8.296881-darwin-296881.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>darwin</string>
-          </map>
           <key>darwin64</key>
           <map>
             <key>archive</key>
@@ -130,18 +94,6 @@
             </map>
             <key>name</key>
             <string>darwin64</string>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>archive</key>
-            <map>
-              <key>hash</key>
-              <string>98a8c775c581ca80bb559e8b4e8eaae7</string>
-              <key>url</key>
-              <string>http://automated-builds-secondlife-com.s3.amazonaws.com/hg/repo/p64_3p-zlib/rev/314131/arch/Linux/installer/zlib-1.2.8.314131-linux-314131.tar.bz2</string>
-            </map>
-            <key>name</key>
-            <string>linux</string>
           </map>
           <key>linux64</key>
           <map>
@@ -301,7 +253,7 @@
       <key>source_directory</key>
       <string>boost</string>
       <key>version</key>
-      <string>1.55.0</string>
+      <string>1.72.0</string>
       <key>version_file</key>
       <string>version.txt</string>
     </map>
