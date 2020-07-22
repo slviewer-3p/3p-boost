@@ -376,21 +376,6 @@ case "$AUTOBUILD_PLATFORM" in
             --prefix="${stage}" --libdir="${stage}"/lib/release \
             "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM stage
 
-        # conditionally run unit tests
-        # date_time Posix test failures: https://svn.boost.org/trac/boost/ticket/10570
-        # libs/regex/test/de_fuzz produces:
-        # error: "clang" is not a known value of feature <toolset>
-        # error: legal values: "gcc"
-        find_test_dirs "${BOOST_LIBS[@]}" | \
-        grep -v \
-             -e 'date_time/' \
-             -e 'filesystem/test/issues' \
-             -e 'regex/test/de_fuzz' \
-            | \
-        run_tests variant=release -a -q \
-                  --prefix="${stage}" --libdir="${stage}"/lib/release \
-                  "${RELEASE_BOOST_BJAM_OPTIONS[@]}" $BOOST_BUILD_SPAM
-
         mv "${stage_lib}"/libboost* "${stage_release}"
 
         sep "clean"
