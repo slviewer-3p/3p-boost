@@ -32,7 +32,7 @@ cd "$BOOST_SOURCE_DIR"
 bjam="$(pwd)/b2"
 stage="$(pwd)/stage"
 
-[ -f "$stage"/packages/include/zlib/zlib.h ] || fail "You haven't installed the zlib package yet."
+[ -f "$stage"/packages/include/zlib-ng/zlib.h ] || fail "You haven't installed the zlib package yet."
                                                      
 if [ "$OSTYPE" = "cygwin" ] ; then
     autobuild="$(cygpath -u $AUTOBUILD)"
@@ -224,7 +224,7 @@ case "$AUTOBUILD_PLATFORM" in
         WINDOWS_BJAM_OPTIONS=("--toolset=$bjamtoolset" -j2 \
             --abbreviate-paths 
             "include=$INCLUDE_PATH" "-sICU_PATH=$ICU_PATH" \
-            "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib" \
+            "-sZLIB_INCLUDE=$INCLUDE_PATH/zlib-ng" \
             cxxflags=/FS \
             cxxflags=/DBOOST_STACKTRACE_LINK \
             "${BOOST_BJAM_OPTIONS[@]}")
@@ -303,8 +303,8 @@ case "$AUTOBUILD_PLATFORM" in
         # fail for lack of an ICU library.
         DARWIN_BJAM_OPTIONS=("${BOOST_BJAM_OPTIONS[@]}" \
             "include=${stage}/packages/include" \
-            "include=${stage}/packages/include/zlib/" \
-            "-sZLIB_INCLUDE=${stage}/packages/include/zlib/" \
+            "include=${stage}/packages/include/zlib-ng/" \
+            "-sZLIB_INCLUDE=${stage}/packages/include/zlib-ng/" \
             cxxflags=-std=c++14 \
             cxxflags=-Wno-c99-extensions cxxflags=-Wno-variadic-macros \
             cxxflags=-Wno-unused-function cxxflags=-Wno-unused-const-variable \
@@ -366,7 +366,7 @@ case "$AUTOBUILD_PLATFORM" in
         sep "bootstrap"
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
 
-        RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib/" \
+        RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib-ng/" \
             "-sZLIB_LIBPATH=$stage/packages/lib/release" \
             "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
             "${BOOST_BJAM_OPTIONS[@]}" \
