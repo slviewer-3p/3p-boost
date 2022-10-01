@@ -57,7 +57,7 @@ source_environment_tempfile="$stage/source_environment.sh"
 
 # Explicitly request each of the libraries named in BOOST_LIBS.
 # Use magic bash syntax to prefix each entry in BOOST_LIBS with "--with-".
-BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE architecture=x86 --layout=tagged -sNOZIP2=1 -sNO_LZMA=1 -sNO_ZSTD=1\
+BOOST_BJAM_OPTIONS="address-model=$AUTOBUILD_ADDRSIZE --layout=tagged -sNOZIP2=1 -sNO_LZMA=1 -sNO_ZSTD=1\
                     ${BOOST_LIBS[*]/#/--with-}"
 
 # Turn these into a bash array: it's important that all of cxxflags (which
@@ -365,7 +365,7 @@ case "$AUTOBUILD_PLATFORM" in
 
         sep "bootstrap"
         ./bootstrap.sh --prefix=$(pwd) --with-icu="${stage}"/packages/
-
+	
         RELEASE_BOOST_BJAM_OPTIONS=(toolset=gcc "include=$stage/packages/include/zlib-ng/" \
             "-sZLIB_LIBPATH=$stage/packages/lib/release" \
             "-sZLIB_INCLUDE=${stage}\/packages/include/zlib/" \
